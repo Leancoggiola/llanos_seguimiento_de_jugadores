@@ -1,0 +1,53 @@
+.cc-label {
+    color: var(--app-color);
+    font-size: 1rem;
+    font-weight: lighter;
+    line-height: 1.50rem;
+    width: calc(100% - 1.125rem);
+    display: block;
+    z-index: 1;
+    pointer-events: none;
+    transition: 200ms ease all;
+    padding-bottom: 0.375rem;
+    &-disabled {
+        color: var(--disabled);
+    }
+
+    .cc-input {
+        margin-top: 5px;
+        display: block;
+    }
+}
+
+.cc-form-field-text-input .cc-label{
+    line-height: 1.25rem;
+    & + .cc-input-component .cc-input {
+        padding: 1.42rem 0.714rem 0.0714rem;
+    }
+}
+
+.cc-form-field-text-input,
+.cc-form-field-select-input {
+    .cc-label {
+        position: absolute;
+        top: 1rem;
+        left: 1px;
+        padding-left: 0.65rem;
+        transition: 200ms ease top, 200ms ease font-size;
+        padding-bottom: 0.57rem;
+    }
+}
+
+.cc-form-field-text-input.cc-form-field-focused,
+.cc-form-field-text-input.cc-form-field-has-value,
+.cc-form-field-select-input.cc-form-field-focused,
+.cc-form-field-select-input.cc-form-field-has-value.cc-form-field-has-placeholder {
+    .cc-label {
+        top: 0.07rem;
+        font-size: 0.85rem;
+        width: auto;
+        z-index: 1;
+        padding-bottom: 0;
+        line-height: 1.5rem;
+    }
+}

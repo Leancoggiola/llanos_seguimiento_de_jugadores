@@ -1,0 +1,72 @@
+.cc-progress-loader-pos-relative {
+    position: relative!important;
+}
+.cc-progress-loader {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 100%;
+
+    &-content {
+        display: flex;
+        height: 1rem;
+        width: 5rem;
+    }
+    &-square {
+        background-color: var(--progress-loader-square-color);
+        height: 1rem;
+        width: 1rem;
+        border-radius: 50%;
+        opacity: 0;
+        margin-right: 1rem;
+    
+        &:last-of-type {
+            margin-right: 0;
+        }
+        
+        @for $i from 1 through 3 {
+            &:nth-child(#{$i}) {
+                animation: loaderAnimation 2s var(--easy-in-out-expo);
+                animation-delay: 1 - ($i * 0.2s);
+                animation-iteration-count: infinite;
+            }
+        }
+    }
+}
+
+.cc-progress-loader-fullscreen {
+    height: 100vh;
+    position: fixed;
+    z-index: 999;
+    .cc-progress-loader-content {
+        top:50%;
+    }
+    &.cc-progress-loader-pos-relative {
+        background-color: #ffffff50;
+    }
+}
+
+@keyframes loaderAnimation {
+    0% {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    33% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    67% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+}

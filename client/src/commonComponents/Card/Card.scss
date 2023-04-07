@@ -1,0 +1,44 @@
+.cc-card {
+    display: inline-block;
+    color: var(--app-color);
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border-color);
+    box-shadow: none;
+    transition: box-shadow 200ms ease;
+
+    &:hover {
+        box-shadow: 0 0 .5rem 0 var(--card-box-shadow-color-hover);
+    }
+
+    &-header {
+        width: auto;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--card-border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &-body {
+        padding: 0.75rem;
+        &:first-child { margin-top: 0; }
+        &:last-child { margin-bottom: 0; }
+    }
+
+    &-footer {
+        display: flex;
+        flex-direction: row;
+        background: var(--card-footer-bg);
+        min-height: 2.75rem;
+    }
+    
+    &-image {
+        margin: 0;
+        svg, img {width: 100%;}
+
+        & ~ &-header {
+            border: none;
+            padding-bottom: 0;
+        }
+    }
+}

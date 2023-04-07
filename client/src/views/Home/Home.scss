@@ -1,0 +1,12 @@
+.home-container {
+    section {
+        margin-bottom: 2rem;
+        box-shadow: 0 0 0.5rem 0 var(--card-box-shadow-color-hover);
+        &:last-child {
+            margin: 0;
+        }
+    }
+    .no-content h1 {
+        text-align: center;
+    }
+}

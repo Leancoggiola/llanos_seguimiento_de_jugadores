@@ -1,0 +1,43 @@
+.cc-icon-btn {
+    cursor: pointer;
+    outline: none;
+    background: none;
+    border: none;
+    padding: 0;
+    transition: box-shadow var(--easy-in-out-fast);
+    color: var(--app-color);
+
+    &:hover {
+        background-color: var(--btn-icon-hover-bg);
+        color: var(--btn-icon-hover-color);
+    }
+    &:focus {
+        background-color: var(--btn-icon-focus-bg);
+        color: var(--btn-icon-focus-color);
+    }
+    &:disabled {
+        cursor: auto;
+        pointer-events: none;
+        path {
+            fill: var(--btn-icon-disabled);
+        }
+        &:hover {
+            path {
+                fill: var(--btn-icon-disabled);
+            }
+        }
+    }
+    
+    .cc-icon {
+        background: transparent;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    path {
+        fill: currentColor;
+        transition: fill var(--easy-in-out-fast);
+    }
+}

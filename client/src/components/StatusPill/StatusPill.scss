@@ -1,0 +1,17 @@
+.status-pill {
+    &-pendiente .cc-pill-btn {
+        color: var( --status-pending);
+        background-color: var(--status-pending-bg);
+        border-color: var( --status-pending);
+    }
+    &-viendo .cc-pill-btn{
+        color: var( --status-watching);
+        background-color: var(--status-watching-bg);
+        border-color: var( --status-watching);
+    }
+    &-terminado .cc-pill-btn{
+        color: var( --status-finished);
+        background-color: var(--status-finished-bg);
+        border-color: var( --status-finished);
+    }
+}

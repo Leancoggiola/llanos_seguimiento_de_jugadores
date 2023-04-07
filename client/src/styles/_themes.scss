@@ -1,0 +1,70 @@
+@import './customVariables';
+
+.theme-default {
+    // App variables
+    --app-bg: #{$app-bg-default};
+    --app-submenu-bg: #{$app-submenu-bg-default};
+    --app-color: #{$color-default};
+    --app-highlight: #{$highlight-default};
+    --disabled: #{$disabled-default};
+
+    --navigation-bg: #{$navigation-bg-default};
+    --scrollbar-bg: #{$scrollbar-bg-default};
+
+    --icon-color: #{$color-default};
+    --border-color: #{$border-color-default};
+    --border-color-navigation : #{$border-color-navigation-default};
+
+    --btn-primary-color-bg: #{$btn-primary-color-bg-default};
+    --btn-primary-color: #{$btn-primary-color-default};
+    --btn-primary-hover-bg: #{$btn-primary-hover-bg-default};
+    --btn-primary-hover: #{$btn-primary-hover-default};
+
+    --btn-primary-color-disabled-bg: #{$btn-primary-color-disabled-bg-default};
+    --btn-primary-color-disabled: #{$btn-primary-color-disabled-default};
+    --btn-primary-border-disabled: #{$btn-primary-border-disabled-default};
+
+    --btn-secondary-color-bg: #{$btn-secondary-color-bg-default};
+    --btn-secondary-color: #{$btn-secondary-color-default};
+    --btn-secondary-hover-bg: #{$btn-secondary-hover-bg-default};
+    --btn-secondary-hover: #{$btn-secondary-hover-default};
+
+    --btn-icon-hover-bg: #{$btn-icon-hover-bg-default};
+    --btn-icon-hover-color:#{$btn-icon-hover-color-default};
+    --btn-icon-focus-bg:#{$btn-icon-focus-bg-default};
+    --btn-icon-focus-color:#{$btn-icon-focus-color-default};
+    --btn-icon-disabled:#{$btn-icon-disabled-default};
+
+    --progress-loader-square-color: #{$progress-loader-square-color-default};
+
+    --dropdown-bg: #{$dropdown-bg-default};
+    --dropdown-color: #{$dropdown-color-default};
+
+    --modal-overlay-bg: #{$modal-overlay-bg-default};
+
+    --chip-bg: #{$chip-bg-default};
+    --chip-color: #{$chip-color-default};
+    --chip-monochrome-bg: #{$chip-monochrome-bg-default};
+    --chip-monochrome-color: #{$chip-monochrome-color-default};
+
+    --form-element-bg: #{$form-element-bg-default};
+    --form-element-hover: #{$form-element-hover-default};
+    --form-element-border: #{$form-element-border-default};
+    --form-element-disabled-color: #{$form-element-disabled-color-default};
+    --form-element-disabled-border: #{$form-element-disabled-border-default};
+
+    --card-bg: #{$card-bg-default};
+    --card-box-shadow-color-hover: #{$card-box-shadow-color-hover-default};
+    --card-border-color: #{$card-border-color-default};
+    --card-footer-bg: #{$card-footer-bg-default};
+
+    --carousel-bg: #{$carousel-bg-default};
+    --carousel-focus: #{$carousel-focus-default};
+    --carousel-arrow-hover: #{$carousel-arrow-hover-default};
+    --carousel-arrow-border: #{$carousel-arrow-border-default};
+    --carousel-arrow-shadow-color: #{$carousel-arrow-shadow-color-default};
+    --carousel-edit-btn-color: #{$carousel-edit-btn-color-default};
+
+}
+
+    

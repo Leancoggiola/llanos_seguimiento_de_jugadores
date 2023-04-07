@@ -1,0 +1,23 @@
+.cc-error {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    &-headline {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        &-icon {
+            color: var(--error);
+            svg {
+                height: 3rem;
+                width: 3rem;
+            }
+        }
+    }
+    &-msg {
+        margin: 0.5rem;
+    }
+
+}

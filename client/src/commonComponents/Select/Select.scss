@@ -1,0 +1,88 @@
+.cc-select {
+    display: block;
+    position: relative;
+    &-input {
+        color: var(--app-color);
+        background: var(--form-element-bg);
+        border: none;
+        border-bottom: 1px solid var(--form-element-border);
+        cursor: pointer;
+        min-height: 2.75rem;
+        padding: 1.25rem 0.65rem 0.25rem;
+        position: relative;
+        text-align: left;
+        width: 100%;
+
+        &-text {
+            width: calc(100% - 2.15rem);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        &-arrow {
+            position: absolute;
+            right: 0.5rem;
+            top: 0.75rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: var(--app-color);
+            transition: transform 0.25s ease-in-out;
+        }
+
+        &-clean {
+            position: absolute;
+            right: 2.125rem;
+            top: 0.75rem;
+            z-index: 1;
+            width: 1.25rem;
+            height: 1.25rem;
+            fill: var(--app-color);
+        }
+
+        &:disabled {
+            color: var(--form-element-disabled-color);
+            border-bottom: 1px solid var(--form-element-disabled-border);
+            background-color: var(--form-element-bg);
+            cursor: not-allowed;
+
+            &::placeholder {
+                color: var(--form-element-disabled-color);
+            }
+
+            .cc-select-input-arrow {
+                fill: var(--form-element-disabled-color);
+            }
+        }
+
+        &:hover:not(:disabled), &:focus:not(:disabled) {
+            background-color: var(--form-element-hover);
+        }
+        &:focus:not(:disabled) {
+            border-bottom: 2px solid var(--form-element-border);
+        }
+    }
+
+    &-wrapper-options {
+        width: 100%;
+        z-index: 100;
+    }
+
+    &-options {
+        background-color: var(--form-element-bg);
+        border: 1px solid transparent;
+        display: none;
+        width: 100%;
+        max-height: 8.50rem;
+        overflow-y: auto;
+    }
+
+    &-open {
+        .cc-select-options {
+            display: block;
+        }
+        .cc-select-input-arrow {
+            transform: rotateZ(180deg);
+        }
+    }
+}

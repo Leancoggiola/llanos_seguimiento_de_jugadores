@@ -1,0 +1,13 @@
+.inprogress-text {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    z-index: 999;
+    position: fixed;
+    top: 54%;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--app-color);
+    font-size: 1.5rem;
+}

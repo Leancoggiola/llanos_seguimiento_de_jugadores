@@ -1,0 +1,21 @@
+.header-profile-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    cursor: initial;
+    &:hover {
+        background-color: var(--btn-icon-hover-bg);
+    }
+    &:focus {
+        background-color: var(--btn-icon-focus-bg);
+    }
+    .cc-avatar { cursor: pointer; }
+
+    .icon-avatar {
+        .cc-icon svg {
+            height: 40px;
+            width: 40px;
+        }
+    }
+}

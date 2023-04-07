@@ -1,0 +1,21 @@
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    .login-card {
+        width: 100%;
+        max-width: 32rem;
+        background: var(--login-bg);
+        border: 1px solid var(--border-color);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        h1 { margin-bottom: 0.75rem;}
+        form,.cc-form-field {
+            width: 100%;
+        }
+    }
+}

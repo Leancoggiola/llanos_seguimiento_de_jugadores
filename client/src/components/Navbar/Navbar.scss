@@ -1,0 +1,83 @@
+.navigation {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    overflow: hidden;
+    top: 4rem;
+    height: 100%; // Modify in the future
+    z-index: 100;
+    background-color: var(--navigation-bg);
+    border-right: 1px solid var(--app-bg);
+
+    &-collapse {
+        width: var(--vertical-nav-collapse-width);
+        transition: width 0.5s;
+        @media screen and (max-width: 480px){
+            display: none;
+        }
+    }
+    &-expanded {
+        width: var(--vertical-nav-expanded-width);
+        transition: width 0.5s;
+        @media screen and (max-width: 480px){
+            display: flex;
+            width: var(--vertical-nav-collapse-width);
+        }
+    }
+
+    button {
+        height: var(--vertical-nav-collapse-width);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        position: relative;
+        padding: 0;
+        background: transparent;
+        color: var(--navbar-color);
+        border: none;
+        transition: background-color 200ms ease-in;
+
+        h2 {
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-grow: 1;
+            text-align: left;
+            font-size: large;
+        }
+        .icon-container {
+            width: var(--vertical-nav-collapse-width);
+            min-width: var(--vertical-nav-collapse-width);
+            height: 100%;
+            display: flex;
+            flex-grow: 0;
+            align-items: center;
+            justify-content: center;
+            img {
+                height: 3rem;
+                width: 3rem;
+                border-radius: 10%;
+                box-shadow: 0 0 .5rem .5rem var(--app-bg);
+            }
+        }
+        &.active {
+            color: white;
+            background-color: var(--app-bg);
+            &:before {
+                content: '';
+                display: block;
+                width: 0.25rem;
+                height: 100%;
+                position: absolute;
+                z-index: 1;
+                background: var(--app-color);
+            }
+        }
+        &:hover {
+            background-color: var(--app-bg);
+        }
+    }
+}

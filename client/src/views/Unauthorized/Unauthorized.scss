@@ -1,0 +1,7 @@
+.unauthorized-container {
+    height: 100vh;
+    .cc-error-headline-msg {
+        text-transform: capitalize;
+    }
+    h4 { display: none; }
+}

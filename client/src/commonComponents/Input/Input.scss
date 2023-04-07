@@ -1,0 +1,89 @@
+.cc-input-component {
+    position: relative;
+    .cc-input[type='password'] {
+        font-family: Calibri;
+    }
+
+    input.cc-input,textarea.cc-text-area {
+        &::placeholder {
+            font-size: 1rem;
+            color: var(--app-color);
+            transition: opacity var(--easy-in-out-fast);
+            opacity: 0;
+        }
+
+        &:focus::placeholder {
+            opacity: 1;
+        }
+
+        &::-webkit-input-placeholder {
+            font-size: 1rem;
+            color: var(--app-color);
+            transition: opacity var(--easy-in-out-fast);
+            opacity: 0;
+        }
+
+        &:focus::-webkit-input-placeholder {
+            opacity: 1;
+        }
+
+        &:-ms-input-placeholder {
+            font-size: 1rem;
+            color: var(--app-color);
+            transition: opacity var(--easy-in-out-fast);
+            opacity: 0;
+        }
+
+        &:focus:-ms-input-placeholder {
+            opacity: 1;
+        }
+    }
+
+    .cc-input,.cc-text-area {
+        color: var(--app-color);
+        font-family: Calibri;
+        font-weight: lighter;
+        font-size: 1rem;
+
+        background: var(--form-element-bg);
+        line-height: 1.5rem;
+        padding: 0.725rem;
+        display: block;
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        box-sizing: border-box;
+        box-shadow: inset 0px -1px 0px 0px var(--form-element-border);
+
+        &:hover:not(:disabled) {
+            background-color: var(--form-element-hover);
+        }
+
+        &:focus:not(:disabled) {
+            background-color: var(--form-element-hover);
+            box-shadow: inset 0px -2px 0px 0px var(--form-element-border);
+            border-width: 0 0 2px;
+        }
+
+        &:disabled {
+            color: var(--form-element-disabled-color);
+            background-color: var(--form-element-bg);
+            box-shadow: inset 0 -1px 0 0 var(--form-element-border);
+            cursor: not-allowed;
+
+            &::placeholder {
+                color: var(--form-element-disabled-color);
+            }
+        }
+
+        &.cc-input-invalid {
+            box-shadow: inset 0px -1px 0px 0px var(--error);
+            padding-right: 2rem;
+
+            &:focus:not(:disabled) {
+                box-shadow: inset 0px -2px 0px 0px var(--error);
+            }
+        }
+
+    }
+}

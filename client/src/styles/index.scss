@@ -1,0 +1,28 @@
+@import './themes';
+
+// Default variables
+body {
+    --vertical-nav-collapse-width: 5rem;
+    --vertical-nav-expanded-width: 18rem;
+    --header-width: 4rem;
+    --avatar-size: 2.5rem;
+    --search-suggestion-item-height: 3rem;
+
+    --easy-in-out-fast: 150ms ease-in-out;
+    --easy-in-out-expo: cubic-bezier(1,0,0,1);
+
+    --error: rgb(249, 93, 84);
+    --warning: rgb(237, 101, 0);
+    --success: rgb(87, 225, 136);
+
+    --status-pending: rgb(255, 255, 255);
+    --status-pending-bg: rgba(255, 255, 255, 0.25);
+    --status-watching: rgb(87, 225, 136);
+    --status-watching-bg: rgba(87, 225, 136, 0.2);
+    --status-finished: rgb(0, 191, 255);
+    --status-finished-bg: rgba(0, 191, 255, 0.2);
+
+    $mobile-bp: 768px;
+    $mobile-bp: 768px;
+    $mobile-bp: 768px;
+}

@@ -1,0 +1,52 @@
+header {
+    position: absolute;
+    display: grid; 
+    grid-template-columns: var(--vertical-nav-collapse-width) 1fr var(--vertical-nav-collapse-width);
+    grid-template-rows: 1fr;
+    grid-template-areas: 'Menu Search Profile'; 
+    align-items: center;
+    gap: 0 2rem; 
+    width: 100%;
+    min-height: var(--header-width);
+    z-index: 100;
+    top: 0;
+    background-color: var(--navigation-bg);
+    @media screen and (max-width: 480px){
+        gap: 0;
+    }
+
+    .header-menu {
+        grid-area: Menu;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        width: 100%;
+        height: 100%;
+        button {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            svg {
+                stroke: var(--icon-color);
+                height: 2rem;
+                width: 2rem;
+            }
+        }
+    }
+    .header-search {
+        grid-area: Search;
+        width: 50%;
+        justify-self: end;
+        @media screen and (max-width: 480px){
+            width: 100%;
+        }
+    }
+    .header-profile {
+        grid-area: Profile;
+        display: flex;
+        height: 100%;
+        width: 100%;
+    }
+}

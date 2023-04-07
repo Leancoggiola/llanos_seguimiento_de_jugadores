@@ -1,0 +1,38 @@
+.cc-pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    .cc-pill {
+        margin-bottom: .5rem;
+        margin-top: .5rem;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.cc-pill {
+    display: flex;
+    align-items: center;
+    height: fit-content;
+    &-btn {
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        line-height: 1;
+        font-weight: lighter;
+        padding: 0.25rem 0.625rem;
+        text-align: center;
+        color: var(--chip-color);
+        background-color: var(--chip-bg);
+        border: 1px solid var(--chip-color);
+        border-radius: 2rem;
+        transition: color var(--easy-in-out-fast), background-color var(--easy-in-out-fast),
+            box-shadow var(--easy-in-out-fast), border-color var(--easy-in-out-fast);
+
+        &.cc-pill-monochrome {
+            color: var(--chip-monochrome-color);
+            background-color: var(--chip-monochrome-bg);
+            border: 1px solid var(--chip-monochrome-color);
+        }
+    }
+}

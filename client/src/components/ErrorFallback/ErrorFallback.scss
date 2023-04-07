@@ -1,0 +1,18 @@
+.error-fallback {
+    color: var(--app-color);
+    height: 100vh;
+    .no-content-found {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        
+        .main-text {
+            color: var(--app-color);
+            font-size: 1.25rem;
+            margin: 0;
+            margin-bottom: 1rem;
+        }
+    }
+}

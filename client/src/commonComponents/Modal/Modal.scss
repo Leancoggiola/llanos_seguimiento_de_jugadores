@@ -1,0 +1,63 @@
+.cc-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 9999;
+    height: 100vh;
+    width: 100%;
+    top:0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    padding: 3rem;
+    background: var(--modal-overlay-bg);
+    @media screen and (max-width: 480px) {
+        padding: 0;
+    }
+    &-dialog-container {
+        max-width: 60rem;
+        min-width: 20rem;
+        width: inherit;
+        background: var(--navigation-bg);
+        display: flex;
+        flex-direction: column;
+        max-height: 90%;
+        overflow-y: auto;
+    }
+    &-body {
+        min-height: 12rem;
+        padding: 1.25rem;
+        display: block;
+        overflow: auto;
+        flex: 1;
+    }
+
+    &-footer {
+        display: flex;
+        flex-direction: row;
+        padding: 1.25rem;
+        border-top: 1px solid var(--border-color-navigation);
+
+        button {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        button + button {
+            margin-top: 0.75rem;
+        }
+    }
+
+    &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color-navigation);
+        padding: 0 1.25rem;
+        min-height: 3.75rem;
+        &-close-btn svg{
+            height: 2rem;
+            width: 2rem;
+        }
+    }
+}
