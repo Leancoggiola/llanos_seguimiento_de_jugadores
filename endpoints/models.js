@@ -17,12 +17,24 @@ const teamsSchema = mongoose.Schema({
     createdBy: { type: mongoose.ObjectId, required: true }
 })
 
+const matchDetailsSchema = mongoose.Schema({
+    type: { type: String, required: [true, "Se requiere tipo"], enum: ["Gol", "Tarjeta Amarilla", "Tarjeta Roja"]},
+    player: { type: playerSchema, required: [true, "Se requiere jugador"] },
+    time_in_match: { type: Number, required: [true, "Se requiere minuto"] },
+})
+
+const matchSchema = mongoose.Schema({
+    date: { type: Date, required: false },
+    teams: { type: [teamsSchema], required: [true, "Se requieren los equipos"]},
+    details: {type: [matchDetailsSchema], required: false}
+})
+
 const tournamentsSchema = mongoose.Schema({
     name: { type: String, required: [true, "Se requiere nombre"] },
-    starting_date: {type: Date, required: [true, "Se requiere fecha de inicio"]},
-    amount_dates: {type: Number, required: [true, "Se requiere total de fechas"]},
-    teams: { type: [teamsSchema], required: [true, "Se requieren equipos a participar"]},
+    teams: { type: [teamsSchema], required: false},
+    matchs: { type: Object, required: false},
     status: { type: String, required: [true, "Se requiere estado"], enum: ["Creado", "Iniciado", "Terminado"]},
+    type: { type: String, required: [true, "Se requiere tipo"], enum: ["Liga", "Eliminatoria", "Liga+Eliminatoria", "Grupos+Eliminatoria"]},
     createdBy: { type: mongoose.ObjectId, required: true }
 })
 
@@ -50,9 +62,10 @@ userSchema.statics.login = async function(username, password) {
     throw Error("Usuario no encontrado")
 }
 
+const Match = mongoose.model('match', matchSchema)
 const User = mongoose.model('users', userSchema);
 const Tournament = mongoose.model('tournaments', tournamentsSchema);
 const Team = mongoose.model('teams', teamsSchema);
 const Player = mongoose.model('players', playerSchema);
 
-module.exports = { User, Tournament, Team, Player }
+module.exports = { User, Tournament, Team, Player, Match }

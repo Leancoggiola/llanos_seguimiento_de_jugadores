@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 // Assets
 import allAppsLogo from '../../assets/all-apps-icon.png';
 // Middleware
-import { changeListToDisplay } from '../../middleware/actions/listActions'
+//import { changeListToDisplay } from '../../middleware/actions/narBarActions'
 // Styling
 import './Navbar.scss';
 
@@ -16,7 +16,7 @@ const Navbar = ({isCollapse}) => {
 
     const handleClick = (index, appName) => {
         setActiveIndex(index);
-        dispath(changeListToDisplay(appName))
+        //dispath(changeListToDisplay(appName))
     }
 
     const getActiveButton = (activeIndex, index) => {

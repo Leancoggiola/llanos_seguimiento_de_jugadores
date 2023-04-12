@@ -1,55 +1,50 @@
 import { isEmpty } from 'lodash';
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
+import { Card, CardBody } from '../../commonComponents/Card';
 import ErrorMessage from '../../commonComponents/ErrorMessage';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 // Middleware
-import { getUserListRequest } from '../../middleware/actions/listActions';
+import { navbarNewEntry } from '../../middleware/actions/navbarActions'
 // Styling
+import { contentIcAddCircleOutline } from '../../assets/icons';
+import Icon from '../../commonComponents/Icon';
+import IconButton from '../../commonComponents/IconButton';
 import './Home.scss';
+import { useState } from 'react';
+import TourneyCard from '../../components/TourneyForm';
+import TourneyForm from '../../components/TourneyForm';
 
 const Home = () => {
-    // const { user } = useAuth0();
-    // const dispatch = useDispatch();
-    // const { loading, data, error } = useSelector((state) => state.list.userList);
-    // const crudState = useSelector((state) => state.list.crud);
-    // const appList = useSelector((state) => state.meta.appList)
-    // const appToDisplay = useSelector((state) => state.list.display);
+    const tourneyList = useSelector((state) => state.tourney.tourneyList);
+    const [ tourneyForm, setTourneyForm ] = useState(false)
 
-    // useEffect(() => {
-    //     if(isEmpty(data)) {
-    //         dispatch(getUserListRequest(user.email))
-    //     }
-    // }, [])
+    const dispatch = useDispatch();
 
-    // if(loading || crudState.loading) return <LoadingSpinner showPosRelative={true} fullscreen={true}/>
+    const handleNewTourney = () => {
+        setTourneyForm(true)
+        dispatch(navbarNewEntry({action: setTourneyForm, param: false}))
+    }
 
-    // if(error) return <ErrorMessage message={error.message} />
+    if(tourneyList.loading) return <LoadingSpinner showPosRelative={true} fullscreen={true}/>
+    if(tourneyList.error) return <ErrorMessage message={tourneyList.error.message} />
 
-    // return (
-    //     <>
-    //         {!isEmpty(data) && 
-    //         <main className='home-container page'>
-    //             {data.contentList.length > 0 ? appList.data.map(app => {
-    //                 if(appToDisplay === 'all' || appToDisplay === app.name ) {
-    //                     return (
-    //                         <ListCarousel 
-    //                             list={data.contentList.filter(item => item.appName === app.name)} 
-    //                             title={app.displayName} 
-    //                             id={app.name}
-    //                             appStyle={app.style}
-    //                             key={app.name}
-    //                         />
-    //                     )}
-    //                 }) :
-    //                 <div className='no-content'>
-    //                     <h1>Aun no has añadido contenido a tus listas.</h1>
-    //                 </div>
-    //             }
-    //         </main>}
-    //     </>
-    // )
+    return (
+        <main className='home-container page'>
+            { !tourneyForm ?
+            <>
+                {!isEmpty(tourneyList.data) && tourneyList.data.map((tourney, index) => (
+                    <TourneyCard key={tourney.name+index} tourney={tourney}/>
+                ))}
+                <IconButton className='add-new-tourney' onClick={handleNewTourney}>
+                    <Icon src={contentIcAddCircleOutline}/>
+                </IconButton>
+            </>
+            :
+            <TourneyForm/>
+            }
+        </main>
+    )
 }
 
 export default Home;

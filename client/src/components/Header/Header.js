@@ -1,29 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // Components
-import IconButton from '../../commonComponents/IconButton';
 import Icon from '../../commonComponents/Icon';
-import Navbar from '../Navbar'
+import IconButton from '../../commonComponents/IconButton';
+import Navbar from '../Navbar';
 
-import { navigationIcMenu } from '../../assets/icons';
+import { navigationIcKeyboardArrowLeft, navigationIcMenu } from '../../assets/icons';
+// Middleware
+import { navbarBack } from '../../middleware/actions/navbarActions';
 // Styling
-import './Header.scss'
+import './Header.scss';
 
 const Header = (props) => {
-    const { search: SearchBar, profileMenu: ProfileMenu} = props;
-    const [ isCollapse, setToggleNavBar] = useState(true)
+    const { profileMenu: ProfileMenu} = props;
+    const [ isCollapse, setToggleNavBar] = useState(true);
+
+    const dispatch = useDispatch();
+
+    const position = useSelector((state) => state.navbar.navbarPosition)
+
+    useEffect(() => {
+        position.length > 0 && setToggleNavBar(true)
+    }, [position])
 
     return (
         <>
             <header>
                 <div className='header-menu'>
-                    <IconButton type='button' onClick={() => setToggleNavBar(!isCollapse)} >
-                        <Icon src={navigationIcMenu} />
-                    </IconButton>
+                    { position.length === 0 ? 
+                        <IconButton type='button' onClick={() => setToggleNavBar(!isCollapse)} >
+                            <Icon src={navigationIcMenu} />
+                        </IconButton>
+                        :
+                        <IconButton type='button' onClick={() => dispatch(navbarBack())} >
+                            <Icon src={navigationIcKeyboardArrowLeft} />
+                        </IconButton>
+                    }
                 </div>
-                { SearchBar && <div className='header-search'><SearchBar/></div> }
                 { ProfileMenu && <div className='header-profile'><ProfileMenu /></div> }
             </header>
-            <Navbar isCollapse={isCollapse}/>
+            <Navbar isCollapse={isCollapse} setToggleNavBar={setToggleNavBar}/>
         </>
 
     )

@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 import { authReducer } from './authReducer';
-import { listReducer } from './listReducer';
+import { navbarReducer } from './navbarReducer';
 import { tourneyReducer } from './tourneyReducer';
 import { searchReducer } from './searchReducer';
 
 const rootReducer = combineReducers({
-    list: listReducer,
+    navbar: navbarReducer,
     tourney: tourneyReducer,
     auth: authReducer,
     search: searchReducer

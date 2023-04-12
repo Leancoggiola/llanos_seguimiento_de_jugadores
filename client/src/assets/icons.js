@@ -20,11 +20,17 @@ const ic_settings_24px = "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fww
 
 const ic_edit_24px = "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M3%2017.25V21h3.75L17.81%209.94l-3.75-3.75L3%2017.25zM20.71%207.04c.39-.39.39-1.02%200-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41%200l-1.83%201.83%203.75%203.75%201.83-1.83z%22%2F%3E%3C%2Fsvg%3E";
 
+const ic_add_box_24px = "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M19%203H5c-1.11%200-2%20.9-2%202v14c0%201.1.89%202%202%202h14c1.1%200%202-.9%202-2V5c0-1.1-.9-2-2-2zm-2%2010h-4v4h-2v-4H7v-2h4V7h2v4h4v2z%22%2F%3E%3C%2Fsvg%3E";
+
+const ic_add_circle_outline_24px = "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M13%207h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm0%2018c-4.41%200-8-3.59-8-8s3.59-8%208-8%208%203.59%208%208-3.59%208-8%208z%22%2F%3E%3C%2Fsvg%3E";
+
 export {
     ic_exit_to_app_24px as actionIcExitApp,
     ic_search_24px as actionIcSearch,
     ic_settings_24px as actionIcSettings,
     ic_edit_24px as actionIcEdit,
+    ic_add_box_24px as contentIcAdd,
+    ic_add_circle_outline_24px as contentIcAddCircleOutline,
     ic_menu_24px as navigationIcMenu,
     ic_close_24px as navigationIcClose,
     ic_check_24px as navigationIcCheck,

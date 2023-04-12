@@ -35,14 +35,6 @@ header {
             }
         }
     }
-    .header-search {
-        grid-area: Search;
-        width: 50%;
-        justify-self: end;
-        @media screen and (max-width: 480px){
-            width: 100%;
-        }
-    }
     .header-profile {
         grid-area: Profile;
         display: flex;
