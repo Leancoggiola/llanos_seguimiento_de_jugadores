@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 // Components
 import FormField from '../../commonComponents/FormField';
 import Label from '../../commonComponents/Label';
@@ -7,6 +8,8 @@ import { Option, Select } from '../../commonComponents/Select';
 import MultiAddModal from '../MultiAddModal';
 // Assets
 import trophyIcon from '../../assets/trophy-icon.png';
+// Middleware
+import { postTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyForm.scss';
 import List from '../../commonComponents/List';
@@ -21,8 +24,19 @@ const TourneyForm = (props) => {
     const [ equipos, setEquipos ] = useState([]) 
     const [ showMultiAdd , setMultiAdd ] = useState(true)
 
+    const teamList = useSelector((state) => state.team.teamList)
+
+    const dispatch = useDispatch();
+
     const handleSubmit = (e) => {
         e.preventDefault()
+        const postBody = {
+            name: nombre,
+            status: 'Iniciado',
+            type: modalidad,
+            teams: equipos
+        }
+        dispatch(postTourneyRequest(postBody))
     }
 
     const handleNewEquipos = (data) => {
@@ -54,9 +68,9 @@ const TourneyForm = (props) => {
                 <FormField>
                     <Label>Equipos</Label>
                     <Select value={modalidad} onChange={(e) => setModalidad(e)} >
-                        {MODALIDADES.map(option => (
-                            <Option value={option} key={option} >
-                                {option}
+                        {teamList.data.map((option, index) => (
+                            <Option value={option} key={option.name+index} >
+                                {option.name}
                             </Option>
                         ))}
                     </Select>

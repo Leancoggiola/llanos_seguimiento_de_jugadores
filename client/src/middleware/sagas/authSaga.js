@@ -4,15 +4,14 @@ import { serviceCall } from '../../config/serviceCall';
 import { isUserLoggedInFailure, isUserLoggedInSuccess } from '../actions/authActions';
 import { getRequest } from '../index.js';
 
-import jwt_decode from 'jwt-decode';
-
 import { GET_LOGGED_USER } from '../constants/auth';
 
 // Workers
 function* isUserLoggedInWork(action) {
-    const { payload: { cookies, removeCookie, username, password } } = action;
+    const { payload } = action;
     try {
-        if(username && password) {
+        if(payload?.username && payload?.password) {
+            const { username, password } = payload;
             const options = {
                 url: '/api/user/login',
                 method: 'POST',
@@ -21,23 +20,18 @@ function* isUserLoggedInWork(action) {
             const response = yield call(serviceCall, options)
             yield put(isUserLoggedInSuccess(response));
         } else {
-            if(cookies?.jwt) {
-                const decodedToken = jwt_decode(cookies.jwt)
-                const dateExp = new Date(decodedToken.exp*1000);
-                const dateNow = new Date(decodedToken.exp);
-                if(dateExp.getTime() < dateNow.getTime()) {
-                    removeCookie('jwt')
-                    yield put(isUserLoggedInFailure({message: "Not logged"}));
-                } else {
-                    yield put(isUserLoggedInSuccess(decodedToken.id));
+            if(document.cookie.replace('jwt=','')) {
+                const options = {
+                    url: '/api/user',
+                    method: 'GET'
                 }
+                const response = yield call(serviceCall, options)
+                yield put(isUserLoggedInSuccess(response));
             } else {
-                removeCookie('jwt')
-                yield put(isUserLoggedInFailure({message: "Not logged"}));
+                yield put(isUserLoggedInFailure(403));
             }
         }
     } catch (e) {
-        removeCookie('jwt')
         yield put(isUserLoggedInFailure(e));
     }
 }

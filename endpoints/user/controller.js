@@ -1,19 +1,39 @@
 const { User, Team, Tournament, Player } = require('../models.js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
 
 module.exports = {
     // Status
+    isLogged: async (req, res) => {
+        try {
+            const user = await User.findById(req?.token).catch(err => res.status(400).json({ message: err.message }))
+            if(user) res.status(200).json("Logged")
+            else res.sendStatus(403)
+        } catch(e) {
+            res.status(e?.status ? e.status : 404).json({ message: e.message })
+        }
+    },
+
     login: async (req, res) => {
         const { username, password } = req.body; 
         try {
-            const user = await User.login(username, password).catch(err => res.status(400).json({ message: err.message }))
-            const jwtToken = jwt.sign(
-                { id: user._id, username: user.username}, 
-                process.env.JWT_SECRET,
-                { expiresIn: 1*24*60*60 }
-            )
-            res.cookie("jwt", jwtToken, { withCredentials: true, httpOnly: false, maxAge: 1*24*60*60*1000})
-            res.status(200).json({ message: "Logeado"})
+            const user = await User.findOne({username})
+            if(user) {
+                const auth = await bcrypt.compare(password, user.password);
+                if(auth) {
+                    const jwtToken = jwt.sign(
+                        { id: user._id, username: user.username}, 
+                        process.env.JWT_SECRET,
+                        { expiresIn: 1*24*60*60 }
+                    )
+                    res.cookie("jwt", jwtToken, { withCredentials: true, httpOnly: false, maxAge: 1*24*60*60*1000})
+                    res.status(200).json({ message: "Logeado"})
+                } else {
+                    res.status(400).json({ message: "Contraseña Incorrecta"})
+                }
+            } else {
+                res.status(400).json({ message: "Usuario Incorrecto"})
+            }
         } catch(e) {
             res.status(e?.status ? e.status : 404).json({ message: e.message })
         }

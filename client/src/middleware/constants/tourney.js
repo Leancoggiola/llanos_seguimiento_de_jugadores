@@ -1,2 +1,3 @@
 // Tourney data constants
 export const TOURNEY_GET_TOURNEY_LIST = 'TOURNEY_GET_TOURNEY_LIST';
+export const TOURNEY_POST_NEW_TOURNEY = 'TOURNEY_POST_NEW_TOURNEY';

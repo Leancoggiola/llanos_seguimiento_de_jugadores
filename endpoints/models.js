@@ -4,17 +4,17 @@ const bcrypt = require('bcrypt')
 const playerSchema = mongoose.Schema({
     name: { type: String, required: [true, "Se requiere nombre"] },
     surname: { type: String, required: [true, "Se requiere apellido"] },
-    dni: { type: Number, required: [true, "Se requiere DNI"], unique: true},
+    dni: { type: Number, required: [true, "Se requiere DNI"]},
     yellow_cards_per_match: { type: Object, require: false},
     red_cards_per_match: { type: Object, require: false},
     sanction_per_tourney: { type: Object, require: false},
-    createdBy: { type: mongoose.ObjectId, required: true }
+    createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })
 
 const teamsSchema = mongoose.Schema({
     name: { type: String, required: [true, "Se requiere nombre"] },
-    players: { type: [playerSchema], required: [true, "Se requieren jugadores"] },
-    createdBy: { type: mongoose.ObjectId, required: true }
+    players: { type: [playerSchema], default: undefined },
+    createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })
 
 const matchDetailsSchema = mongoose.Schema({
@@ -31,11 +31,11 @@ const matchSchema = mongoose.Schema({
 
 const tournamentsSchema = mongoose.Schema({
     name: { type: String, required: [true, "Se requiere nombre"] },
-    teams: { type: [teamsSchema], required: false},
+    teams: { type: [teamsSchema], required: false, default: []},
     matchs: { type: Object, required: false},
     status: { type: String, required: [true, "Se requiere estado"], enum: ["Creado", "Iniciado", "Terminado"]},
     type: { type: String, required: [true, "Se requiere tipo"], enum: ["Liga", "Eliminatoria", "Liga+Eliminatoria", "Grupos+Eliminatoria"]},
-    createdBy: { type: mongoose.ObjectId, required: true }
+    createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })
 
 const userSchema = mongoose.Schema({
@@ -49,18 +49,6 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, salt)
     next()
 })
-
-userSchema.statics.login = async function(username, password) {
-    const user = await this.findOne({username})
-    if(user) {
-        const auth = await bcrypt.compare(password, user.password);
-        if(auth) {
-            return user;
-        }
-        throw Error("Contraseña incorrecta")
-    }
-    throw Error("Usuario no encontrado")
-}
 
 const Match = mongoose.model('match', matchSchema)
 const User = mongoose.model('users', userSchema);

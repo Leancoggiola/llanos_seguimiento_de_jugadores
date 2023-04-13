@@ -1,12 +1,12 @@
 const express = require('express');
-const { checkUser } = require('../../middlewares/AuthMiddlewares.js');
+const { verifyToken } = require('../../middlewares/AuthMiddlewares.js');
 const router = express.Router();
 
 const { getTournaments, deleteTournaments, postTournaments, putTournaments }= require('./controller.js');
 
-router.get('/getTournaments', getTournaments);
-router.delete('/deleteTournaments', checkUser, deleteTournaments);
-router.post('/postTournaments', checkUser, postTournaments);
-router.put('/putTournaments', checkUser, putTournaments);
+router.get('/getTournaments', verifyToken, getTournaments);
+router.delete('/deleteTournaments', verifyToken, deleteTournaments);
+router.post('/postTournaments', verifyToken, postTournaments);
+router.put('/putTournaments', verifyToken, putTournaments);
 
 module.exports =  router;

@@ -1,16 +1,29 @@
-const { User } = require('../endpoints/models.js');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
+const { User } = require('../endpoints/models')
 
-
-module.exports.checkUser = (req) => {
-    const token = req.cookies.jwt;
-    if(token) {
-        const tokenData =jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-            if(err) throw new Error("No autorizado", {cause: 401})
-            return decoded
-        })
-        return tokenData.id
-    } else {
-        throw new Error("No autorizado", {cause: 401})
+module.exports = {
+    verifyToken: async (req,res,next) => {
+        const bearerHeader = req.headers['authorization'];
+        if(bearerHeader) {
+            const token = bearerHeader.split(" ")[1];
+            if(token) {
+                const tokenData =jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+                    if(err) res.clearCookie('jwt').sendStatus(403)
+                    return decoded
+                })
+                
+                const user = await User.findById(tokenData.id);
+                if(user) {
+                    req.token = tokenData.id;
+                    next()
+                } else {
+                    res.clearCookie('jwt').sendStatus(403)
+                }
+            } else {
+                res.clearCookie('jwt').sendStatus(403)
+            }
+        } else {
+            res.clearCookie('jwt').sendStatus(403)
+        }
     }
 }

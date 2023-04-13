@@ -1,12 +1,12 @@
 const express = require('express');
-const { checkUser } = require('../../middlewares/AuthMiddlewares.js');
+const { verifyToken } = require('../../middlewares/AuthMiddlewares.js');
 const router = express.Router();
 
-const { login, postUser, deleteUser }= require('./controller.js');
+const { isLogged, login, postUser, deleteUser }= require('./controller.js');
 
+router.get('/', verifyToken, isLogged);
 router.post('/login', login);
 router.post('/postUser', postUser);
-router.post('/', checkUser)
-router.delete('/deleteUser',checkUser, deleteUser);
+router.delete('/deleteUser',verifyToken, deleteUser);
 
 module.exports =  router;

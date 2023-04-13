@@ -3,7 +3,7 @@ import { TabNavigationContext } from '../contexts';
 
 const TabControl = (props) => {
   const { children, className = '', disabled = false, onClick = null, tabKey = 0, ...others } = props;
-  const { activeTab, setActiveTab, currentTab, buttonRefs, lineSide, controlled } = useContext(
+  const { activeTab, setActiveTab, currentTab, buttonRefs, controlled } = useContext(
     TabNavigationContext
   );
 
@@ -27,7 +27,6 @@ const TabControl = (props) => {
       onClick={(event) => onTabClick(event)}
       disabled={disabled}
       tabIndex={tabKey === currentTab && !disabled ? '0' : '-1'}
-      aria-selected={tabKey === activeTab && !disabled}
       {...others}
     >
       {children}

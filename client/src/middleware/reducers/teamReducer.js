@@ -1,50 +1,50 @@
-import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY } from '../constants/tourney';
+import { TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM } from '../constants/team';
 import { getFailure, getRequest, getSuccess } from '../index.js';
 
 const initial = { loading: false, data: null, error: null };
 
 const initialState = {
-    tourneyList: {...initial},
+    teamList: {...initial},
     crud: {...initial}
 }
 
-export const tourneyReducer = (state = initialState, action) => {
+export const teamReducer = (state = initialState, action) => {
     const { type, payload } = action;
 
     switch(type) {
-        // GET TOURNEY LIST
-        case getRequest(TOURNEY_GET_TOURNEY_LIST): {
+        // GET TEAM LIST
+        case getRequest(TEAM_GET_TEAM_LIST): {
             return {
                 ...state,
-                tourneyList: { loading: true, data: null, error: null }
+                teamList: { loading: true, data: null, error: null }
             }
         }
-        case getSuccess(TOURNEY_GET_TOURNEY_LIST): {
+        case getSuccess(TEAM_GET_TEAM_LIST): {
             return {
                 ...state,
-                tourneyList: { loading: false, data: payload, error: null }
+                teamList: { loading: false, data: payload, error: null }
             }
         }
-        case getFailure(TOURNEY_GET_TOURNEY_LIST): {
+        case getFailure(TEAM_GET_TEAM_LIST): {
             return {
                 ...state,
-                tourneyList: { loading: false, data: null, error: payload }
+                teamList: { loading: false, data: null, error: payload }
             }
         }
-        // POST TOURNEY
-        case getRequest(TOURNEY_POST_NEW_TOURNEY): {
+        // POST TEAM
+        case getRequest(TEAM_POST_NEW_TEAM): {
             return {
                 ...state,
                 crud: { loading: true, data: null, error: null }
             }
         }
-        case getSuccess(TOURNEY_POST_NEW_TOURNEY): {
+        case getSuccess(TEAM_POST_NEW_TEAM): {
             return {
                 ...state,
                 crud: { loading: false, data: payload, error: null }
             }
         }
-        case getFailure(TOURNEY_POST_NEW_TOURNEY): {
+        case getFailure(TEAM_POST_NEW_TEAM): {
             return {
                 ...state,
                 crud: { loading: false, data: null, error: payload }

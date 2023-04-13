@@ -13,11 +13,12 @@ import Login from './views/Login';
 import Unauthorized from './views/Unauthorized';
 
 // Middleware
-import { isUserLoggedInRequest } from './middleware/actions/authActions';
+import { isUserLoggedInRequest, isUserLoggedInFailure } from './middleware/actions/authActions';
 import { getTourneysRequest } from './middleware/actions/tourneyActions';
 
 // Styles
 import './App.scss';
+import { getTeamsRequest } from './middleware/actions/teamActions';
 
 export default () => {
   const [ cookies, setCookie, removeCookie] = useCookies(['jwt']);
@@ -26,29 +27,21 @@ export default () => {
 
   const loggedUser = useSelector((state) => state.auth)
   const tourneyList = useSelector((state) => state.tourney.tourneyList)
+  const teamList = useSelector((state) => state.team.teamList)
 
   useEffect(() => {
-    dispatch(isUserLoggedInRequest({cookies, removeCookie}))
+    dispatch(isUserLoggedInRequest())
     return () => {
       removeCookie(['jwt'])
     }
   }, [])
 
   useEffect(() => {
-    if(!loggedUser.data || cookies?.jwt) {
-      dispatch(isUserLoggedInRequest({cookies, removeCookie}))
-    }
     if(loggedUser.data) {
       isEmpty(tourneyList.data) && dispatch(getTourneysRequest())
+      isEmpty(teamList.data) && dispatch(getTeamsRequest())
     }
   }, [loggedUser.data])
-
-  useEffect(() => {
-    if(tourneyList.error === 401) {
-      setUnauthorized(true)
-      removeCookie(['jwt'])
-    }
-  }, [tourneyList.error])
 
   return (
     <BrowserRouter>
@@ -57,9 +50,9 @@ export default () => {
             <InprogressFallback status={'Autenticando Usuario'}/>
           }>
             { 
-              loggedUser.error ? <Login /> :
+              !document.cookie|| loggedUser.error ?  <Login /> :
               unauthorized ? <Unauthorized errorObj={{ error:401, errorDescription: 'No se encuentra autorizado, vuelva a logearse'}}/> :
-              !tourneyList.data ? <InprogressFallback status={'Preparando la aplicacion'}/> :
+              !tourneyList.data || !teamList.data ? <InprogressFallback status={'Preparando la aplicacion'}/> :
               !loggedUser.data ? <InprogressFallback status={'Autenticando Usuario'}/> :
               <BaseRoute />
             }

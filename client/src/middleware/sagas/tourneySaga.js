@@ -3,12 +3,14 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { serviceCall } from '../../config/serviceCall.js';
 import {
     getTourneysFailure,
-    getTourneysSuccess
+    getTourneysSuccess,
+    postTourneyFailure,
+    postTourneySuccess
 } from '../actions/tourneyActions';
 
 import { getRequest } from '../index.js';
 
-import { TOURNEY_GET_TOURNEY_LIST } from '../constants/tourney';
+import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY } from '../constants/tourney';
 
 // Workers
 function* getTourneysWork() {
@@ -24,6 +26,21 @@ function* getTourneysWork() {
     }
 }
 
+function* postTourneyWork(action) {
+    const { payload } = action;
+    try {
+        const options = {
+            url: '/api/tournaments/postTournaments',
+            method: 'POST',
+            data: payload
+        }
+        const response = yield call(serviceCall, options)
+        yield put(postTourneySuccess(response));
+    } catch (e) {
+        yield put(postTourneyFailure(e));
+    }
+}
+
 // Watchers
 function* getTourneysWatch() {
     yield takeLatest(
@@ -32,6 +49,14 @@ function* getTourneysWatch() {
     )
 }
 
+function* postTourneyWatch() {
+    yield takeLatest(
+        getRequest(TOURNEY_POST_NEW_TOURNEY),
+        postTourneyWork
+    )
+}
+
 export const tourneySaga = [
-    getTourneysWatch()
+    getTourneysWatch(),
+    postTourneyWatch()
 ]
