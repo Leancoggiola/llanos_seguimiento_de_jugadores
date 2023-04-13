@@ -60,7 +60,7 @@
         }
 
         &:focus:not(:disabled) {
-            background-color: var(--form-element-hover);
+            background-color: var(--form-element-bg);
             box-shadow: inset 0px -2px 0px 0px var(--form-element-border);
             border-width: 0 0 2px;
         }

@@ -58,13 +58,10 @@
     --card-border-color: #{$card-border-color-default};
     --card-footer-bg: #{$card-footer-bg-default};
 
-    --carousel-bg: #{$carousel-bg-default};
-    --carousel-focus: #{$carousel-focus-default};
-    --carousel-arrow-hover: #{$carousel-arrow-hover-default};
-    --carousel-arrow-border: #{$carousel-arrow-border-default};
-    --carousel-arrow-shadow-color: #{$carousel-arrow-shadow-color-default};
-    --carousel-edit-btn-color: #{$carousel-edit-btn-color-default};
-
+    --tab-navigator-font-color: #{$tab-navigator-font-color-default};
+    --tab-navigator-hover-font-color: #{$tab-navigator-hover-font-color-default};
+    --tab-navigator-border-bottom: #{$tab-navigator-border-bottom-default};
+    --tab-navigator-disabled-color: #{$tab-navigator-disabled-color-default};
 }
 
     

@@ -56,9 +56,7 @@ $card-box-shadow-color-hover-default: $grey-700;
 $card-border-color-default: $grey-500;
 $card-footer-bg-default: $grey-450;
 
-$carousel-bg-default: $grey-550;
-$carousel-focus-default: 0 0 0 2px rgba($orange, 0.5);
-$carousel-arrow-hover-default: $grey-550;
-$carousel-arrow-border-default: $grey-580;
-$carousel-arrow-shadow-color-default: $grey-600;
-$carousel-edit-btn-color-default: $white;
+$tab-navigator-font-color-default: $white;
+$tab-navigator-hover-font-color-default: $white;
+$tab-navigator-border-bottom-default: 1px solid $grey-400;
+$tab-navigator-disabled-color-default: $grey-400;

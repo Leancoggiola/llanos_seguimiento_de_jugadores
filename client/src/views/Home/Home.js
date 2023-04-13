@@ -17,7 +17,7 @@ import TourneyForm from '../../components/TourneyForm';
 
 const Home = () => {
     const tourneyList = useSelector((state) => state.tourney.tourneyList);
-    const [ tourneyForm, setTourneyForm ] = useState(false)
+    const [ tourneyForm, setTourneyForm ] = useState(true)
 
     const dispatch = useDispatch();
 
@@ -41,7 +41,7 @@ const Home = () => {
                 </IconButton>
             </>
             :
-            <TourneyForm/>
+            <TourneyForm setTourneyForm={setTourneyForm} />
             }
         </main>
     )

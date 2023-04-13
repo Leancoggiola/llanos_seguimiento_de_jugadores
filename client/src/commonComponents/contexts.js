@@ -47,7 +47,9 @@ export const FormFieldContext = createContext({
     }
 });
 
-export const FormFieldProvider = FormFieldContext.Provider;
+export const TabNavigationContext = createContext();
 
 export const ModalProvider = ModalContext.Provider;
 export const SelectProvider = SelectContext.Provider;
+export const FormFieldProvider = FormFieldContext.Provider;
+export const TabNavigationProvider = TabNavigationContext.Provider;

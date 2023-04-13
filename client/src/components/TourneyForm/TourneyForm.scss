@@ -1,3 +1,39 @@
-.tourney-card {
-    width: 100%;
+.tourney-form {
+    position: relative;
+    height: 100%;
+    & > form {
+        position: relative;
+    }
+    .img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 1rem;
+        img {
+            height: 4rem;
+            width: auto;
+        }
+    }
+
+    &-new-team {
+        text-align: left;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--btn-primary-color-bg);
+        display: block;
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    &-action-buttons {
+        display: flex;
+        width: calc(100%);
+        justify-content: space-between;
+        position: sticky;
+        background-color: var(--navigation-bg);
+        bottom: 0;
+        padding: 1rem 0.5rem;
+        margin: 0 -0.5rem;
+    }
 }

@@ -1,0 +1,51 @@
+.cc-tab-navigation {
+    display: flex;
+    border-bottom: var(--tab-navigator-border-bottom);
+    .cc-tab-button {
+        &-active {
+            font-weight: lighter!important;
+            border-bottom-color: var(--tab-navigator-hover-font-color)!important;
+            box-shadow: var(--tab-navigator-hover-font-color)!important;
+        }
+    }
+
+    &.cc-tab-navigation-alt {
+        border: none;
+    }
+
+    .cc-tab-button {
+        color: var(--tab-navigator-font-color);
+        background-color: transparent;
+        padding: 0.75rem 1rem 0.5rem 1rem;
+        margin: 0;
+        font-weight: lighter;
+        line-height: 1.45rem;
+        cursor: pointer;
+        
+        border: none;
+        border-bottom: 0.07rem solid transparent;
+        transition: border-bottom 150ms ease-in-out, color 150ms ease-in-out;
+
+        &:hover:not([disabled]) {
+            text-decoration: none;
+            background-color: transparent;
+            color: var(--tab-navigator-font-color);
+            text-shadow: 1px 0 0 var(--tab-navigator-font-color);
+        }
+
+        &:disabled {
+            color: var(--tab-navigator-disabled-color);
+            &:hover {
+                color: var(--tab-navigator-disabled-color);
+                border-bottom-color: transparent;
+                cursor: not-allowed;
+                font-weight: lighter;
+            }
+        }
+
+        path {
+            fill: currentColor;
+        }
+
+    }
+}

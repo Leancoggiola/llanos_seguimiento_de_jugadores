@@ -1,0 +1,17 @@
+.multi-add-modal {
+    &-tabs {
+        justify-content: space-evenly;
+    }
+    p {
+        margin-bottom: 0;
+    }
+    &-text-area {
+        height: 100%;
+        resize: none;
+        min-height: 8rem;
+    }
+    &-footer {
+        justify-content: space-evenly;
+        button + button { margin-top: 0;}
+    }
+}

@@ -1,7 +1,8 @@
 import { useContext, useEffect, useRef } from 'react';
 import { FormFieldContext } from '../contexts';
-import { navigationIcClose } from '../../assets/icons';
+import { omit } from 'lodash';
 // Components
+import { navigationIcClose } from '../../assets/icons';
 import IconButton from '../IconButton';
 import Icon from '../Icon';
 // Styling
@@ -22,6 +23,8 @@ const Input = (props) => {
         hideClearButton=true
     } = props;
     let nextUniqueId = 0;
+
+    const others = omit(props, ['disabled', 'id', 'className', 'required', 'onBlur', 'onChange', 'onFocus', 'placeholder', 'type', 'value', 'hideClearButton']);
 
     const formFieldContext = useContext(FormFieldContext);
     const inputValue = value.toString();
@@ -45,8 +48,15 @@ const Input = (props) => {
     }
 
     const handleChange = (event) => {
-        formFieldContext.setValue(event.target.value);
-        onChange(event)
+        if(type === 'number' && others.max || others.min) {
+            if (Number(event.target.value) >= Number(others.min) && Number(event.target.value) <= Number(others.max)) {
+                formFieldContext.setValue(event.target.value);
+                onChange(event)
+            }
+        } else {
+            formFieldContext.setValue(event.target.value);
+            onChange(event)
+        }
     }
 
     const handleFocus = (event) => {
@@ -74,6 +84,7 @@ const Input = (props) => {
                 value={inputValue}
                 required={required}
                 placeholder={placeholder}
+                {...others}
             />
             {inputValue.length > 0 && !hideClearButton &&
             <IconButton className='cc-input-clear-button' onClick={handleClear} disabled={disabled}>
