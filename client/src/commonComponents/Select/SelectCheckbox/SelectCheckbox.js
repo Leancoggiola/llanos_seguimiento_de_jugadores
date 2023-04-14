@@ -1,6 +1,5 @@
 // Components
 import { contentIcRemove, navigationIcCheck } from '../../../assets/icons';
-import IconButton from '../../IconButton';
 import Icon from '../../Icon';
 // Styling
 import './SelectCheckbox.scss';
@@ -20,12 +19,8 @@ const SelectCheckbox = (props) => {
 
     return (
         <div className={classes} onClick={handleClickCheckBox}>
-            <IconButton className='cc-select-checkbox-icon-selected' >
-                <Icon src={navigationIcCheck} />
-            </IconButton>
-            <IconButton className='cc-select-checkbox-icon-indeterminate'>
-                <Icon src={contentIcRemove} />
-            </IconButton>
+            <Icon src={navigationIcCheck} className='cc-select-checkbox-icon-selected'/>
+            <Icon src={contentIcRemove} className='cc-select-checkbox-icon-indeterminate'/>
         </div>
     );
 }

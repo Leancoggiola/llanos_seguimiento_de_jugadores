@@ -1,67 +1,87 @@
-@import './customVariables';
+@import './colors';
 
 .theme-default {
     // App variables
-    --app-bg: #{$app-bg-default};
-    --app-submenu-bg: #{$app-submenu-bg-default};
-    --app-color: #{$color-default};
-    --app-highlight: #{$highlight-default};
-    --disabled: #{$disabled-default};
+    --app-bg: #{$black};
+    --app-submenu-bg: #{$grey-600};
+    --app-color: #{$white};
+    --app-highlight: #{$orange};
+    --disabled: #{$grey-400};
 
-    --navigation-bg: #{$navigation-bg-default};
-    --scrollbar-bg: #{$scrollbar-bg-default};
+    --navigation-bg: #{$grey-550};
+    --scrollbar-bg: #{$grey-450};
 
-    --icon-color: #{$color-default};
-    --border-color: #{$border-color-default};
-    --border-color-navigation : #{$border-color-navigation-default};
+    --label-color: #{$white};
+    --icon-color: #{$white};
 
-    --btn-primary-color-bg: #{$btn-primary-color-bg-default};
-    --btn-primary-color: #{$btn-primary-color-default};
-    --btn-primary-hover-bg: #{$btn-primary-hover-bg-default};
-    --btn-primary-hover: #{$btn-primary-hover-default};
+    --border-color: #{$grey-500};
+    --border-color-navigation : #{$grey-600};
+    --border-hover: #{$grey-500};
 
-    --btn-primary-color-disabled-bg: #{$btn-primary-color-disabled-bg-default};
-    --btn-primary-color-disabled: #{$btn-primary-color-disabled-default};
-    --btn-primary-border-disabled: #{$btn-primary-border-disabled-default};
+    --btn-primary-color-bg: #{$orange};
+    --btn-primary-color: #{$black};
+    --btn-primary-hover-bg: #{$grey-200};
+    --btn-primary-hover: #{$black};
 
-    --btn-secondary-color-bg: #{$btn-secondary-color-bg-default};
-    --btn-secondary-color: #{$btn-secondary-color-default};
-    --btn-secondary-hover-bg: #{$btn-secondary-hover-bg-default};
-    --btn-secondary-hover: #{$btn-secondary-hover-default};
+    --btn-primary-color-disabled-bg: #{$grey-600};
+    --btn-primary-color-disabled: #{$grey-400};
+    --btn-primary-border-disabled: #{$grey-600};
 
-    --btn-icon-hover-bg: #{$btn-icon-hover-bg-default};
-    --btn-icon-hover-color:#{$btn-icon-hover-color-default};
-    --btn-icon-focus-bg:#{$btn-icon-focus-bg-default};
-    --btn-icon-focus-color:#{$btn-icon-focus-color-default};
-    --btn-icon-disabled:#{$btn-icon-disabled-default};
+    --btn-secondary-color-bg: transparent;
+    --btn-secondary-color: #{$white};
+    --btn-secondary-hover-bg: #{$grey-200};
+    --btn-secondary-hover: #{$black};
 
-    --progress-loader-square-color: #{$progress-loader-square-color-default};
+    --btn-icon-hover-bg: #{$grey-450};
+    --btn-icon-hover-color:#{$white};
+    --btn-icon-focus-bg:#{$grey-450};
+    --btn-icon-focus-color:#{$white};
+    --btn-icon-disabled:#{$grey-400};
 
-    --dropdown-bg: #{$dropdown-bg-default};
-    --dropdown-color: #{$dropdown-color-default};
+    --progress-loader-square-color: #{$orange};
 
-    --modal-overlay-bg: #{$modal-overlay-bg-default};
+    --dropdown-bg: #{$grey-550};
+    --dropdown-color: #{$white};
 
-    --chip-bg: #{$chip-bg-default};
-    --chip-color: #{$chip-color-default};
-    --chip-monochrome-bg: #{$chip-monochrome-bg-default};
-    --chip-monochrome-color: #{$chip-monochrome-color-default};
+    --modal-overlay-bg: #{$black-with-opacity};
 
-    --form-element-bg: #{$form-element-bg-default};
-    --form-element-hover: #{$form-element-hover-default};
-    --form-element-border: #{$form-element-border-default};
-    --form-element-disabled-color: #{$form-element-disabled-color-default};
-    --form-element-disabled-border: #{$form-element-disabled-border-default};
+    --chip-bg: #{$grey-500};
+    --chip-color: #{$white};
+    --chip-monochrome-bg: #{$white};
+    --chip-monochrome-color: #{$grey-500};
 
-    --card-bg: #{$card-bg-default};
-    --card-box-shadow-color-hover: #{$card-box-shadow-color-hover-default};
-    --card-border-color: #{$card-border-color-default};
-    --card-footer-bg: #{$card-footer-bg-default};
+    --form-element-bg: #{$grey-600};
+    --form-element-hover: #{$grey-550};
+    --form-element-border: #{$grey-200};
+    --form-element-disabled-bg: #{$grey-600};
+    --form-element-disabled-color: #{$grey-400};
+    --form-element-disabled-border: #{$grey-450};
 
-    --tab-navigator-font-color: #{$tab-navigator-font-color-default};
-    --tab-navigator-hover-font-color: #{$tab-navigator-hover-font-color-default};
-    --tab-navigator-border-bottom: #{$tab-navigator-border-bottom-default};
-    --tab-navigator-disabled-color: #{$tab-navigator-disabled-color-default};
+    --select-list-background-color: #{$grey-600};
+    --select-option-hover-bg-color: #{$grey-550};
+    --select-option-selected-color: #{$orange};
+    --select-option-selected-bg-color: #{$grey-550};
+    --select-option-border-color: transparent;
+    --select-option-disable-color: #{$grey-400};
+    --select-option-disable-bg-color: #{$grey-450};
+    --select-option-disable-border-color: #{$grey-450};
+    --select-trigger-icon-color: #{$white};
+
+    --checkbox-bg-color: transparent;
+    --checked-bg-color: #{$white};
+    --checked-border-color: #{$white};
+    --checked-disabled-bg-color: #{$grey-450};
+    --checked-icon-color: #{$black};
+
+    --card-bg: #{$grey-600};
+    --card-box-shadow-color-hover: #{$grey-600};
+    --card-border-color: #{$grey-500};
+    --card-footer-bg: #{$grey-450};
+
+    --tab-navigator-font-color: #{$white};
+    --tab-navigator-hover-font-color: #{$white};
+    --tab-navigator-border-bottom: 1px solid #{$grey-400};
+    --tab-navigator-disabled-color: #{$grey-400};
 }
 
     

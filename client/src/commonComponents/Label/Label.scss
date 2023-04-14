@@ -1,14 +1,15 @@
 .cc-label {
-    color: var(--app-color);
+    color: var(--label-color);
     font-size: 1rem;
     font-weight: lighter;
-    line-height: 1.50rem;
+    line-height: 1.60rem;
     width: calc(100% - 1.125rem);
     display: block;
     z-index: 1;
     pointer-events: none;
     transition: 200ms ease all;
     padding-bottom: 0.375rem;
+
     &-disabled {
         color: var(--disabled);
     }
@@ -17,18 +18,23 @@
         margin-top: 5px;
         display: block;
     }
+
+    &.cc-disabled {
+        color: var(--form-element-disabled-color)
+    }
 }
 
 .cc-form-field-text-input .cc-label{
-    line-height: 1.25rem;
+    line-height: 1.15rem;
     & + .cc-input-component .cc-input {
-        padding: 1.42rem 0.714rem 0.0714rem;
+        padding: 1.45rem 0.715rem 0.0715rem;
     }
     & + .cc-input-component .cc-text-area {
-        padding: 1.42rem 0.714rem 0.0714rem;
+        padding: 1.45rem 0.715rem 0.0715rem;
     }
 }
 
+.cc-form-field-date-input,
 .cc-form-field-text-input,
 .cc-form-field-select-input {
     .cc-label {
@@ -41,6 +47,8 @@
     }
 }
 
+.cc-form-field-date-input.cc-form-field-focused,
+.cc-form-field-date-input.cc-form-field-has-value,
 .cc-form-field-text-input.cc-form-field-focused,
 .cc-form-field-text-input.cc-form-field-has-value,
 .cc-form-field-select-input.cc-form-field-focused,

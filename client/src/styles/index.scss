@@ -22,6 +22,9 @@ body {
     --status-finished: rgb(0, 191, 255);
     --status-finished-bg: rgba(0, 191, 255, 0.2);
 
+    --focus: rbga(23,119,207,0.5);
+    --focus-state: 0 0 0 2px var(--focus);
+
     $mobile-bp: 768px;
     $mobile-bp: 768px;
     $mobile-bp: 768px;

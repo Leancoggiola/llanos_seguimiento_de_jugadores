@@ -7,11 +7,17 @@ import './Label.scss'
 const Label = (props) => {
     const { children, className } = props;
     const others = omit(props, ['children', 'className']);
-    const { disabled, id } = useContext(FormFieldContext)
+
+    const { disabled, id, isFocused, invalid, formElementType, required } = useContext(FormFieldContext)
     
     const classes = `cc-label ` +
         `${className ? className : ''}` +
-        `${disabled ? 'cc-label-disabled ' : ''}`;
+        `${isFocused ? 'cc-focus ' : ''}` +
+        `${invalid ? 'cc-invalid ' : ''}` +
+        `${disabled ? 'cc-disabled ' : ''}` +
+        `${formElementType === 'textInput' ? 'cc-label-for-text ' : ''}` +
+        `${formElementType === 'number' ? 'cc-label-for-numeric-input ' : ''}` +
+        `${required ? 'cc-label-required ' : ''}`;
     
     return (
         <label className={classes} htmlFor={id} {...others}>

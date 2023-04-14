@@ -38,7 +38,7 @@ const Select = (props) => {
     const [ hasSelectedAllOptions, setHasSelectedAllOptions] = useState({ selected: false, indeterminate: false})
     const [ optionsChildrenSorted, setOptionsChildrenSorted ] = useState(children);
     const [ searchOption, setSearchOption] = useState('');
-    const [ hasSelectedMultipleOptions, setHasSelectedMultipleOptions] = useState(false)
+    const [ hasSelectedMultipleOptions, setHasSelectedMultipleOption] = useState(false)
 
     const selectWrapperRef = useRef();
     const selectTriggerRef = useRef();
@@ -124,7 +124,7 @@ const Select = (props) => {
         if(!hasSelectedMultipleOptions) {
             setOptionsChildrenSorted(optionsChildren)
         }
-        setHasSelectedMultipleOptions(false)
+        setHasSelectedMultipleOption(false)
     }, [children])
 
     useEffect(() => {
@@ -299,7 +299,7 @@ const Select = (props) => {
           setDisplayedValue([...prevDisplayedSelected, ...selectedOptions.displayedValue]);
         }
     
-        setHasSelectedMultipleOptions(true);
+        setHasSelectedMultipleOption(true);
     };
 
     const handleCleanValue = (e) => {
@@ -336,7 +336,7 @@ const Select = (props) => {
             hasSelectedAllOptions,
             handleClickSearchCheckbox,
             totalOptions,
-            setHasSelectedMultipleOptions
+            setHasSelectedMultipleOption
         }}>
             <div id={formFieldContext.id} 
                 ref={selectWrapperRef} 

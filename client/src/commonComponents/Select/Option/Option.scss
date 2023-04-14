@@ -1,18 +1,20 @@
 .cc-option {
-    padding: 0.75rem 0.375rem;
-    max-height: 2.75rem;
+    padding: 0.85rem 0.425rem;
+    max-height: 3.15rem;
     display: flex;
     align-items: center;
     cursor: pointer;
 
     &:hover, &-current {
-        color: var(--app-highlight);
-        background-color: var(--form-element-hover);
+        color: var(--select-option-selected-color);
+        background-color: var(--select-option-selected-bg-color);
     }
+}
 
-    &-disabled {
-        color: var(--form-element-disabled-color);
-        background-color: 1px solid var(--form-element-bg);
+.cc-select-options {
+    .cc-option-disabled {
+        color: var(--select-list-background-color);
+        background-color: 1px solid var(--select-option-disable-color);
         cursor: not-allowed;
     }
 }

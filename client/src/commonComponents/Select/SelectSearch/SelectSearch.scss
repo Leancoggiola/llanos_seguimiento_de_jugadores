@@ -1,18 +1,31 @@
-.cc-option {
-    padding: 0.75rem 0.375rem;
-    max-height: 2.75rem;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+.cc-select-search {
+    display: none;
+    padding: 0.85rem 0.425rem;
+    max-height: 3.15rem;
+    background-color: var(--select-list-background-color);
+    border: 1px solid var(--select-option-border-color);
+    border-bottom: 1px solid var(--form-element-border);
+    
+    &-input {
+        background-color: inherit;
+        border: none;
+        color: inherit;
+        width: 100%;
 
-    &:hover, &-current {
-        color: var(--app-highlight);
-        background-color: var(--form-element-hover);
+        &:focus-visible {
+            outline: none;
+        }
     }
 
-    &-disabled {
-        color: var(--form-element-disabled-color);
-        background-color: 1px solid var(--form-element-bg);
-        cursor: not-allowed;
+    &-icon {
+        justify-self: flex-end;
+        fill: var(--select-trigger-icon-color)
+    }
+}
+
+.cc-select-open {
+    .cc-select-search {
+        display: flex;
+        align-items: center;
     }
 }
