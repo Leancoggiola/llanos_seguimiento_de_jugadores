@@ -67,9 +67,9 @@ const TourneyForm = (props) => {
                 <h2>Equipos</h2>
                 <FormField>
                     <Label>Equipos</Label>
-                    <Select value={modalidad} onChange={(e) => setModalidad(e)} >
+                    <Select value={equipos} onChange={(e) => setEquipos(e)} filter={true} multiple={true}>
                         {teamList.data.map((option, index) => (
-                            <Option value={option} key={option.name+index} >
+                            <Option value={option._id} key={option._id+index} >
                                 {option.name}
                             </Option>
                         ))}

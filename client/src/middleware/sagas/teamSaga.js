@@ -35,7 +35,6 @@ function* postTeamWork(action) {
             data: payload
         }
         const response = yield call(serviceCall, options)
-        debugger
         yield put(postTeamSuccess(response));
     } catch (e) {
         yield put(postTeamFailure(e));

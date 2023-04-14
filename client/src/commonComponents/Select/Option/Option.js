@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { SelectContext } from '../../contexts';
 // Styling
-import './Option.scss'
+import './Option.scss';
 
 const Option = (props) => {
     const { children, value, disabled, onClick, optionIndex, className } = props;
@@ -13,7 +13,7 @@ const Option = (props) => {
         if(optionIndex === optionCurrent) {
             optionRef.current.focus()
         }
-    }, [optionCurrent])
+    }, [optionCurrent, optionIndex])
     
     const classes = `cc-option ` +
     `${className ? className : ''}` +
@@ -36,7 +36,7 @@ const Option = (props) => {
     }
 
     return (
-        <div id={id + '-' + optionIndex} ref={optionRef} role='option' className={classes} onClick={handleClick}>
+        <div id={id + '-' + optionIndex} ref={optionRef} className={classes} onClick={handleClick}>
             <span>{children}</span>
         </div>
     )
