@@ -1,3 +1,4 @@
+const { errorHandler } = require('../helpers.js');
 const { Tournament, Team } = require('../models.js');
 const mongoose = require('mongoose')
 
@@ -42,12 +43,12 @@ module.exports = {
                 .catch(async err => {
                     await session.abortTransaction();
                     session.endSession()
-                    res.status(400).json({ message: err.message })
+                    errorHandler(err, res)
                 })
         } catch(e) {
             await session.abortTransaction();
             session.endSession()
-            res.status(e?.cause ? e.cause : 400).json({ message: e.message })
+            errorHandler(err, res)
         }
     },
 

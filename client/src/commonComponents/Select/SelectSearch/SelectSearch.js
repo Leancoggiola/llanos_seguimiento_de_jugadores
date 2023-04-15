@@ -10,7 +10,6 @@ import './SelectSearch.scss';
 
 const SelectSearch = (props) => {
     const {
-        id,
         multiple,
         searchPlaceholder,
         searchOption,
@@ -49,9 +48,7 @@ const SelectSearch = (props) => {
                 value={searchOption}
                 onChange={handleChangeSearch}
             />
-            <IconButton className='cc-select-search-icon'>
-                <Icon src={actionIcSearch} />
-            </IconButton>
+            <Icon src={actionIcSearch} className='cc-select-search-icon'/>
         </div>
     )
 }

@@ -9,7 +9,7 @@ const PillGroup = (props) => {
 }
 
 const Pill = (props) => {
-    const { children, className, variant } = props;
+    const { children, className, variant = 'info' } = props;
     const classes = `cc-pill ${className ? className : ''}`;
     const btnClasses = `cc-pill-btn ${variant ? `cc-pill-${variant}` : ''}`
     return (

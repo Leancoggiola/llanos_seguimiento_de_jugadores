@@ -8,26 +8,29 @@ import { BrowserRouter } from 'react-router-dom';
 import Theme from './commonComponents/Theme';
 import BaseRoute from './components/BaseRoute';
 import InprogressFallback from './components/InprogressFallback';
+import Toast from './commonComponents/Toast';
 // Pages
 import Login from './views/Login';
 import Unauthorized from './views/Unauthorized';
 
 // Middleware
-import { isUserLoggedInRequest, isUserLoggedInFailure } from './middleware/actions/authActions';
+import { isUserLoggedInRequest } from './middleware/actions/authActions';
+import { updateToastData } from './middleware/actions/navbarActions';
+import { getTeamsRequest } from './middleware/actions/teamActions';
 import { getTourneysRequest } from './middleware/actions/tourneyActions';
 
 // Styles
 import './App.scss';
-import { getTeamsRequest } from './middleware/actions/teamActions';
 
 export default () => {
-  const [ cookies, setCookie, removeCookie] = useCookies(['jwt']);
-  const [ unauthorized, setUnauthorized] = useState(false);
+  const [ , , removeCookie] = useCookies(['jwt']);
+  const [ unauthorized,] = useState(false);
   const dispatch = useDispatch();
 
   const loggedUser = useSelector((state) => state.auth)
   const tourneyList = useSelector((state) => state.tourney.tourneyList)
   const teamList = useSelector((state) => state.team.teamList)
+  const toastData = useSelector((state) => state.navbar.toastInfo)
 
   useEffect(() => {
     dispatch(isUserLoggedInRequest())
@@ -43,6 +46,12 @@ export default () => {
     }
   }, [loggedUser.data])
 
+  useEffect(() => {
+    if(!isEmpty(toastData)) {
+      setTimeout(() => dispatch(updateToastData({})), 5000) 
+    }
+  }, [toastData])
+
   return (
     <BrowserRouter>
       <Theme variant='default'/>
@@ -56,6 +65,7 @@ export default () => {
               !loggedUser.data ? <InprogressFallback status={'Autenticando Usuario'}/> :
               <BaseRoute />
             }
+            <Toast show={toastData.show} variant={toastData.variant} closeBtn={toastData.closeBtn} position='top' onClose={() => dispatch(updateToastData({}))}>{toastData.message}</Toast>
         </Suspense>
     </BrowserRouter>
   );

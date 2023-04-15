@@ -16,13 +16,13 @@ export const tourneyReducer = (state = initialState, action) => {
         case getRequest(TOURNEY_GET_TOURNEY_LIST): {
             return {
                 ...state,
-                tourneyList: { loading: true, data: null, error: null }
+                tourneyList: { loading: true, data: [], error: null }
             }
         }
         case getSuccess(TOURNEY_GET_TOURNEY_LIST): {
             return {
                 ...state,
-                tourneyList: { loading: false, data: payload, error: null }
+                tourneyList: { loading: false, data: [...state.tourneyList.data, ...payload], error: null }
             }
         }
         case getFailure(TOURNEY_GET_TOURNEY_LIST): {

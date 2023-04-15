@@ -1,0 +1,21 @@
+.motif-error-message {
+    font-size: 0.85rem;
+    font-weight: lighter;
+    color: var(--error);
+    display: flex;
+    align-items: center;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+
+    .motif-error-icon {
+        position: relative;
+        margin: -0.07rem 0.35rem -0.07rem -0.07rem;
+        height: 1.3rem;
+        width: 1.3rem;
+        fill: var(--error);
+    }
+
+    svg {
+        flex-shrink: 0;
+    }
+}

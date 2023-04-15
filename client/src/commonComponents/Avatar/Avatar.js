@@ -1,8 +1,7 @@
 // Styling
 import { forwardRef } from 'react';
 import Icon from '../Icon';
-import IconButton from '../IconButton';
-import './Avatar.scss'
+import './Avatar.scss';
 
 const Avatar = forwardRef((props,ref) => {
     const { name, onClick, user, icon, className } = props;
@@ -17,10 +16,7 @@ const Avatar = forwardRef((props,ref) => {
 
     return(
         <div className={'cc-avatar '+className} onClick={() => onClick()}>
-            { icon ? 
-            <IconButton>
-                <Icon src={icon}/>
-            </IconButton>
+            { icon ? <Icon src={icon}/>
             : 
             user?.picture ?
             <img src={user.picture} alt={initials} />

@@ -12,7 +12,7 @@ const playerSchema = mongoose.Schema({
 })
 
 const teamsSchema = mongoose.Schema({
-    name: { type: String, required: [true, "Se requiere nombre"] },
+    name: { type: String, required: [true, "Se requiere nombre"], unique: true },
     players: { type: [playerSchema], default: undefined },
     createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })
@@ -33,7 +33,7 @@ const tournamentsSchema = mongoose.Schema({
     name: { type: String, required: [true, "Se requiere nombre"] },
     teams: { type: [teamsSchema], required: false, default: []},
     matchs: { type: Object, required: false},
-    status: { type: String, required: [true, "Se requiere estado"], enum: ["Creado", "Iniciado", "Terminado"]},
+    status: { type: String, required: [true, "Se requiere estado"], enum: ["Nuevo", "Jugando", "Terminado"]},
     type: { type: String, required: [true, "Se requiere tipo"], enum: ["Liga", "Eliminatoria", "Liga+Eliminatoria", "Grupos+Eliminatoria"]},
     createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })

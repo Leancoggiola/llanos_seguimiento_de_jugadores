@@ -1,7 +1,4 @@
-import { Buffer } from 'buffer';
-import { isEmpty } from 'lodash';
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 // Assets
 import allAppsLogo from '../../assets/all-apps-icon.png';
 // Middleware
@@ -12,7 +9,7 @@ import './Navbar.scss';
 const Navbar = ({isCollapse}) => {
     const [ activeIndex, setActiveIndex] = useState(0);
 
-    const dispath = useDispatch()
+    // const dispath = useDispatch()
 
     const handleClick = (index, appName) => {
         setActiveIndex(index);

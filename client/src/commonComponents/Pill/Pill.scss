@@ -29,10 +29,25 @@
         transition: color var(--easy-in-out-fast), background-color var(--easy-in-out-fast),
             box-shadow var(--easy-in-out-fast), border-color var(--easy-in-out-fast);
 
-        &.cc-pill-monochrome {
-            color: var(--chip-monochrome-color);
-            background-color: var(--chip-monochrome-bg);
-            border: 1px solid var(--chip-monochrome-color);
+        &.cc-pill-success {
+            color: var(--chip-success-color);
+            background-color: var(--chip-success-bg);
+            border: 1px solid var(--chip-success-color);
+        }
+        &.cc-pill-warning {
+            color: var(--chip-warning-color);
+            background-color: var(--chip-warning-bg);
+            border: 1px solid var(--chip-warning-color);
+        }
+        &.cc-pill-error {
+            color: var(--chip-error-color);
+            background-color: var(--chip-error-bg);
+            border: 1px solid var(--chip-error-color);
+        }
+        &.cc-pill-info {
+            color: var(--chip-info-color);
+            background-color: var(--chip-info-bg);
+            border: 1px solid var(--chip-info-color);
         }
     }
 }

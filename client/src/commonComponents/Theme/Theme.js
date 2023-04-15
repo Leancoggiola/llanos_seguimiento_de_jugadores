@@ -1,12 +1,8 @@
 import { useEffect } from 'react';
 
 const Theme = ({variant}) => {
-    const toggleTheme = () => {
-        document.querySelector('body').setAttribute('class', 'theme-'+ variant)
-    }
-    
     useEffect(() => {
-        toggleTheme()
+        document.querySelector('body').setAttribute('class', 'theme-'+ variant)
     }, [variant])
 
     return null

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 // Components
 import FormField from '../../commonComponents/FormField';
@@ -6,25 +6,27 @@ import Label from '../../commonComponents/Label';
 import Input from '../../commonComponents/Input';
 import { Option, Select } from '../../commonComponents/Select';
 import MultiAddModal from '../MultiAddModal';
+import List from '../../commonComponents/List';
+import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 // Assets
 import trophyIcon from '../../assets/trophy-icon.png';
 // Middleware
 import { postTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyForm.scss';
-import List from '../../commonComponents/List';
 
 const MODALIDADES = ["Grupos+Eliminatoria"];
 
 const TourneyForm = (props) => {
-    const { tourney, setTourneyForm } = props;
+    const { tourney, onClose } = props;
 
     const [ nombre, setNombre ] = useState('');
     const [ modalidad, setModalidad] = useState();
     const [ equipos, setEquipos ] = useState([]) 
-    const [ showMultiAdd , setMultiAdd ] = useState(true)
+    const [ showMultiAdd , setMultiAdd ] = useState(false)
 
     const teamList = useSelector((state) => state.team.teamList)
+    const tourneyCrud = useSelector((state) => state.tourney.crud)
 
     const dispatch = useDispatch();
 
@@ -32,15 +34,34 @@ const TourneyForm = (props) => {
         e.preventDefault()
         const postBody = {
             name: nombre,
-            status: 'Iniciado',
+            status: 'Nuevo',
             type: modalidad,
             teams: equipos
         }
-        dispatch(postTourneyRequest(postBody))
+        dispatch(postTourneyRequest({postBody, resolve: onClose}))
+    }
+
+    const handleEquipoChange = (e) => {
+        const team = teamList.data.filter(x => e.includes(x._id)).map(x => x.name);
+        const newEquipo = equipos.filter(x => !teamList.data.map(team => team.name).includes(x))
+        setEquipos([...new Set([...newEquipo, ...team])])
     }
 
     const handleNewEquipos = (data) => {
-        setEquipos(data)
+        setEquipos([...new Set([...equipos, ...data])])
+    }
+
+    const handleRemove = (item) => {
+        const newEquipos = equipos.filter(x => x !== item)
+        setEquipos([...newEquipos])
+    }
+
+    const isRemovable = (item) => {
+        return !teamList.data.some(x => x.name === item)
+    }
+
+    if (tourneyCrud.loading) {
+        return <LoadingSpinner fullscreen={true}/>
     }
 
     return (
@@ -67,7 +88,7 @@ const TourneyForm = (props) => {
                 <h2>Equipos</h2>
                 <FormField>
                     <Label>Equipos</Label>
-                    <Select value={equipos} onChange={(e) => setEquipos(e)} filter={true} multiple={true}>
+                    <Select value={equipos} onChange={(e) => handleEquipoChange(e)} filter={true} multiple={true}>
                         {teamList.data.map((option, index) => (
                             <Option value={option._id} key={option._id+index} >
                                 {option.name}
@@ -75,10 +96,12 @@ const TourneyForm = (props) => {
                         ))}
                     </Select>
                 </FormField>
-                <button type='button' className='tourney-form-new-team' onClick={() => setMultiAdd(true)}>Nuevo equipo</button>
-                {equipos.length > 0 && <List items={equipos}/>}
+                <div className='tourney-form-new-team'>
+                    <span onClick={() => setMultiAdd(true)}>Nuevo equipo</span>
+                </div>
+                {equipos.length > 0 && <List items={equipos} removeBtn={isRemovable} onRemove={handleRemove} />}
                 <div className='tourney-form-action-buttons'>
-                    <button type='submit' onClick={() => setTourneyForm(false)} className='btn btn-secondary'>
+                    <button type='submit' onClick={onClose} className='btn btn-secondary'>
                         <strong>Cancelar</strong>
                     </button>
                     <button type='submit' onClick={(e) => handleSubmit(e)} className='btn btn-secondary'>
@@ -86,7 +109,7 @@ const TourneyForm = (props) => {
                     </button>
                 </div>
             </form>
-            <MultiAddModal show={showMultiAdd} onClose={()=> setMultiAdd(false)} type={'equipo'} handleClose={handleNewEquipos}/>
+            <MultiAddModal show={showMultiAdd} onClose={()=> setMultiAdd(false)} type={'equipo'} handleClose={handleNewEquipos} names={teamList.data.map(x => x.name)}/>
         </section>
     )
 }

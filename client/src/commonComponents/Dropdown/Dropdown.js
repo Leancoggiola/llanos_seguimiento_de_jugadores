@@ -10,7 +10,7 @@ const Dropdown = forwardRef((props, ref) => {
 
     const [ dropUp, setDropUp ] = useState(false);
     const [ openDropdown, setOpenDropdown] = useState(false);
-    const [ currentItem, setCurrentItem] = useState(-1);
+    const [ currentItem, ] = useState(-1);
 
     const itemsChildren = Children.map(children, (child, index) => {
         return cloneElement(child, { indexItem: index, currentItem: currentItem})

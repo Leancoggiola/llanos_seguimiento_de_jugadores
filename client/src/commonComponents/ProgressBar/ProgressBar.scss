@@ -1,0 +1,11 @@
+.cc-progress-bar-wrapper {
+  height: 0.3rem;
+  width: 100%;
+  background-color: var(--progress-bar-bg-color);
+  
+  .cc-progress-bar {
+    height: 100%;
+    background-color: var(--progress-bar-color);
+    transition: width 0.05s ease-in-out,
+  }
+}

@@ -4,7 +4,7 @@ import { usePopper } from 'react-popper';
 // Components
 import Option from './Option/Option';
 import Icon from '../Icon';
-import { navigationIcClose, navigationIcKeyboardArrowDown } from '../../assets/icons';
+import { navigationIcClose, hardwareIcKeyboardArrowDown } from '../../assets/icons';
 import SelectAllOptions from './SelectAllOptions/SelectAllOptions';
 import SelectSearch from './SelectSearch/SelectSearch';
 // Styling
@@ -359,9 +359,7 @@ const Select = (props) => {
                                 <Icon src={navigationIcClose}/>
                             </IconButton>
                         )}
-                        <IconButton className='cc-select-input-arrow'>
-                            <Icon src={navigationIcKeyboardArrowDown} />
-                        </IconButton>
+                        <Icon src={hardwareIcKeyboardArrowDown} className='cc-select-input-arrow'/>
                 </button>
                 <div className='cc-select-wrapper-options' ref={wrapperOptionsRef} style={styles.popper} {...attributes?.popper}>
                     {multiple && showSelectAllButton && <SelectAllOptions />}

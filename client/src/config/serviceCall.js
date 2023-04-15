@@ -2,7 +2,6 @@ import axios from 'axios';
 
 export function serviceCall(requestConfig) {
     const instance = axios.create();
-    const token = document.cookie;
 
     requestConfig["withAuth"] = requestConfig["withAuth"] ? requestConfig["withAuth"] : true
 

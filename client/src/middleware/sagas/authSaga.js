@@ -1,4 +1,4 @@
-import { delay, put, takeLatest, call } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { serviceCall } from '../../config/serviceCall';
 import { isUserLoggedInFailure, isUserLoggedInSuccess } from '../actions/authActions';

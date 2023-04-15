@@ -5,7 +5,7 @@ import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
 import Navbar from '../Navbar';
 
-import { navigationIcKeyboardArrowLeft, navigationIcMenu } from '../../assets/icons';
+import { hardwareIcKeyboardArrowLeft, navigationIcMenu } from '../../assets/icons';
 // Middleware
 import { navbarBack } from '../../middleware/actions/navbarActions';
 // Styling
@@ -33,7 +33,7 @@ const Header = (props) => {
                         </IconButton>
                         :
                         <IconButton type='button' onClick={() => dispatch(navbarBack())} >
-                            <Icon src={navigationIcKeyboardArrowLeft} />
+                            <Icon src={hardwareIcKeyboardArrowLeft} />
                         </IconButton>
                     }
                 </div>

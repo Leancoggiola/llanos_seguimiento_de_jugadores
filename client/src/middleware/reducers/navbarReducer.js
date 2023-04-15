@@ -1,7 +1,8 @@
-import { NAVBAR_BACK, NAVBAR_NEW_ENTRY} from '../constants/navbar';
+import { NAVBAR_BACK, NAVBAR_NEW_ENTRY, UPDATE_TOAST_INFO} from '../constants/navbar';
 
 const initialState = {
-    navbarPosition: []
+    navbarPosition: [],
+    toastInfo: {}
 }
 
 export const navbarReducer = (state = initialState, action) => {
@@ -21,6 +22,12 @@ export const navbarReducer = (state = initialState, action) => {
             return {
                 ...state,
                 navbarPosition: [...state.navbarPosition.concat(payload)]
+            }
+        }
+        case UPDATE_TOAST_INFO: {
+            return {
+                ...state,
+                toastInfo: payload
             }
         }
         default: return state;

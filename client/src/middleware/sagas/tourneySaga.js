@@ -11,6 +11,7 @@ import {
 import { getRequest } from '../index.js';
 
 import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY } from '../constants/tourney';
+import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
 function* getTourneysWork() {
@@ -27,17 +28,21 @@ function* getTourneysWork() {
 }
 
 function* postTourneyWork(action) {
-    const { payload } = action;
+    const { payload: {postBody, resolve} } = action;
     try {
         const options = {
             url: '/api/tournaments/postTournaments',
             method: 'POST',
-            data: payload
+            data: postBody
         }
         const response = yield call(serviceCall, options)
         yield put(postTourneySuccess(response));
+        yield put(getTourneysSuccess([response]));
+        yield put(updateToastData({show: true, variant: 'success', message: 'Torneo creado con exito', closeBtn: true}))
+        resolve && resolve()
     } catch (e) {
         yield put(postTourneyFailure(e));
+        yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
     }
 }
 

@@ -8,6 +8,10 @@
     --app-highlight: #{$orange};
     --disabled: #{$grey-400};
 
+    --error: #{$error};
+    --warning: #{$warning};
+    --success: #{$success};
+
     --navigation-bg: #{$grey-550};
     --scrollbar-bg: #{$grey-450};
 
@@ -47,8 +51,14 @@
 
     --chip-bg: #{$grey-500};
     --chip-color: #{$white};
-    --chip-monochrome-bg: #{$white};
-    --chip-monochrome-color: #{$grey-500};
+    --chip-info-bg: #{$info-bg};
+    --chip-info-color: #{$info};
+    --chip-success-bg: #{$success-bg};
+    --chip-success-color: #{$success};
+    --chip-warning-bg: #{$warning-bg};
+    --chip-warning-color: #{$warning};
+    --chip-error-bg: #{$error-bg};
+    --chip-error-color: #{$error};
 
     --form-element-bg: #{$grey-600};
     --form-element-hover: #{$grey-550};
@@ -82,6 +92,18 @@
     --tab-navigator-hover-font-color: #{$white};
     --tab-navigator-border-bottom: 1px solid #{$grey-400};
     --tab-navigator-disabled-color: #{$grey-400};
+
+    --toast-close-btn-color: #{$white};
+    --toast-action-btn-color: #{$orange};
+    --toast-box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
+    --toast-bg-color: #{$grey-550};
+    --toast-success-icon-color: #{$success};
+    --toast-error-icon-color: #{$error};
+    --toast-warning-icon-color: #{$warning};
+    --toast-info-icon-color: #{$white};
+
+    --progress-bar-color: #{$orange};
+    --progress-bar-bg-color: #{$grey-550};
 }
 
     

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useDispatch } from 'react-redux';
 // Components
-import { actionIcExitApp, actionIcSettings } from '../../assets/icons';
+import { actionIcExitToApp, actionIcSettings } from '../../assets/icons';
 import Avatar from '../../commonComponents/Avatar';
 import { Dropdown, DropdownItem } from '../../commonComponents/Dropdown';
 import Icon from '../../commonComponents/Icon';
@@ -14,7 +14,7 @@ import './Profile.scss';
 const Profile = () => {
 
     const [ isProfileMenuOpen, setProfileMenuOpen ] = useState(false);
-    const [ cookies, setCookie, removeCookie] = useCookies(['jwt']);
+    const [,, removeCookie] = useCookies(['jwt']);
     const dispatch = useDispatch();
 
     const logoutUser = () => {
@@ -27,7 +27,7 @@ const Profile = () => {
     const profileMenuOptions=[{
             id: 'header-profile-logout',
             optionFn: logoutUser,
-            icon: actionIcExitApp,
+            icon: actionIcExitToApp,
             description: 'Logout'
     }]
 
