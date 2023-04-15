@@ -1,4 +1,8 @@
 import { useState } from 'react';
+// Components
+import IconButton from '../../commonComponents/IconButton';
+import Icon from '../../commonComponents/Icon';
+import { contentIcTShirt, contentIcTeam, contentIcTrophy, testIc } from '../../assets/icons';
 // Assets
 import allAppsLogo from '../../assets/all-apps-icon.png';
 // Middleware
@@ -22,29 +26,18 @@ const Navbar = ({isCollapse}) => {
 
     return (
         <nav className={`navigation ${isCollapse ? 'navigation-collapse' : 'navigation-expanded'}`}>
-            <button type='button' className={`${getActiveButton(activeIndex, 0)}`} onClick={() => handleClick(0, 'all')}>
-                <div className='icon-container'>  
-                    <img src={allAppsLogo} alt='all-apps'/>
-                </div>
-                <h2>Home</h2>
-            </button>
-            {/* {!isEmpty(data) && data.map((option,index) => {
-                const { name, displayName, image: { contentType, data }} = option;
-                const imgSrc = `data:${contentType};base64, ${Buffer.from(data.data).toString('base64')}`;
-                return(
-                    <button 
-                        type='button' 
-                        className={`${getActiveButton(activeIndex, index+1)}`} 
-                        key={name}
-                        onClick={() => handleClick(index+1,name)}
-                    >
-                        <div className='icon-container'>  
-                            <img src={imgSrc} alt={`${name}-app`}/>
-                        </div>
-                        <h2>{displayName}</h2>
-                    </button>
-                )
-            })} */}
+            <IconButton className={`${getActiveButton(activeIndex, 0)}`} onClick={() => handleClick(0, 'tourneys')}>
+                <Icon src={contentIcTrophy}/>
+                <h1>{'Torneos'}</h1>
+            </IconButton>
+            <IconButton className={`${getActiveButton(activeIndex, 1)}`} onClick={() => handleClick(1, 'teams')}>
+                <Icon src={contentIcTeam}/>
+                <h1>{'Equipos'}</h1>
+            </IconButton>
+            <IconButton className={`${getActiveButton(activeIndex, 2)}`} onClick={() => handleClick(2, 'players')}>
+                <Icon src={contentIcTShirt}/>
+                <h1>{'Jugadores'}</h1>
+            </IconButton>
         </nav>
     )
 }

@@ -12,14 +12,14 @@
     &-collapse {
         width: var(--vertical-nav-collapse-width);
         transition: width 0.5s;
-        @media screen and (max-width: 480px){
+        @media screen and (max-width: 576px){
             display: none;
         }
     }
     &-expanded {
         width: var(--vertical-nav-expanded-width);
         transition: width 0.5s;
-        @media screen and (max-width: 480px){
+        @media screen and (max-width: 576px){
             display: flex;
             width: var(--vertical-nav-collapse-width);
         }
@@ -27,6 +27,7 @@
 
     button {
         height: var(--vertical-nav-collapse-width);
+        gap: 1rem;
         width: 100%;
         display: flex;
         align-items: center;
@@ -39,30 +40,24 @@
         border: none;
         transition: background-color 200ms ease-in;
 
-        h2 {
+        svg {
+            width: 3rem;
+            height: auto;
+            padding-left: 1rem;
+        }
+
+        h1 {
             width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            flex-grow: 1;
             text-align: left;
             font-size: large;
-        }
-        .icon-container {
-            width: var(--vertical-nav-collapse-width);
-            min-width: var(--vertical-nav-collapse-width);
-            height: 100%;
-            display: flex;
-            flex-grow: 0;
-            align-items: center;
-            justify-content: center;
-            img {
-                height: 3rem;
-                width: 3rem;
-                border-radius: 10%;
-                box-shadow: 0 0 .5rem .5rem var(--app-bg);
+            @media screen and (max-width: 576px){
+                display: none;
             }
         }
+
         &.active {
             color: white;
             background-color: var(--app-bg);

@@ -2,7 +2,7 @@
 import './IconButton.scss'
 
 const IconButton = (props) => {
-    const { children, className, disabled, href, onClick, type } = props;
+    const { children, className, disabled, href, onClick, type = 'button'} = props;
     const classes = `cc-icon-btn ${className ? className : ''}`;
 
     const handleClick = (e) => {
