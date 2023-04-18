@@ -1,14 +1,16 @@
 import { combineReducers } from 'redux';
 import { authReducer } from './authReducer';
 import { navbarReducer } from './navbarReducer';
-import { tourneyReducer } from './tourneyReducer';
+import { playerReducer } from './playerReducer';
 import { teamReducer } from './teamReducer';
+import { tourneyReducer } from './tourneyReducer';
 
 const rootReducer = combineReducers({
-    navbar: navbarReducer,
-    tourney: tourneyReducer,
     auth: authReducer,
-    team: teamReducer
+    navbar: navbarReducer,
+    player: playerReducer,
+    team: teamReducer,
+    tourney: tourneyReducer
 })
 
 export default rootReducer;

@@ -1,49 +1,36 @@
 
-import { isEmpty } from 'lodash';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+// Pages
+import Tournaments from '../Tournaments';
+import Teams from '../Teams';
 // Components
-import { contentIcAddCircleOutline } from '../../assets/icons';
 import ErrorMessage from '../../commonComponents/ErrorMessage';
-import Icon from '../../commonComponents/Icon';
-import IconButton from '../../commonComponents/IconButton';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
-import TourneyCard from '../../components/TourneyCard';
-import TourneyForm from '../../components/TourneyForm';
-// Middleware
-import { navbarNewEntry, navbarBack } from '../../middleware/actions/navbarActions';
 // Styling
-
 import './Home.scss';
 
 const Home = () => {
-    const tourneyList = useSelector((state) => state.tourney.tourneyList);
-    const [ tourneyForm, setTourneyForm ] = useState(false)
+    const display = useSelector((state) => state.navbar.display);
+    const { loading: tourneyLoading } = useSelector((state) => state.tourney.tourneyList);
+    const { loading: teamLoading } = useSelector((state) => state.team.teamList);
+    // const display = useSelector((state) => state.navbar.display);
 
-    const dispatch = useDispatch();
-
-    const handleNewTourney = () => {
-        setTourneyForm(true)
-        dispatch(navbarNewEntry({action: setTourneyForm, param: false}))
+    const setPage = () => {
+        switch(display) {
+            case('tourneys'):
+                return <Tournaments/>
+            case('teams'):
+                return <Teams/>
+            default:
+                return <ErrorMessage message={'Ups! No encontramos la página que esta buscando'} />
+        }
     }
 
-    if(tourneyList.loading) return <LoadingSpinner showPosRelative={true} fullscreen={true}/>
-    if(tourneyList.error) return <ErrorMessage message={tourneyList.error.message} />
+    if(teamLoading || tourneyLoading) return <LoadingSpinner showPosRelative={true} fullscreen={true}/>
 
     return (
         <main className='home-container page'>
-            {!tourneyForm ?
-            <>
-                {!isEmpty(tourneyList.data) && tourneyList.data.map((tourney, index) => (
-                    <TourneyCard key={tourney.name+index} tourney={tourney}/>
-                ))}
-                <IconButton className='add-new-tourney' onClick={handleNewTourney}>
-                    <Icon src={contentIcAddCircleOutline}/>
-                </IconButton>
-            </>
-            :
-            <TourneyForm onClose={() => dispatch(navbarBack())} />
-            }
+            {setPage()}
         </main>
     )
 }

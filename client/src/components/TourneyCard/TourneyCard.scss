@@ -10,6 +10,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        &-formats {
+            text-align: center;
+        }
         svg {
             width: 2rem;
             height: auto;

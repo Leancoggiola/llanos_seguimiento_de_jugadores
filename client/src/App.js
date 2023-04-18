@@ -12,13 +12,12 @@ import Toast from './commonComponents/Toast';
 // Pages
 import Login from './views/Login';
 import Unauthorized from './views/Unauthorized';
-
 // Middleware
 import { isUserLoggedInRequest } from './middleware/actions/authActions';
 import { updateToastData } from './middleware/actions/navbarActions';
 import { getTeamsRequest } from './middleware/actions/teamActions';
 import { getTourneysRequest } from './middleware/actions/tourneyActions';
-
+import { getPlayersRequest } from './middleware/actions/playerActions';
 // Styles
 import './App.scss';
 
@@ -30,6 +29,7 @@ export default () => {
   const loggedUser = useSelector((state) => state.auth)
   const tourneyList = useSelector((state) => state.tourney.tourneyList)
   const teamList = useSelector((state) => state.team.teamList)
+  const playerList = useSelector((state) => state.player.playerList)
   const toastData = useSelector((state) => state.navbar.toastInfo)
 
   useEffect(() => {
@@ -43,6 +43,7 @@ export default () => {
     if(loggedUser.data) {
       isEmpty(tourneyList.data) && dispatch(getTourneysRequest())
       isEmpty(teamList.data) && dispatch(getTeamsRequest())
+      isEmpty(playerList.data) && dispatch(getPlayersRequest())
     }
   }, [loggedUser.data])
 
@@ -61,7 +62,7 @@ export default () => {
             { 
               !document.cookie|| loggedUser.error ?  <Login /> :
               unauthorized ? <Unauthorized errorObj={{ error:401, errorDescription: 'No se encuentra autorizado, vuelva a logearse'}}/> :
-              !tourneyList.data || !teamList.data ? <InprogressFallback status={'Preparando la aplicacion'}/> :
+              !tourneyList.data || !teamList.data || !playerList.data ? <InprogressFallback status={'Preparando la aplicacion'}/> :
               !loggedUser.data ? <InprogressFallback status={'Autenticando Usuario'}/> :
               <BaseRoute />
             }

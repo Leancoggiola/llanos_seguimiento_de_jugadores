@@ -1,23 +1,27 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 // Components
-import IconButton from '../../commonComponents/IconButton';
+import { contentIcTShirt, contentIcTeam, contentIcTrophy } from '../../assets/icons';
 import Icon from '../../commonComponents/Icon';
-import { contentIcTShirt, contentIcTeam, contentIcTrophy, testIc } from '../../assets/icons';
-// Assets
-import allAppsLogo from '../../assets/all-apps-icon.png';
+import IconButton from '../../commonComponents/IconButton';
 // Middleware
-//import { changeListToDisplay } from '../../middleware/actions/narBarActions'
+import { changePageToDisplay } from '../../middleware/actions/navbarActions';
 // Styling
 import './Navbar.scss';
 
-const Navbar = ({isCollapse}) => {
+const Navbar = ({isCollapse, setToggleNavBar}) => {
     const [ activeIndex, setActiveIndex] = useState(0);
 
-    // const dispath = useDispatch()
+    const dispath = useDispatch();
 
-    const handleClick = (index, appName) => {
+    useEffect(() => {
+        handleClick(1, 'teams')
+    }, [])
+
+    const handleClick = (index, optionName) => {
         setActiveIndex(index);
-        //dispath(changeListToDisplay(appName))
+        dispath(changePageToDisplay(optionName))
+        setToggleNavBar(true)
     }
 
     const getActiveButton = (activeIndex, index) => {

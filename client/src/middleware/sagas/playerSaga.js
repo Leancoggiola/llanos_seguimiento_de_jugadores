@@ -2,95 +2,95 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { serviceCall } from '../../config/serviceCall.js';
 import {
-    getTeamsFailure,
-    getTeamsSuccess,
-    postTeamFailure,
-    postTeamSuccess,
-    deleteTeamFailure,
-    deleteTeamSuccess
-} from '../actions/teamActions.js';
+    getPlayersFailure,
+    getPlayersSuccess,
+    postPlayerFailure,
+    postPlayerSuccess,
+    deletePlayerFailure,
+    deletePlayerSuccess
+} from '../actions/playerActions.js';
 
 import { getRequest } from '../index.js';
 
-import { TEAM_DELETE_NEW_TEAM, TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM } from '../constants/team.js';
+import { PLAYER_DELETE_NEW_PLAYER, PLAYER_GET_PLAYER_LIST, PLAYER_POST_NEW_PLAYER } from '../constants/player.js';
 import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
-function* getTeamsWork() {
+function* getPlayersWork() {
     try {
         const options = {
-            url: '/api/teams/getTeams',
+            url: '/api/players/getPlayers',
             method: 'GET'
         }
         const response = yield call(serviceCall, options)
-        yield put(getTeamsSuccess(response));
+        yield put(getPlayersSuccess(response));
     } catch (e) {
-        yield put(getTeamsFailure(e.status));
+        yield put(getPlayersFailure(e.status));
     }
 }
 
-function* postTeamWork(action) {
+function* postPlayerWork(action) {
     const { payload: {postBody, resolve} } = action;
     try {
         const options = {
-            url: '/api/teams/postTeam',
+            url: '/api/players/postPlayer',
             method: 'POST',
             data: postBody
         }
         const response = yield call(serviceCall, options)
-        yield put(postTeamSuccess(response.result));
-        yield put(getTeamsSuccess(response.newData));
+        yield put(postPlayerSuccess(response.result));
+        yield put(getPlayersSuccess(response.newData));
         yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
         resolve && resolve()
     } catch (e) {
-        yield put(postTeamFailure(e));
+        yield put(postPlayerFailure(e));
         yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
     }
 }
 
-function* deleteTeamWork(action) {
+function* deletePlayerWork(action) {
     const { payload: {postBody, resolve} } = action;
     try {
         const options = {
-            url: '/api/teams/deleteTeam',
+            url: '/api/players/deletePlayer',
             method: 'DELETE',
             data: {id: postBody}
         }
         const response = yield call(serviceCall, options)
-        yield put(deleteTeamSuccess(response.result));
-        yield put(getTeamsSuccess(response.newData));
+        yield put(deletePlayerSuccess(response.result));
+        yield put(getPlayersSuccess(response.newData));
         yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
         resolve && resolve()
     } catch (e) {
-        yield put(deleteTeamFailure(e));
+        yield put(deletePlayerFailure(e));
         yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
     }
 }
 
 // Watchers
-function* getTeamsWatch() {
+function* getPlayersWatch() {
     yield takeLatest(
-        getRequest(TEAM_GET_TEAM_LIST),
-        getTeamsWork
+        getRequest(PLAYER_GET_PLAYER_LIST),
+        getPlayersWork
     )
 }
 
-function* postTeamWatch() {
+function* postPlayerWatch() {
     yield takeLatest(
-        getRequest(TEAM_POST_NEW_TEAM),
-        postTeamWork
+        getRequest(PLAYER_POST_NEW_PLAYER),
+        postPlayerWork
     )
 }
 
-function* deleteTeamWatch() {
+function* deletePlayerWatch() {
     yield takeLatest(
-        getRequest(TEAM_DELETE_NEW_TEAM),
-        deleteTeamWork
+        getRequest(PLAYER_DELETE_NEW_PLAYER),
+        deletePlayerWork
     )
 }
 
-export const teamSaga = [
-    getTeamsWatch(),
-    postTeamWatch(),
-    deleteTeamWatch()
+export const playerSaga = [
+    getPlayersWatch(),
+    postPlayerWatch(),
+    deletePlayerWatch()
 ]

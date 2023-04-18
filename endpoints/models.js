@@ -2,17 +2,17 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 
 const playerSchema = mongoose.Schema({
-    name: { type: String, required: [true, "Se requiere nombre"] },
-    surname: { type: String, required: [true, "Se requiere apellido"] },
-    dni: { type: Number, required: [true, "Se requiere DNI"]},
-    yellow_cards_per_match: { type: Object, require: false},
-    red_cards_per_match: { type: Object, require: false},
-    sanction_per_tourney: { type: Object, require: false},
+    name: { type: String, required: [true, "Se requiere nombre"], lowercase: true, trim: true },
+    dni: { type: String, required: [true, "Se requiere DNI"], unique: true, lowercase: true, trim: true, maxLength: 8, match: /^\d{7,8}$/ },
+    edad: { type: Number, required: false, min: 1, max: 99 },
+    // yellow_cards_per_match: { type: Object, require: false},
+    // red_cards_per_match: { type: Object, require: false},
+    // sanction_per_tourney: { type: Object, require: false},
     createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })
 
 const teamsSchema = mongoose.Schema({
-    name: { type: String, required: [true, "Se requiere nombre"], unique: true },
+    name: { type: String, required: [true, "Se requiere nombre"], unique: true, lowercase: true, trim: true },
     players: { type: [playerSchema], default: undefined },
     createdBy: { type: mongoose.mongo.ObjectId, required: true }
 })
@@ -30,7 +30,7 @@ const matchSchema = mongoose.Schema({
 })
 
 const tournamentsSchema = mongoose.Schema({
-    name: { type: String, required: [true, "Se requiere nombre"] },
+    name: { type: String, required: [true, "Se requiere nombre"], lowercase: true, trim: true },
     teams: { type: [teamsSchema], required: false, default: []},
     matchs: { type: Object, required: false},
     status: { type: String, required: [true, "Se requiere estado"], enum: ["Nuevo", "Jugando", "Terminado"]},

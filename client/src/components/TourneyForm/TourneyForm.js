@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // Components
 import FormField from '../../commonComponents/FormField';
-import Label from '../../commonComponents/Label';
 import Input from '../../commonComponents/Input';
-import { Option, Select } from '../../commonComponents/Select';
-import MultiAddModal from '../MultiAddModal';
+import Label from '../../commonComponents/Label';
 import List from '../../commonComponents/List';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
+import { Option, Select } from '../../commonComponents/Select';
+import MultiAddModal from '../MultiAddModal';
 // Assets
 import trophyIcon from '../../assets/trophy-icon.png';
 // Middleware
@@ -67,7 +67,7 @@ const TourneyForm = (props) => {
     return (
         <section className='tourney-form'>
             <div className='img-container'>
-                <img src={trophyIcon} alt={'trophy'}/>  
+                <img src={trophyIcon} alt={'trophy-icon'}/>  
             </div>   
             <h1>Nuevo Torneo</h1>
             <form noValidate>
@@ -85,7 +85,7 @@ const TourneyForm = (props) => {
                         ))}
                     </Select>
                 </FormField>
-                <h2>Equipos</h2>
+                <h1>Equipos</h1>
                 <FormField>
                     <Label>Equipos</Label>
                     <Select value={equipos} onChange={(e) => handleEquipoChange(e)} filter={true} multiple={true}>

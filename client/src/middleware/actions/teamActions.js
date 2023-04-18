@@ -1,6 +1,6 @@
 import { getFailure, getSuccess, getRequest} from '../index.js';
 
-import { TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM } from '../constants/team.js';
+import { TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM, TEAM_DELETE_NEW_TEAM } from '../constants/team.js';
 
 // GET Team LIST
 export const getTeamsRequest = (payload) => {
@@ -41,6 +41,27 @@ export const postTeamSuccess = (payload) => {
 export const postTeamFailure = (payload) => {
     return {
         type: getFailure(TEAM_POST_NEW_TEAM),
+        payload
+    }
+}
+// DELETE Team
+export const deleteTeamRequest = (payload) => {
+    return {
+        type: getRequest(TEAM_DELETE_NEW_TEAM),
+        payload
+    }
+}
+
+export const deleteTeamSuccess = (payload) => {
+    return {
+        type: getSuccess(TEAM_DELETE_NEW_TEAM),
+        payload
+    }
+}
+
+export const deleteTeamFailure = (payload) => {
+    return {
+        type: getFailure(TEAM_DELETE_NEW_TEAM),
         payload
     }
 }

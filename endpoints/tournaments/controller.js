@@ -9,14 +9,32 @@ module.exports = {
         try {
             const tourneys = await Tournament.find({ createdBy: user})
             res.status(200).json(tourneys)
-        } catch(e) {
-            res.status(e?.cause ? e.cause : 400).json({ message: e.message })
+        } catch(err) {
+            res.status(err?.cause ? err.cause : 400).json({ message: err.message })
         }
     },
 
     deleteTournaments: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession()
+        session.startTransaction()
         try {
-        } catch(e) {
+            const { body: { id } } = req;
+            Tournament.deleteOne({id}, {session})
+                .then(async response => {
+                    await session.commitTransaction();
+                    session.endSession()
+                    res.status(201).json({result: response, newData: await Tournament.find({ createdBy: user})})
+                })
+                .catch(async err => {
+                    await session.abortTransaction();
+                    session.endSession()
+                    errorHandler(err, res)
+                })
+        } catch(err) {
+            await session.abortTransaction();
+            session.endSession()
+            errorHandler(err, res)
         }
     },
 
@@ -38,14 +56,14 @@ module.exports = {
                 .then(async tourney => {
                     await session.commitTransaction();
                     session.endSession()
-                    res.status(201).json(tourney)
+                    res.status(201).json({result: tourney, newData: await Tournament.find({ createdBy: user})})
                 })
                 .catch(async err => {
                     await session.abortTransaction();
                     session.endSession()
                     errorHandler(err, res)
                 })
-        } catch(e) {
+        } catch(err) {
             await session.abortTransaction();
             session.endSession()
             errorHandler(err, res)
@@ -54,7 +72,7 @@ module.exports = {
 
     putTournaments: async (req, res) => {
         try {
-        } catch(e) {
+        } catch(err) {
         }
     }
 }

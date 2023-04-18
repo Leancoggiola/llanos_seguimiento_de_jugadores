@@ -1,57 +1,87 @@
-const { Player } = require('../models.js');
+const { Player, Tournament } = require('../models');
+const mongoose = require('mongoose');
+const { errorHandler } = require('../helpers')
 
 module.exports = {
-    // Status
     getPlayers: async (req, res) => {
+        const user = req?.token;
         try {
-            const user = checkUser(req, res, next)
-            if(user) {
-                const players = await Player.find({ createdBy: user})
-                res.status(200).json(players)
-            } else {
-                throw new Error("No autorizado", {cause: 401})
-            }
-        } catch(e) {
-            res.status(e?.cause ? e.cause : 400).json({ message: e.message })
+            const players = await Player.find({ createdBy: user})
+            res.status(200).json(players)
+        } catch(err) {
+            errorHandler(err, res)
         }
     },
-
+    
     postPlayer: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession()
+        session.startTransaction()
         try {
-            const user = checkUser(req, res, next)
-            if(user) {
-                const { body } = req;
-                const newPlayer = new Player(body);
-                Player.save()
-                    .then(player => res.status(201).json(player))
-                    .catch(err => res.status(400).json({ message: err.message }))
-            } else {
-                throw new Error("No autorizado", {cause: 401})
+            const { body } = req;
+            body["createdBy"] = user;
+            if(body.players) {
+                const existing = await Player.find({ 'name': { $in: body.players}}, null, {session})
+                const newPlayers = body.players.filter(player => !existing.map(x => x.name).includes(player)) 
+                const docs = await Player.create(newPlayers.map(x => ({ name: x, players: [], createdBy: user})), {session})
+                body.players = [...docs, ...existing]
             }
-        } catch(e) {
-            res.status(e?.cause ? e.cause : 400).json({ message: e.message })
+            const newTournament = new Tournament(body);
+            newTournament.save({session})
+                .then(async tourney => {
+                    await session.commitTransaction();
+                    session.endSession()
+                    res.status(201).json({result: tourney, newData: await Tournament.find({ createdBy: user})})
+                })
+                .catch(async err => {
+                    await session.abortTransaction();
+                    session.endSession()
+                    errorHandler(err, res)
+                })
+        } catch(err) {
+            await session.abortTransaction();
+            session.endSession()
+            errorHandler(err, res)
         }
     },
-
+    
     putPlayer: async (req, res) => {
         try {
-            const { body } = req;
-            Player.updateOne({ _id: body._id}, body)
-                .then(() => res.status(200).json('Updated successfully'))
-                .catch(err => res.status(400).json({ message: err.message }))
         } catch(e) {
-            res.status(e?.status ? e.status : 400).json({ message: e.message })
         }
     },
-
+    
     deletePlayer: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession()
+        session.startTransaction()
         try {
-            const { body } = req;
-            Player.remove(body)
-                .then(() => res.status(200).json('Deleted successfully'))
-                .catch(err => res.status(400).json({ message: err.message }))
-        } catch(e) {
-            res.status(e?.status ? e.status : 400).json({ message: e.message })
+            const { body: { id } } = req;
+
+            const isOnTournament = await Tournament.find({
+                "players._id": {$in: [mongoose.Types.ObjectId(id)]}, 
+                "status": {$ne: "Terminado"}
+            });
+
+            if(isOnTournament.length > 0) {
+                res.status(404).json({message: "Elimina el equipo de todo los torneos primero"})
+            } else {
+                Player.deleteOne({id}, {session})
+                .then(async response => {
+                    await session.commitTransaction();
+                    session.endSession()
+                    res.status(201).json({result: response, newData: await Player.find({ createdBy: user})})
+                })
+                .catch(async err => {
+                    await session.abortTransaction();
+                    session.endSession()
+                    errorHandler(err, res)
+                })
+            }
+        } catch(err) {
+            await session.abortTransaction();
+            session.endSession()
+            errorHandler(err, res)
         }
-    }
+    },
 }

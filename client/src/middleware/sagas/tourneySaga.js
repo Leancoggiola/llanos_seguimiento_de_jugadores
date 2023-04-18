@@ -5,12 +5,14 @@ import {
     getTourneysFailure,
     getTourneysSuccess,
     postTourneyFailure,
-    postTourneySuccess
+    postTourneySuccess,
+    deleteTourneyFailure,
+    deleteTourneySuccess
 } from '../actions/tourneyActions';
 
 import { getRequest } from '../index.js';
 
-import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY } from '../constants/tourney';
+import { TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY } from '../constants/tourney';
 import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
@@ -36,12 +38,31 @@ function* postTourneyWork(action) {
             data: postBody
         }
         const response = yield call(serviceCall, options)
-        yield put(postTourneySuccess(response));
-        yield put(getTourneysSuccess([response]));
+        yield put(postTourneySuccess(response.result));
+        yield put(getTourneysSuccess(response.newData));
         yield put(updateToastData({show: true, variant: 'success', message: 'Torneo creado con exito', closeBtn: true}))
         resolve && resolve()
     } catch (e) {
         yield put(postTourneyFailure(e));
+        yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
+    }
+}
+
+function* deleteTourneyWork(action) {
+    const { payload: {postBody, resolve} } = action;
+    try {
+        const options = {
+            url: '/api/tournaments/deleteTournaments',
+            method: 'DELETE',
+            data: {id: postBody}
+        }
+        const response = yield call(serviceCall, options)
+        yield put(deleteTourneySuccess(response.result));
+        yield put(getTourneysSuccess(response.newData));
+        yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
+        resolve && resolve()
+    } catch (e) {
+        yield put(deleteTourneyFailure(e));
         yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
     }
 }
@@ -61,7 +82,15 @@ function* postTourneyWatch() {
     )
 }
 
+function* deleteTourneyWatch() {
+    yield takeLatest(
+        getRequest(TOURNEY_DELETE_NEW_TOURNEY),
+        deleteTourneyWork
+    )
+}
+
 export const tourneySaga = [
     getTourneysWatch(),
-    postTourneyWatch()
+    postTourneyWatch(),
+    deleteTourneyWatch()
 ]

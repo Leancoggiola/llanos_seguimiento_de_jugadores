@@ -1,6 +1,6 @@
 import { getFailure, getSuccess, getRequest} from '../index.js';
 
-import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY } from '../constants/tourney.js';
+import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_DELETE_NEW_TOURNEY } from '../constants/tourney.js';
 
 // GET Tourney LIST
 export const getTourneysRequest = (payload) => {
@@ -41,6 +41,27 @@ export const postTourneySuccess = (payload) => {
 export const postTourneyFailure = (payload) => {
     return {
         type: getFailure(TOURNEY_POST_NEW_TOURNEY),
+        payload
+    }
+}
+// DELETE Tourney
+export const deleteTourneyRequest = (payload) => {
+    return {
+        type: getRequest(TOURNEY_DELETE_NEW_TOURNEY),
+        payload
+    }
+}
+
+export const deleteTourneySuccess = (payload) => {
+    return {
+        type: getSuccess(TOURNEY_DELETE_NEW_TOURNEY),
+        payload
+    }
+}
+
+export const deleteTourneyFailure = (payload) => {
+    return {
+        type: getFailure(TOURNEY_DELETE_NEW_TOURNEY),
         payload
     }
 }

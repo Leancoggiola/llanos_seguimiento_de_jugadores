@@ -1,0 +1,18 @@
+.team-card {
+    width: 100%;
+    margin: 1rem 0;
+    &-header {
+        display: grid;
+        grid-template-columns: max-content max-content 1fr;
+        gap: 1rem;
+        h2 { margin: 0;}
+        &-player-count {
+            display: flex;
+            align-items: center;
+        }
+        &-delete {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+}

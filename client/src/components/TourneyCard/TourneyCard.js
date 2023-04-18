@@ -1,15 +1,22 @@
 import { capitalize } from 'lodash';
+import { useDispatch } from 'react-redux';
+import { useState } from 'react';
 // Components
-import { Card, CardHeader, CardBody } from '../../commonComponents/Card';
-import { Pill } from '../../commonComponents/Pill'
-// Assets
+import { actionIcDelete, contentIcAdd, contentIcKnockoutStage, editorIcBorderAll, editorIcFormatListNumbered } from '../../assets/icons';
+import { Card, CardBody, CardHeader } from '../../commonComponents/Card';
+import Icon from '../../commonComponents/Icon';
+import IconButton from '../../commonComponents/IconButton';
+import { Pill } from '../../commonComponents/Pill';
+import DeleteConfirmation from '../DeleteConfirmation';
+// Middleware
+import { deleteTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyCard.scss';
-import Icon from '../../commonComponents/Icon';
-import { contentIcKnockoutStage, editorIcFormatListNumbered, editorIcBorderAll, contentIcAdd } from '../../assets/icons';
 
 const TourneyCard = (props) => {
-    const { tourney: { name, status, type } } = props;
+    const { tourney: { name, status, type, _id } } = props;
+    const [ showModal, setShowModal ] = useState(false)
+    const dispatch = useDispatch()
 
     const getStatusVariant = () => {
         if('Nuevo') return 'info';
@@ -26,6 +33,11 @@ const TourneyCard = (props) => {
         return icons
     }
 
+    const handleDelete = () => {
+        dispatch(deleteTourneyRequest({postBody: _id}))
+        setShowModal(false)
+    }
+
     return (
         <Card className='tourney-card'>
             <CardHeader className='tourney-card-header'>
@@ -33,11 +45,17 @@ const TourneyCard = (props) => {
                 <Pill variant={getStatusVariant()}>{capitalize(status)}</Pill>
             </CardHeader>
             <CardBody className='tourney-card-body'>
-                <p><strong>Formato: </strong>{type}</p>
-                <div>{
-                    getIcons().map((x,index) => <Icon key={index} src={x}/>)
-                }</div>
+                <div className='tourney-card-body-formats'>
+                    <p><strong>Formato: </strong>{type}</p>
+                    <div>{
+                        getIcons().map((x,index) => <Icon key={index} src={x}/>)
+                    }</div>
+                </div>
+                <IconButton onClick={() => setShowModal(true)} >
+                    <Icon src={actionIcDelete}/>
+                </IconButton>
             </CardBody>
+            <DeleteConfirmation show={showModal} onClose={() => setShowModal(false)} onSubmit={handleDelete}/>
         </Card>
     )
 }

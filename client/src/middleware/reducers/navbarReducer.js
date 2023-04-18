@@ -1,8 +1,9 @@
-import { NAVBAR_BACK, NAVBAR_NEW_ENTRY, UPDATE_TOAST_INFO} from '../constants/navbar';
+import { NAVBAR_BACK, NAVBAR_NEW_ENTRY, UPDATE_TOAST_INFO, CHANGE_PAGE_TO_DISPLAY } from '../constants/navbar';
 
 const initialState = {
     navbarPosition: [],
-    toastInfo: {}
+    toastInfo: {},
+    display: ''
 }
 
 export const navbarReducer = (state = initialState, action) => {
@@ -28,6 +29,12 @@ export const navbarReducer = (state = initialState, action) => {
             return {
                 ...state,
                 toastInfo: payload
+            }
+        }
+        case CHANGE_PAGE_TO_DISPLAY: {
+            return {
+                ...state,
+                display: payload
             }
         }
         default: return state;
