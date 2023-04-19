@@ -1,28 +1,4 @@
 .cc-form-field {
     position: relative;
     margin-bottom: 0.85rem;
-
-    &-focused , &-has-placeholder, &-has-value {
-        .cc-label {
-            top: 0.07rem!important;
-            font-size: 0.85rem;
-            width: auto;
-            z-index: 1;
-            padding-bottom: 0;
-            line-height: 1.5rem;
-        }
-    }
-
-    &-select-input {
-        .cc-label {
-            position: absolute;
-            top: 1rem;
-            left: 0.1rem;
-            transition: 200ms ease top, 200ms ease font-size;
-            padding-left: 0.65rem;
-            padding-bottom: 0.6rem;
-        }
-    }
-
-
 }

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const bcrypt = require('bcrypt');
 
 const playerSchema = Schema({
     name: {
@@ -8,19 +7,21 @@ const playerSchema = Schema({
         required: [true, 'Se requiere nombre'],
         lowercase: true,
         trim: true,
+        maxLength: 30,
     },
     dni: {
         type: String,
-        required: [true, 'Se requiere DNI'],
-        sparse: true,
-        unique: true,
+        required: false,
+        index: {
+            unique: true,
+            partialFilterExpression: { dni: { $exists: true } },
+        },
         lowercase: true,
         trim: true,
         maxLength: 8,
         match: /^\d{7,8}$/,
-        default: null,
     },
-    edad: { type: Number, required: false, min: 1, max: 99 },
+    age: { type: Number, required: false, min: 1, max: 99 },
     // yellow_cards_per_match: { type: Object, require: false},
     // red_cards_per_match: { type: Object, require: false},
     // sanction_per_tourney: { type: Object, require: false},
@@ -72,7 +73,6 @@ const tournamentsSchema = Schema({
         type: String,
         required: [true, 'Se requiere nombre'],
         lowercase: true,
-        trim: true,
     },
     teams: {
         type: [Schema.Types.ObjectId],
@@ -94,12 +94,7 @@ const tournamentsSchema = Schema({
     type: {
         type: String,
         required: [true, 'Se requiere tipo'],
-        enum: [
-            'Liga',
-            'Eliminatoria',
-            'Liga+Eliminatoria',
-            'Grupos+Eliminatoria',
-        ],
+        enum: ['Liga', 'Eliminatoria', 'Liga+Eliminatoria', 'Grupos+Eliminatoria'],
     },
     createdBy: {
         type: Schema.Types.ObjectId,

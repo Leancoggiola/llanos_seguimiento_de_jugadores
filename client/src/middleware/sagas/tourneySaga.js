@@ -9,6 +9,7 @@ import {
     deleteTourneyFailure,
     deleteTourneySuccess,
 } from '../actions/tourneyActions';
+import { getTeamsRequest } from '../actions/teamActions.js';
 
 import { getRequest } from '../index.js';
 
@@ -46,6 +47,7 @@ function* postTourneyWork(action) {
         const response = yield call(serviceCall, options);
         yield put(postTourneySuccess(response.result));
         yield put(getTourneysSuccess(response.newData));
+        if (response.result.teams.length) yield put(getTeamsRequest());
         yield put(
             updateToastData({
                 show: true,

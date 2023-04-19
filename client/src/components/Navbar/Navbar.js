@@ -15,7 +15,7 @@ const Navbar = ({ isCollapse, setToggleNavBar }) => {
     const dispath = useDispatch();
 
     useEffect(() => {
-        handleClick(1, 'teams');
+        handleClick(1, 'equipos');
     }, []);
 
     const handleClick = (index, optionName) => {

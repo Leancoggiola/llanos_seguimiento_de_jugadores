@@ -1,47 +1,32 @@
-// Componentes
-import { contentIcRemove } from '../../assets/icons';
-import Icon from '../Icon';
-import IconButton from '../IconButton';
+import { capitalize } from 'lodash';
 // Styling
-import './List.scss'
+import './List.scss';
 
 const List = (props) => {
-    const { items, type='ul', className, removeBtn, onRemove = () => null } = props;
+    const { children, type = 'ul', className } = props;
     const classes = `cc-list ${className ? className : ''}`;
 
-    const isRemovable = (item) => {
-        return typeof removeBtn === 'function' ? removeBtn(item) : removeBtn
-    }
-    
-    if(type === 'ul') {
-        return(
+    if (type === 'ul') {
+        return (
             <ul className={classes}>
-                {items.map((item, index) => (
-                    <li key={item+index}>
-                        {item}
-                        {isRemovable(item) && 
-                        <IconButton onClick={() => onRemove(item)}>
-                            <Icon src={contentIcRemove}/>
-                        </IconButton>}
-                    </li>))}
+                {children.map((item, index) => (
+                    <li key={item + index}>{typeof item === 'string' ? capitalize(item) : item}</li>
+                ))}
             </ul>
-        )
+        );
     }
-    if(type === 'ol') {
-        return(
+    if (type === 'ol') {
+        return (
             <ol className={classes}>
-                {items.map((item, index) => (
-                    <li key={item+index}>
-                        {index+1} - {item}
-                        {isRemovable(item) && 
-                        <IconButton onClick={() => onRemove(item)}>
-                            <Icon src={contentIcRemove}/>
-                        </IconButton>}
-                    </li>))}
+                {children.map((item, index) => (
+                    <li key={item + index}>
+                        {index + 1} - {item}
+                    </li>
+                ))}
             </ol>
-        )
+        );
     }
     return null;
-}
+};
 
 export default List;

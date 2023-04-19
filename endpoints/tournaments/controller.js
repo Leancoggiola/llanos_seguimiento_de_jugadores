@@ -26,7 +26,7 @@ module.exports = {
             const {
                 body: { id },
             } = req;
-            await Tournament.findByIdAndDelete(id, { session })
+            await Tournament.findByIdAndDelete(id, { session, runValidators: true })
                 .then(async (response) => {
                     await session.commitTransaction();
                     session.endSession();
@@ -74,6 +74,7 @@ module.exports = {
             await Tournament.findOneAndUpdate({}, body, {
                 new: true,
                 upsert: true,
+                runValidators: true,
                 session,
             })
                 .populate({ path: 'teams', select: 'name players' })

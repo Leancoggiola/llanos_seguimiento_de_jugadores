@@ -1,7 +1,11 @@
+import { capitalize } from 'lodash';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
+import { contentIcRemove } from '../../assets/icons';
 import FormField from '../../commonComponents/FormField';
+import Icon from '../../commonComponents/Icon';
+import IconButton from '../../commonComponents/IconButton';
 import Input from '../../commonComponents/Input';
 import Label from '../../commonComponents/Label';
 import List from '../../commonComponents/List';
@@ -42,9 +46,7 @@ const TourneyForm = (props) => {
     };
 
     const handleEquipoChange = (e) => {
-        const team = teamList.data
-            .filter((x) => e.includes(x._id))
-            .map((x) => x.name);
+        const team = teamList.data.filter((x) => e.includes(x._id)).map((x) => x.name);
         const newEquipo = equipos.filter(
             (x) => !teamList.data.map((team) => team.name).includes(x)
         );
@@ -86,11 +88,7 @@ const TourneyForm = (props) => {
                 </FormField>
                 <FormField>
                     <Label>Modalidad</Label>
-                    <Select
-                        value={modalidad}
-                        onChange={(e) => setModalidad(e)}
-                        required={true}
-                    >
+                    <Select value={modalidad} onChange={(e) => setModalidad(e)} required={true}>
                         {MODALIDADES.map((option) => (
                             <Option value={option} key={option}>
                                 {option}
@@ -109,7 +107,7 @@ const TourneyForm = (props) => {
                     >
                         {teamList.data.map((option, index) => (
                             <Option value={option._id} key={option._id + index}>
-                                {option.name}
+                                {capitalize(option.name)}
                             </Option>
                         ))}
                     </Select>
@@ -118,18 +116,21 @@ const TourneyForm = (props) => {
                     <span onClick={() => setMultiAdd(true)}>Nuevo equipo</span>
                 </div>
                 {equipos.length > 0 && (
-                    <List
-                        items={equipos}
-                        removeBtn={isRemovable}
-                        onRemove={handleRemove}
-                    />
+                    <List>
+                        {equipos.map((equipo, index) => (
+                            <div className="team-form-equipo-list" key={equipo + index}>
+                                <p>{equipo}</p>
+                                {isRemovable && (
+                                    <IconButton onClick={() => handleRemove(equipo)}>
+                                        <Icon src={contentIcRemove} />
+                                    </IconButton>
+                                )}
+                            </div>
+                        ))}
+                    </List>
                 )}
                 <div className="tourney-form-action-buttons">
-                    <button
-                        type="submit"
-                        onClick={onClose}
-                        className="btn btn-secondary"
-                    >
+                    <button type="submit" onClick={onClose} className="btn btn-secondary">
                         <strong>Cancelar</strong>
                     </button>
                     <button
@@ -146,7 +147,7 @@ const TourneyForm = (props) => {
                 onClose={() => setMultiAdd(false)}
                 type={'equipo'}
                 handleClose={handleNewEquipos}
-                names={teamList.data.map((x) => x.name)}
+                existingElements={[...teamList.data, ...equipos]}
             />
         </section>
     );

@@ -1,24 +1,28 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { capitalize } from 'lodash';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // Components
-import FormField from "../../commonComponents/FormField";
-import Input from "../../commonComponents/Input";
-import Label from "../../commonComponents/Label";
-import List from "../../commonComponents/List";
-import LoadingSpinner from "../../commonComponents/LoadingSpinner";
-import { Option, Select } from "../../commonComponents/Select";
-import MultiAddModal from "../MultiAddModal";
+import { contentIcRemove } from '../../assets/icons';
+import FormField from '../../commonComponents/FormField';
+import Icon from '../../commonComponents/Icon';
+import IconButton from '../../commonComponents/IconButton';
+import Input from '../../commonComponents/Input';
+import Label from '../../commonComponents/Label';
+import List from '../../commonComponents/List';
+import LoadingSpinner from '../../commonComponents/LoadingSpinner';
+import { Option, Select } from '../../commonComponents/Select';
+import MultiAddModal from '../MultiAddModal';
 // Assets
-import teamIcon from "../../assets/team-icon.png";
+import teamIcon from '../../assets/team-icon.png';
 // Middleware
-import { postTeamRequest } from "../../middleware/actions/teamActions";
+import { postTeamRequest } from '../../middleware/actions/teamActions';
 // Styling
-import "./TeamForm.scss";
+import './TeamForm.scss';
 
 const TeamForm = (props) => {
     const { team, onClose } = props;
 
-    const [nombre, setNombre] = useState("");
+    const [nombre, setNombre] = useState('');
     const [jugadores, setJugadores] = useState([]);
     const [showMultiAdd, setMultiAdd] = useState(false);
 
@@ -37,13 +41,11 @@ const TeamForm = (props) => {
     };
 
     const handlePlayerChange = (e) => {
-        const player = playerList.data
-            .filter((x) => e.includes(x._id))
-            .map((x) => x.name);
+        const player = playerList.data.filter((x) => e.includes(x._id));
         const newPlayer = jugadores.filter(
-            (x) => !playerList.data.map((player) => player.name).includes(x)
+            (x) => !playerList.data.map((player) => player.dni).includes(x.dni)
         );
-        setJugadores([...new Set([...newPlayer, ...player])]);
+        setJugadores([...new Set([...player, ...newPlayer])]);
     };
 
     const handleNewPlayers = (data) => {
@@ -51,12 +53,12 @@ const TeamForm = (props) => {
     };
 
     const handleRemove = (item) => {
-        const newPlayers = jugadores.filter((x) => x !== item);
+        const newPlayers = jugadores.filter((x) => x.name !== item.name);
         setJugadores([...newPlayers]);
     };
 
     const isRemovable = (item) => {
-        return !playerList.data.some((x) => x.name === item);
+        return !playerList.data.some((x) => x.dni === item.dni);
     };
 
     if (teamCrud.loading) {
@@ -66,7 +68,7 @@ const TeamForm = (props) => {
     return (
         <section className="team-form">
             <div className="img-container">
-                <img src={teamIcon} alt={"team-icon"} />
+                <img src={teamIcon} alt={'team-icon'} />
             </div>
             <h1>Nuevo Equipo</h1>
             <form noValidate>
@@ -90,7 +92,7 @@ const TeamForm = (props) => {
                     >
                         {playerList.data.map((option, index) => (
                             <Option value={option._id} key={option._id + index}>
-                                {option.name}
+                                {capitalize(option.name)}
                             </Option>
                         ))}
                     </Select>
@@ -99,18 +101,22 @@ const TeamForm = (props) => {
                     <span onClick={() => setMultiAdd(true)}>Nuevo jugador</span>
                 </div>
                 {jugadores.length > 0 && (
-                    <List
-                        items={jugadores}
-                        removeBtn={isRemovable}
-                        onRemove={handleRemove}
-                    />
+                    <List>
+                        {jugadores.map((player, index) => (
+                            <div className="team-form-player-list" key={player.dni + index}>
+                                <p>{capitalize(player.name)}</p>
+                                <p>{player.dni}</p>
+                                {isRemovable(player) && (
+                                    <IconButton onClick={() => handleRemove(player)}>
+                                        <Icon src={contentIcRemove} />
+                                    </IconButton>
+                                )}
+                            </div>
+                        ))}
+                    </List>
                 )}
                 <div className="team-form-action-buttons">
-                    <button
-                        type="submit"
-                        onClick={onClose}
-                        className="btn btn-secondary"
-                    >
+                    <button type="submit" onClick={onClose} className="btn btn-secondary">
                         <strong>Cancelar</strong>
                     </button>
                     <button
@@ -125,9 +131,9 @@ const TeamForm = (props) => {
             <MultiAddModal
                 show={showMultiAdd}
                 onClose={() => setMultiAdd(false)}
-                type={"jugador"}
+                type={'jugador'}
                 handleClose={handleNewPlayers}
-                names={playerList.data.map((x) => x.name)}
+                existingElements={[...playerList.data, ...jugadores]}
             />
         </section>
     );

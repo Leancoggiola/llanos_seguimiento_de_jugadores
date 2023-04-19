@@ -14,7 +14,7 @@ const DeleteConfirmation = (props) => {
         >
             {message && (
                 <ModalBody>
-                    <h6>{message}</h6>
+                    <h3>{message}</h3>
                 </ModalBody>
             )}
             <ModalFooter className="delete-modal-body">

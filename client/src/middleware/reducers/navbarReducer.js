@@ -1,42 +1,49 @@
-import { NAVBAR_BACK, NAVBAR_NEW_ENTRY, UPDATE_TOAST_INFO, CHANGE_PAGE_TO_DISPLAY } from '../constants/navbar';
+import {
+    NAVBAR_BACK,
+    NAVBAR_NEW_ENTRY,
+    UPDATE_TOAST_INFO,
+    CHANGE_PAGE_TO_DISPLAY,
+} from '../constants/navbar';
 
 const initialState = {
     navbarPosition: [],
     toastInfo: {},
-    display: ''
-}
+    display: '',
+};
 
 export const navbarReducer = (state = initialState, action) => {
     const { type, payload } = action;
 
-    switch(type) {
+    switch (type) {
         // GET User List
         case NAVBAR_BACK: {
-            const cia = state.navbarPosition.pop()
-            cia.action(cia.param)
+            if (payload) return { ...state, navbarPosition: [] };
+            const cia = state.navbarPosition.pop();
+            cia.action(cia.param);
             return {
                 ...state,
-                navbarPosition: [...state.navbarPosition]
-            }
+                navbarPosition: [...state.navbarPosition],
+            };
         }
         case NAVBAR_NEW_ENTRY: {
             return {
                 ...state,
-                navbarPosition: [...state.navbarPosition.concat(payload)]
-            }
+                navbarPosition: [...state.navbarPosition.concat(payload)],
+            };
         }
         case UPDATE_TOAST_INFO: {
             return {
                 ...state,
-                toastInfo: payload
-            }
+                toastInfo: payload,
+            };
         }
         case CHANGE_PAGE_TO_DISPLAY: {
             return {
                 ...state,
-                display: payload
-            }
+                display: payload,
+            };
         }
-        default: return state;
+        default:
+            return state;
     }
-}
+};

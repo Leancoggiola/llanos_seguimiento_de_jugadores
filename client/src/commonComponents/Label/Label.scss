@@ -3,7 +3,7 @@
     font-size: 1rem;
     font-weight: lighter;
     line-height: 1.60rem;
-    width: calc(100% - 1.125rem);
+    width: calc(100% - 18px);
     display: block;
     z-index: 1;
     pointer-events: none;
@@ -52,7 +52,7 @@
 .cc-form-field-text-input.cc-form-field-focused,
 .cc-form-field-text-input.cc-form-field-has-value,
 .cc-form-field-select-input.cc-form-field-focused,
-.cc-form-field-select-input.cc-form-field-has-value.cc-form-field-has-placeholder {
+.cc-form-field-select-input.cc-form-field-has-value {
     .cc-label {
         top: 0.07rem;
         font-size: 0.85rem;
