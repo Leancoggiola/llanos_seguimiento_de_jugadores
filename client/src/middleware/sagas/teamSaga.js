@@ -7,7 +7,7 @@ import {
     postTeamFailure,
     postTeamSuccess,
     deleteTeamFailure,
-    deleteTeamSuccess
+    deleteTeamSuccess,
 } from '../actions/teamActions.js';
 
 import { getRequest } from '../index.js';
@@ -20,9 +20,9 @@ function* getTeamsWork() {
     try {
         const options = {
             url: '/api/teams/getTeams',
-            method: 'GET'
-        }
-        const response = yield call(serviceCall, options)
+            method: 'GET',
+        };
+        const response = yield call(serviceCall, options);
         yield put(getTeamsSuccess(response));
     } catch (e) {
         yield put(getTeamsFailure(e.status));
@@ -30,67 +30,76 @@ function* getTeamsWork() {
 }
 
 function* postTeamWork(action) {
-    const { payload: {postBody, resolve} } = action;
+    const {
+        payload: { postBody, resolve },
+    } = action;
     try {
         const options = {
             url: '/api/teams/postTeam',
             method: 'POST',
-            data: postBody
-        }
-        const response = yield call(serviceCall, options)
+            data: postBody,
+        };
+        const response = yield call(serviceCall, options);
         yield put(postTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
-        yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
-        resolve && resolve()
+        yield put(
+            updateToastData({
+                show: true,
+                variant: 'success',
+                message: 'Equipo creado con exito',
+                closeBtn: true,
+            })
+        );
+        resolve && resolve();
     } catch (e) {
         yield put(postTeamFailure(e));
-        yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
+        yield put(
+            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
+        );
     }
 }
 
 function* deleteTeamWork(action) {
-    const { payload: {postBody, resolve} } = action;
+    const {
+        payload: { postBody, resolve },
+    } = action;
     try {
         const options = {
             url: '/api/teams/deleteTeam',
             method: 'DELETE',
-            data: {id: postBody}
-        }
-        const response = yield call(serviceCall, options)
+            data: { id: postBody },
+        };
+        const response = yield call(serviceCall, options);
         yield put(deleteTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
-        yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
-        resolve && resolve()
+        yield put(
+            updateToastData({
+                show: true,
+                variant: 'success',
+                message: 'Equipo eliminado con exito',
+                closeBtn: true,
+            })
+        );
+        resolve && resolve();
     } catch (e) {
         yield put(deleteTeamFailure(e));
-        yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
+        yield put(
+            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
+        );
     }
 }
 
 // Watchers
 function* getTeamsWatch() {
-    yield takeLatest(
-        getRequest(TEAM_GET_TEAM_LIST),
-        getTeamsWork
-    )
+    yield takeLatest(getRequest(TEAM_GET_TEAM_LIST), getTeamsWork);
 }
 
 function* postTeamWatch() {
-    yield takeLatest(
-        getRequest(TEAM_POST_NEW_TEAM),
-        postTeamWork
-    )
+    yield takeLatest(getRequest(TEAM_POST_NEW_TEAM), postTeamWork);
 }
 
 function* deleteTeamWatch() {
-    yield takeLatest(
-        getRequest(TEAM_DELETE_NEW_TEAM),
-        deleteTeamWork
-    )
+    yield takeLatest(getRequest(TEAM_DELETE_NEW_TEAM), deleteTeamWork);
 }
 
-export const teamSaga = [
-    getTeamsWatch(),
-    postTeamWatch(),
-    deleteTeamWatch()
-]
+export const teamSaga = [getTeamsWatch(), postTeamWatch(), deleteTeamWatch()];

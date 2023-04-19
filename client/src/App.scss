@@ -16,6 +16,10 @@ body {
     color: var(--app-color);
     margin: 0;
 
+    h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+    }
+
     font-family: Calibri;
     font-size: 16px;
 
@@ -66,12 +70,8 @@ body {
             color: var(--btn-primary-color-disabled);
         }
     }
-    .page {
-        margin: 8rem 4rem 0;
-        min-height: calc(100vh - 4rem);
-        height: 1px;
-        @media screen and (max-width: 576px){
-            margin: 4rem 0.5rem 0;
-        }
+
+    .confirmation-modal {
+        h3 { text-align: center;}
     }
 }

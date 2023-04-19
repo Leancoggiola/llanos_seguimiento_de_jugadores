@@ -1,78 +1,115 @@
 const { errorHandler } = require('../helpers.js');
-const { Tournament, Team } = require('../models.js');
-const mongoose = require('mongoose')
+const { Tournament, Team, User } = require('../models.js');
+const mongoose = require('mongoose');
 
 module.exports = {
     // Tournaments
     getTournaments: async (req, res) => {
         const user = req?.token;
         try {
-            const tourneys = await Tournament.find({ createdBy: user})
-            res.status(200).json(tourneys)
-        } catch(err) {
-            res.status(err?.cause ? err.cause : 400).json({ message: err.message })
+            const tourneys = await Tournament.find({
+                createdBy: user,
+            }).populate({ path: 'teams', select: 'name players' });
+            res.status(200).json(tourneys);
+        } catch (err) {
+            res.status(err?.cause ? err.cause : 400).json({
+                message: err.message,
+            });
         }
     },
 
     deleteTournaments: async (req, res) => {
         const user = req?.token;
-        const session = await mongoose.startSession()
-        session.startTransaction()
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
-            const { body: { id } } = req;
-            Tournament.deleteOne({id}, {session})
-                .then(async response => {
+            const {
+                body: { id },
+            } = req;
+            await Tournament.findByIdAndDelete(id, { session })
+                .then(async (response) => {
                     await session.commitTransaction();
-                    session.endSession()
-                    res.status(201).json({result: response, newData: await Tournament.find({ createdBy: user})})
+                    session.endSession();
+                    res.status(201).json({
+                        result: response,
+                        newData: await Tournament.find({
+                            createdBy: user,
+                        }).populate({ path: 'teams', select: 'name players' }),
+                    });
                 })
-                .catch(async err => {
+                .catch(async (err) => {
                     await session.abortTransaction();
-                    session.endSession()
-                    errorHandler(err, res)
-                })
-        } catch(err) {
+                    session.endSession();
+                    errorHandler(err, res);
+                });
+        } catch (err) {
             await session.abortTransaction();
-            session.endSession()
-            errorHandler(err, res)
+            session.endSession();
+            errorHandler(err, res);
         }
     },
 
     postTournaments: async (req, res) => {
         const user = req?.token;
-        const session = await mongoose.startSession()
-        session.startTransaction()
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
             const { body } = req;
-            body["createdBy"] = user;
-            if(body.teams) {
-                const existing = await Team.find({ 'name': { $in: body.teams}}, null, {session})
-                const newTeams = body.teams.filter(team => !existing.map(x => x.name).includes(team)) 
-                const docs = await Team.create(newTeams.map(x => ({ name: x, players: [], createdBy: user})), {session})
-                body.teams = [...docs, ...existing]
+            body['createdBy'] = user;
+            if (body.teams.length > 0) {
+                const existing = await Team.find({ name: { $in: body.teams } }, null, { session });
+                const newTeams = body.teams.filter(
+                    (team) => !existing.map((x) => x.name).includes(team)
+                );
+                const docs = await Team.create(
+                    newTeams.map((x) => ({
+                        name: x,
+                        players: [],
+                        createdBy: user,
+                    })),
+                    { session }
+                );
+                body.teams = [...docs, ...existing].map((x) => x._id);
             }
-            const newTournament = new Tournament(body);
-            newTournament.save({session})
-                .then(async tourney => {
-                    await session.commitTransaction();
-                    session.endSession()
-                    res.status(201).json({result: tourney, newData: await Tournament.find({ createdBy: user})})
+            await Tournament.findOneAndUpdate({}, body, {
+                new: true,
+                upsert: true,
+                session,
+            })
+                .populate({ path: 'teams', select: 'name players' })
+                .then(async (tourney, err) => {
+                    if (err) {
+                        await session.abortTransaction();
+                        session.endSession();
+                        errorHandler(err, res);
+                    } else {
+                        await session.commitTransaction();
+                        session.endSession();
+                        res.status(201).json({
+                            result: tourney,
+                            newData: await Tournament.find({
+                                createdBy: user,
+                            }).populate({
+                                path: 'teams',
+                                select: 'name players',
+                            }),
+                        });
+                    }
                 })
-                .catch(async err => {
+                .catch(async (err) => {
                     await session.abortTransaction();
-                    session.endSession()
-                    errorHandler(err, res)
-                })
-        } catch(err) {
+                    session.endSession();
+                    errorHandler(err, res);
+                });
+        } catch (err) {
             await session.abortTransaction();
-            session.endSession()
-            errorHandler(err, res)
+            session.endSession();
+            errorHandler(err, res);
         }
     },
 
     putTournaments: async (req, res) => {
         try {
-        } catch(err) {
-        }
-    }
-}
+        } catch (err) {}
+    },
+};

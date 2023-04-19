@@ -5,7 +5,7 @@
     --app-bg: #{$black};
     --app-submenu-bg: #{$grey-600};
     --app-color: #{$white};
-    --app-highlight: #{$orange};
+    --app-highlight: #{$branding};
     --disabled: #{$grey-400};
 
     --error: #{$error};
@@ -22,7 +22,7 @@
     --border-color-navigation : #{$grey-600};
     --border-hover: #{$grey-500};
 
-    --btn-primary-color-bg: #{$orange};
+    --btn-primary-color-bg: #{$branding};
     --btn-primary-color: #{$black};
     --btn-primary-hover-bg: #{$grey-200};
     --btn-primary-hover: #{$black};
@@ -42,7 +42,7 @@
     --btn-icon-focus-color:#{$white};
     --btn-icon-disabled:#{$grey-400};
 
-    --progress-loader-square-color: #{$orange};
+    --progress-loader-square-color: #{$branding};
 
     --dropdown-bg: #{$grey-550};
     --dropdown-color: #{$white};
@@ -69,7 +69,7 @@
 
     --select-list-background-color: #{$grey-600};
     --select-option-hover-bg-color: #{$grey-550};
-    --select-option-selected-color: #{$orange};
+    --select-option-selected-color: #{$branding};
     --select-option-selected-bg-color: #{$grey-550};
     --select-option-border-color: transparent;
     --select-option-disable-color: #{$grey-400};
@@ -94,7 +94,7 @@
     --tab-navigator-disabled-color: #{$grey-400};
 
     --toast-close-btn-color: #{$white};
-    --toast-action-btn-color: #{$orange};
+    --toast-action-btn-color: #{$branding};
     --toast-box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
     --toast-bg-color: #{$grey-550};
     --toast-success-icon-color: #{$success};
@@ -102,7 +102,7 @@
     --toast-warning-icon-color: #{$warning};
     --toast-info-icon-color: #{$white};
 
-    --progress-bar-color: #{$orange};
+    --progress-bar-color: #{$branding};
     --progress-bar-bg-color: #{$grey-550};
 }
 

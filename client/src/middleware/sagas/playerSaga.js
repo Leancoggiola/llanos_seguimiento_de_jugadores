@@ -7,12 +7,16 @@ import {
     postPlayerFailure,
     postPlayerSuccess,
     deletePlayerFailure,
-    deletePlayerSuccess
+    deletePlayerSuccess,
 } from '../actions/playerActions.js';
 
 import { getRequest } from '../index.js';
 
-import { PLAYER_DELETE_NEW_PLAYER, PLAYER_GET_PLAYER_LIST, PLAYER_POST_NEW_PLAYER } from '../constants/player.js';
+import {
+    PLAYER_DELETE_NEW_PLAYER,
+    PLAYER_GET_PLAYER_LIST,
+    PLAYER_POST_NEW_PLAYER,
+} from '../constants/player.js';
 import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
@@ -20,9 +24,9 @@ function* getPlayersWork() {
     try {
         const options = {
             url: '/api/players/getPlayers',
-            method: 'GET'
-        }
-        const response = yield call(serviceCall, options)
+            method: 'GET',
+        };
+        const response = yield call(serviceCall, options);
         yield put(getPlayersSuccess(response));
     } catch (e) {
         yield put(getPlayersFailure(e.status));
@@ -30,67 +34,76 @@ function* getPlayersWork() {
 }
 
 function* postPlayerWork(action) {
-    const { payload: {postBody, resolve} } = action;
+    const {
+        payload: { postBody, resolve },
+    } = action;
     try {
         const options = {
             url: '/api/players/postPlayer',
             method: 'POST',
-            data: postBody
-        }
-        const response = yield call(serviceCall, options)
+            data: postBody,
+        };
+        const response = yield call(serviceCall, options);
         yield put(postPlayerSuccess(response.result));
         yield put(getPlayersSuccess(response.newData));
-        yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
-        resolve && resolve()
+        yield put(
+            updateToastData({
+                show: true,
+                variant: 'success',
+                message: 'Jugador creado con exito',
+                closeBtn: true,
+            })
+        );
+        resolve && resolve();
     } catch (e) {
         yield put(postPlayerFailure(e));
-        yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
+        yield put(
+            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
+        );
     }
 }
 
 function* deletePlayerWork(action) {
-    const { payload: {postBody, resolve} } = action;
+    const {
+        payload: { postBody, resolve },
+    } = action;
     try {
         const options = {
             url: '/api/players/deletePlayer',
             method: 'DELETE',
-            data: {id: postBody}
-        }
-        const response = yield call(serviceCall, options)
+            data: { id: postBody },
+        };
+        const response = yield call(serviceCall, options);
         yield put(deletePlayerSuccess(response.result));
         yield put(getPlayersSuccess(response.newData));
-        yield put(updateToastData({show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true}))
-        resolve && resolve()
+        yield put(
+            updateToastData({
+                show: true,
+                variant: 'success',
+                message: 'Jugador eliminado con exito',
+                closeBtn: true,
+            })
+        );
+        resolve && resolve();
     } catch (e) {
         yield put(deletePlayerFailure(e));
-        yield put(updateToastData({show: true, variant: 'error', message: e.message, closeBtn: true}))
+        yield put(
+            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
+        );
     }
 }
 
 // Watchers
 function* getPlayersWatch() {
-    yield takeLatest(
-        getRequest(PLAYER_GET_PLAYER_LIST),
-        getPlayersWork
-    )
+    yield takeLatest(getRequest(PLAYER_GET_PLAYER_LIST), getPlayersWork);
 }
 
 function* postPlayerWatch() {
-    yield takeLatest(
-        getRequest(PLAYER_POST_NEW_PLAYER),
-        postPlayerWork
-    )
+    yield takeLatest(getRequest(PLAYER_POST_NEW_PLAYER), postPlayerWork);
 }
 
 function* deletePlayerWatch() {
-    yield takeLatest(
-        getRequest(PLAYER_DELETE_NEW_PLAYER),
-        deletePlayerWork
-    )
+    yield takeLatest(getRequest(PLAYER_DELETE_NEW_PLAYER), deletePlayerWork);
 }
 
-export const playerSaga = [
-    getPlayersWatch(),
-    postPlayerWatch(),
-    deletePlayerWatch()
-]
+export const playerSaga = [getPlayersWatch(), postPlayerWatch(), deletePlayerWatch()];

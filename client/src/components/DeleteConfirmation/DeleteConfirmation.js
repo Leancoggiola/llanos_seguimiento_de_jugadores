@@ -1,23 +1,36 @@
 // Components
-import { Modal, ModalBody } from '../../commonComponents/Modal';
+import { Modal, ModalBody, ModalFooter } from '../../commonComponents/Modal';
 // Styling
 import './DeleteConfirmation.scss';
 
 const DeleteConfirmation = (props) => {
-    const { show, onClose, onSubmit, className } = props;
+    const { show, onClose, onSubmit, message = '', className } = props;
 
-    return(
-        <Modal show={show} onClose={onClose} className={`delete-modal ${className ? className : ''}`}>
-            <ModalBody className='delete-modal-body'>
-                <button type='button' className='delete-modal-body-delete-btn btn' onClick={onSubmit}>
+    return (
+        <Modal
+            show={show}
+            onClose={onClose}
+            className={`delete-modal ${className ? className : ''}`}
+        >
+            {message && (
+                <ModalBody>
+                    <h6>{message}</h6>
+                </ModalBody>
+            )}
+            <ModalFooter className="delete-modal-body">
+                <button
+                    type="button"
+                    className="delete-modal-body-delete-btn btn"
+                    onClick={onSubmit}
+                >
                     Confirmar
                 </button>
-                <button type='button' className='btn-secondary btn' onClick={() => onClose()}>
+                <button type="button" className="btn-secondary btn" onClick={() => onClose()}>
                     Cancelar
                 </button>
-            </ModalBody>
+            </ModalFooter>
         </Modal>
-    )
-}
+    );
+};
 
 export default DeleteConfirmation;

@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // Components
-import FormField from "../../commonComponents/FormField";
-import Input from "../../commonComponents/Input";
-import Label from "../../commonComponents/Label";
-import List from "../../commonComponents/List";
-import LoadingSpinner from "../../commonComponents/LoadingSpinner";
-import { Option, Select } from "../../commonComponents/Select";
-import MultiAddModal from "../MultiAddModal";
+import FormField from '../../commonComponents/FormField';
+import Input from '../../commonComponents/Input';
+import Label from '../../commonComponents/Label';
+import List from '../../commonComponents/List';
+import LoadingSpinner from '../../commonComponents/LoadingSpinner';
+import { Option, Select } from '../../commonComponents/Select';
+import MultiAddModal from '../MultiAddModal';
 // Assets
-import teamIcon from "../../assets/team-icon.png";
+import teamIcon from '../../assets/team-icon.png';
 // Middleware
-import { postTeamRequest } from "../../middleware/actions/teamActions";
+import { postTeamRequest } from '../../middleware/actions/teamActions';
 // Styling
-import "./TeamForm.scss";
+import './PlayerForm.scss';
 
-const TeamForm = (props) => {
+const PlayerForm = (props) => {
     const { team, onClose } = props;
 
-    const [nombre, setNombre] = useState("");
+    const [nombre, setNombre] = useState('');
     const [jugadores, setJugadores] = useState([]);
     const [showMultiAdd, setMultiAdd] = useState(false);
 
@@ -66,7 +66,7 @@ const TeamForm = (props) => {
     return (
         <section className="team-form">
             <div className="img-container">
-                <img src={teamIcon} alt={"team-icon"} />
+                <img src={teamIcon} alt={'team-icon'} />
             </div>
             <h1>Nuevo Equipo</h1>
             <form noValidate>
@@ -125,7 +125,7 @@ const TeamForm = (props) => {
             <MultiAddModal
                 show={showMultiAdd}
                 onClose={() => setMultiAdd(false)}
-                type={"jugador"}
+                type={'jugador'}
                 handleClose={handleNewPlayers}
                 names={playerList.data.map((x) => x.name)}
             />
@@ -133,4 +133,4 @@ const TeamForm = (props) => {
     );
 };
 
-export default TeamForm;
+export default PlayerForm;

@@ -1,5 +1,5 @@
 header {
-    position: absolute;
+    position: fixed;
     display: grid; 
     grid-template-columns: var(--vertical-nav-collapse-width) 1fr var(--vertical-nav-collapse-width);
     grid-template-rows: 1fr;

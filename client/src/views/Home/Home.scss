@@ -1,11 +1,24 @@
 .home-container {
-    .add-new-tourney {
-        position: absolute;
+    padding-bottom: 4rem;
+    margin: 8rem 4rem 0;
+    min-height: calc(100vh - 8rem);
+    height: 100%;
+    @media screen and (max-width: 576px){
+        margin: 4rem 0.5rem 0;
+    }
+    .add-new {
+        position: fixed;
         bottom: 0.5rem;
         right: 0.5rem;
-        svg{
-            width: 3rem;
-            height: auto;
+        .cc-icon {
+            color: var(--app-highlight);
+            box-shadow: 0 0 0.5rem var(--app-bg);
+            border-radius: 50%;
+            background: var(--app-bg);
+            svg {
+                width: 3rem;
+                height: auto;
+            }
         }
     }
 }

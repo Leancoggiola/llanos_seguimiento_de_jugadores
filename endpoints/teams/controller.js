@@ -1,87 +1,113 @@
-const { Team, Tournament } = require('../models');
+const { Team, Tournament, Player, User } = require('../models');
 const mongoose = require('mongoose');
-const { errorHandler } = require('../helpers')
+const { errorHandler } = require('../helpers');
 
 module.exports = {
     getTeams: async (req, res) => {
         const user = req?.token;
         try {
-            const teams = await Team.find({ createdBy: user})
-            res.status(200).json(teams)
-        } catch(err) {
-            errorHandler(err, res)
+            const teams = await Team.find({ createdBy: user });
+            res.status(200).json(teams);
+        } catch (err) {
+            errorHandler(err, res);
         }
     },
-    
+
     postTeam: async (req, res) => {
         const user = req?.token;
-        const session = await mongoose.startSession()
-        session.startTransaction()
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
             const { body } = req;
-            body["createdBy"] = user;
-            if(body.teams) {
-                const existing = await Team.find({ 'name': { $in: body.teams}}, null, {session})
-                const newTeams = body.teams.filter(team => !existing.map(x => x.name).includes(team)) 
-                const docs = await Team.create(newTeams.map(x => ({ name: x, players: [], createdBy: user})), {session})
-                body.teams = [...docs, ...existing]
+            body['createdBy'] = user;
+            if (body.players.length) {
+                body.players = body.players.map((player) => ({
+                    name: player.name,
+                    dni: player?.dni ? player.dni : null,
+                    edad: player?.edad ? player.edad : 18,
+                    createdBy: user,
+                }));
+                const newPlayers = await Player.insertMany(body.players, {
+                    session,
+                });
+                body.players = newPlayers.map((x) => x._id);
             }
-            const newTournament = new Tournament(body);
-            newTournament.save({session})
-                .then(async tourney => {
-                    await session.commitTransaction();
-                    session.endSession()
-                    res.status(201).json({result: tourney, newData: await Tournament.find({ createdBy: user})})
+            await Team.findOneAndUpdate({}, body, {
+                new: true,
+                upsert: true,
+                session,
+            })
+                .populate({ path: 'users', model: User, strictPopulate: false })
+                .populate({ path: 'teams', model: Team })
+                .then(async (tourney, err) => {
+                    if (err) {
+                        await session.abortTransaction();
+                        session.endSession();
+                        errorHandler(err, res);
+                    } else {
+                        await session.commitTransaction();
+                        session.endSession();
+                        res.status(201).json({
+                            result: tourney,
+                            newData: await Team.find({ createdBy: user }),
+                        });
+                    }
                 })
-                .catch(async err => {
+                .catch(async (err) => {
                     await session.abortTransaction();
-                    session.endSession()
-                    errorHandler(err, res)
-                })
-        } catch(err) {
+                    session.endSession();
+                    errorHandler(err, res);
+                });
+        } catch (err) {
             await session.abortTransaction();
-            session.endSession()
-            errorHandler(err, res)
+            session.endSession();
+            errorHandler(err, res);
         }
     },
-    
+
     putTeam: async (req, res) => {
         try {
-        } catch(e) {
-        }
+        } catch (e) {}
     },
-    
+
     deleteTeam: async (req, res) => {
         const user = req?.token;
-        const session = await mongoose.startSession()
-        session.startTransaction()
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
-            const { body: { id } } = req;
+            const {
+                body: { id },
+            } = req;
 
             const isOnTournament = await Tournament.find({
-                "teams._id": {$in: [mongoose.Types.ObjectId(id)]}, 
-                "status": {$ne: "Terminado"}
+                teams: { $in: [mongoose.Types.ObjectId(id)] },
+                status: { $ne: 'Terminado' },
             });
 
-            if(isOnTournament.length > 0) {
-                res.status(404).json({message: "Elimina el equipo de todo los torneos primero"})
+            if (isOnTournament.length > 0) {
+                res.status(404).json({
+                    message: 'Elimina el equipo de todo los torneos primero',
+                });
             } else {
-                Team.deleteOne({id}, {session})
-                .then(async response => {
-                    await session.commitTransaction();
-                    session.endSession()
-                    res.status(201).json({result: response, newData: await Team.find({ createdBy: user})})
-                })
-                .catch(async err => {
-                    await session.abortTransaction();
-                    session.endSession()
-                    errorHandler(err, res)
-                })
+                await Team.findByIdAndDelete(id, { session })
+                    .then(async (response) => {
+                        await session.commitTransaction();
+                        session.endSession();
+                        res.status(201).json({
+                            result: response,
+                            newData: await Team.find({ createdBy: user }),
+                        });
+                    })
+                    .catch(async (err) => {
+                        await session.abortTransaction();
+                        session.endSession();
+                        errorHandler(err, res);
+                    });
             }
-        } catch(err) {
+        } catch (err) {
             await session.abortTransaction();
-            session.endSession()
-            errorHandler(err, res)
+            session.endSession();
+            errorHandler(err, res);
         }
     },
-}
+};

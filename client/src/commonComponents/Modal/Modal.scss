@@ -26,7 +26,6 @@
         overflow-y: auto;
     }
     &-body {
-        min-height: 12rem;
         padding: 1.25rem;
         display: block;
         overflow: auto;
@@ -42,9 +41,6 @@
         button {
             margin-top: 0;
             margin-bottom: 0;
-        }
-        button + button {
-            margin-top: 0.75rem;
         }
     }
 
