@@ -15,7 +15,7 @@ import MultiAddModal from '../MultiAddModal';
 // Assets
 import trophyIcon from '../../assets/trophy-icon.png';
 // Middleware
-import { postTourneyRequest } from '../../middleware/actions/tourneyActions';
+import { postTourneyRequest, putTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyForm.scss';
 
@@ -24,9 +24,9 @@ const MODALIDADES = ['Grupos+Eliminatoria'];
 const TourneyForm = (props) => {
     const { tourney, onClose } = props;
 
-    const [nombre, setNombre] = useState('');
+    const [nombre, setNombre] = useState(tourney?.name ? tourney.name : '');
     const [modalidad, setModalidad] = useState();
-    const [equipos, setEquipos] = useState([]);
+    const [equipos, setEquipos] = useState(tourney?.teams ? tourney.teams.map((x) => x._id) : []);
     const [showMultiAdd, setMultiAdd] = useState(false);
 
     const teamList = useSelector((state) => state.team.teamList);
@@ -36,13 +36,17 @@ const TourneyForm = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const postBody = {
+        const body = {
             name: nombre,
             status: 'Nuevo',
             type: modalidad,
             teams: equipos,
         };
-        dispatch(postTourneyRequest({ postBody, resolve: onClose }));
+        if (tourney.name) {
+            dispatch(putTourneyRequest({ body, resolve: onClose }));
+        } else {
+            dispatch(postTourneyRequest({ body, resolve: onClose }));
+        }
     };
 
     const handleEquipoChange = (e) => {
@@ -119,8 +123,8 @@ const TourneyForm = (props) => {
                     <List>
                         {equipos.map((equipo, index) => (
                             <div className="team-form-equipo-list" key={equipo + index}>
-                                <p>{equipo}</p>
-                                {isRemovable && (
+                                <p>{capitalize(equipo)}</p>
+                                {isRemovable(equipo) && (
                                     <IconButton onClick={() => handleRemove(equipo)}>
                                         <Icon src={contentIcRemove} />
                                     </IconButton>

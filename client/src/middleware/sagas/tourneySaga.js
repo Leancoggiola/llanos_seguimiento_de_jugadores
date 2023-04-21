@@ -1,24 +1,26 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { serviceCall } from '../../config/serviceCall.js';
+import { getTeamsRequest } from '../actions/teamActions.js';
 import {
+    deleteTourneyFailure,
+    deleteTourneySuccess,
     getTourneysFailure,
     getTourneysSuccess,
     postTourneyFailure,
     postTourneySuccess,
-    deleteTourneyFailure,
-    deleteTourneySuccess,
+    putTourneyFailure,
+    putTourneySuccess,
 } from '../actions/tourneyActions';
-import { getTeamsRequest } from '../actions/teamActions.js';
 
 import { getRequest } from '../index.js';
 
+import { updateToastData } from '../actions/navbarActions.js';
 import {
     TOURNEY_DELETE_NEW_TOURNEY,
     TOURNEY_GET_TOURNEY_LIST,
     TOURNEY_POST_NEW_TOURNEY,
 } from '../constants/tourney';
-import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
 function* getTourneysWork() {
@@ -36,13 +38,13 @@ function* getTourneysWork() {
 
 function* postTourneyWork(action) {
     const {
-        payload: { postBody, resolve },
+        payload: { body, resolve },
     } = action;
     try {
         const options = {
             url: '/api/tournaments/postTournaments',
             method: 'POST',
-            data: postBody,
+            data: body,
         };
         const response = yield call(serviceCall, options);
         yield put(postTourneySuccess(response.result));
@@ -65,19 +67,51 @@ function* postTourneyWork(action) {
     }
 }
 
+function* putTourneyWork(action) {
+    const {
+        payload: { body, resolve },
+    } = action;
+    try {
+        const options = {
+            url: '/api/tournaments/putTournaments',
+            method: 'PUT',
+            data: body,
+        };
+        const response = yield call(serviceCall, options);
+        yield put(putTourneySuccess(response.result));
+        yield put(getTourneysSuccess(response.newData));
+        if (response.result.teams.length) yield put(getTeamsRequest());
+        yield put(
+            updateToastData({
+                show: true,
+                variant: 'success',
+                message: 'Torneo editado con exito',
+                closeBtn: true,
+            })
+        );
+        resolve && resolve();
+    } catch (e) {
+        yield put(putTourneyFailure(e));
+        yield put(
+            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
+        );
+    }
+}
+
 function* deleteTourneyWork(action) {
     const {
-        payload: { postBody, resolve },
+        payload: { body, resolve },
     } = action;
     try {
         const options = {
             url: '/api/tournaments/deleteTournaments',
             method: 'DELETE',
-            data: { id: postBody },
+            data: { id: body },
         };
         const response = yield call(serviceCall, options);
         yield put(deleteTourneySuccess(response.result));
         yield put(getTourneysSuccess(response.newData));
+        if (response.result.teams.length) yield put(getTeamsRequest());
         yield put(
             updateToastData({
                 show: true,

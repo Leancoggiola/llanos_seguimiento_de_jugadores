@@ -8,11 +8,19 @@ import {
     postTeamSuccess,
     deleteTeamFailure,
     deleteTeamSuccess,
+    putTeamSuccess,
+    putTeamFailure,
 } from '../actions/teamActions.js';
+import { getPlayersRequest } from '../actions/playerActions.js';
 
 import { getRequest } from '../index.js';
 
-import { TEAM_DELETE_NEW_TEAM, TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM } from '../constants/team.js';
+import {
+    TEAM_DELETE_NEW_TEAM,
+    TEAM_GET_TEAM_LIST,
+    TEAM_POST_NEW_TEAM,
+    TEAM_PUT_TEAM,
+} from '../constants/team.js';
 import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
@@ -31,17 +39,18 @@ function* getTeamsWork() {
 
 function* postTeamWork(action) {
     const {
-        payload: { postBody, resolve },
+        payload: { body, resolve },
     } = action;
     try {
         const options = {
             url: '/api/teams/postTeam',
             method: 'POST',
-            data: postBody,
+            data: body,
         };
         const response = yield call(serviceCall, options);
         yield put(postTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
+        if (response.result.players.length) yield put(getPlayersRequest());
         yield put(
             updateToastData({
                 show: true,
@@ -59,19 +68,52 @@ function* postTeamWork(action) {
     }
 }
 
+function* putTeamWork(action) {
+    const {
+        payload: { body, resolve },
+    } = action;
+    try {
+        const options = {
+            url: '/api/teams/putTeam',
+            method: 'PUT',
+            data: body,
+        };
+        const response = yield call(serviceCall, options);
+        debugger;
+        yield put(putTeamSuccess(response.result));
+        yield put(getTeamsSuccess(response.newData));
+        if (response.result.players.length) yield put(getPlayersRequest());
+        yield put(
+            updateToastData({
+                show: true,
+                variant: 'success',
+                message: 'Equipo editado con exito',
+                closeBtn: true,
+            })
+        );
+        resolve && resolve();
+    } catch (e) {
+        yield put(putTeamFailure(e));
+        yield put(
+            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
+        );
+    }
+}
+
 function* deleteTeamWork(action) {
     const {
-        payload: { postBody, resolve },
+        payload: { body, resolve },
     } = action;
     try {
         const options = {
             url: '/api/teams/deleteTeam',
             method: 'DELETE',
-            data: { id: postBody },
+            data: { id: body },
         };
         const response = yield call(serviceCall, options);
         yield put(deleteTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
+        if (response.result.players.length) yield put(getPlayersRequest());
         yield put(
             updateToastData({
                 show: true,
@@ -98,8 +140,12 @@ function* postTeamWatch() {
     yield takeLatest(getRequest(TEAM_POST_NEW_TEAM), postTeamWork);
 }
 
+function* putTeamWatch() {
+    yield takeLatest(getRequest(TEAM_PUT_TEAM), putTeamWork);
+}
+
 function* deleteTeamWatch() {
     yield takeLatest(getRequest(TEAM_DELETE_NEW_TEAM), deleteTeamWork);
 }
 
-export const teamSaga = [getTeamsWatch(), postTeamWatch(), deleteTeamWatch()];
+export const teamSaga = [getTeamsWatch(), postTeamWatch(), putTeamWatch(), deleteTeamWatch()];

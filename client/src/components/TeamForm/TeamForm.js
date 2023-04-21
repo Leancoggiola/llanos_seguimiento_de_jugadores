@@ -1,5 +1,5 @@
 import { capitalize } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
 import { contentIcRemove } from '../../assets/icons';
@@ -15,15 +15,19 @@ import MultiAddModal from '../MultiAddModal';
 // Assets
 import teamIcon from '../../assets/team-icon.png';
 // Middleware
-import { postTeamRequest } from '../../middleware/actions/teamActions';
+import { postTeamRequest, putTeamRequest } from '../../middleware/actions/teamActions';
 // Styling
 import './TeamForm.scss';
 
 const TeamForm = (props) => {
     const { team, onClose } = props;
 
-    const [nombre, setNombre] = useState('');
+    const [nombre, setNombre] = useState(team?.name ? team.name : '');
     const [jugadores, setJugadores] = useState([]);
+    const [jugadoresDropdown, setJugadoresDropdown] = useState(
+        team?.players ? team.players.map((x) => x._id) : []
+    );
+    const [jugadoresList, setList] = useState([]);
     const [showMultiAdd, setMultiAdd] = useState(false);
 
     const playerList = useSelector((state) => state.player.playerList);
@@ -31,21 +35,22 @@ const TeamForm = (props) => {
 
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        const playerData = playerList.data.filter((x) => jugadoresDropdown.includes(x._id));
+        setList([...new Set([...jugadores, ...playerData])]);
+    }, [jugadores, jugadoresDropdown]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        const postBody = {
+        const body = {
             name: nombre,
-            players: jugadores,
+            players: jugadoresList,
         };
-        dispatch(postTeamRequest({ postBody, resolve: onClose }));
-    };
-
-    const handlePlayerChange = (e) => {
-        const player = playerList.data.filter((x) => e.includes(x._id));
-        const newPlayer = jugadores.filter(
-            (x) => !playerList.data.map((player) => player.dni).includes(x.dni)
-        );
-        setJugadores([...new Set([...player, ...newPlayer])]);
+        if (team.name) {
+            dispatch(putTeamRequest({ body, resolve: onClose }));
+        } else {
+            dispatch(postTeamRequest({ body, resolve: onClose }));
+        }
     };
 
     const handleNewPlayers = (data) => {
@@ -70,7 +75,7 @@ const TeamForm = (props) => {
             <div className="img-container">
                 <img src={teamIcon} alt={'team-icon'} />
             </div>
-            <h1>Nuevo Equipo</h1>
+            <h1>{team?.name ? 'Editar' : 'Nuevo'} Equipo</h1>
             <form noValidate>
                 <FormField>
                     <Label>Nombre</Label>
@@ -85,8 +90,8 @@ const TeamForm = (props) => {
                 <FormField>
                     <Label>Jugador</Label>
                     <Select
-                        value={jugadores}
-                        onChange={(e) => handlePlayerChange(e)}
+                        value={jugadoresDropdown}
+                        onChange={(e) => setJugadoresDropdown(e)}
                         filter={true}
                         multiple={true}
                     >
@@ -100,9 +105,9 @@ const TeamForm = (props) => {
                 <div className="team-form-new-player">
                     <span onClick={() => setMultiAdd(true)}>Nuevo jugador</span>
                 </div>
-                {jugadores.length > 0 && (
+                {jugadoresList.length > 0 && (
                     <List>
-                        {jugadores.map((player, index) => (
+                        {jugadoresList.map((player, index) => (
                             <div className="team-form-player-list" key={player.dni + index}>
                                 <p>{capitalize(player.name)}</p>
                                 <p>{player.dni}</p>

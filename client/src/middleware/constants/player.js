@@ -1,4 +1,5 @@
-// Player data constants
+// Team data constants
 export const PLAYER_GET_PLAYER_LIST = 'PLAYER_GET_PLAYER_LIST';
 export const PLAYER_POST_NEW_PLAYER = 'PLAYER_POST_NEW_PLAYER';
+export const PLAYER_PUT_PLAYER = 'PLAYER_PUT_PLAYER';
 export const PLAYER_DELETE_NEW_PLAYER = 'PLAYER_DELETE_NEW_PLAYER';

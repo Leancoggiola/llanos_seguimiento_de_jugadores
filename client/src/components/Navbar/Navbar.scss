@@ -40,10 +40,12 @@
         border: none;
         transition: background-color 200ms ease-in;
 
+        .cc-icon {
+            width: 100%;
+        }
         svg {
-            width: 3rem;
+            width: 2rem;
             height: auto;
-            padding-left: 1rem;
         }
 
         h1 {

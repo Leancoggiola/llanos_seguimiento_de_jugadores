@@ -6,14 +6,17 @@ module.exports = {
     getTeams: async (req, res) => {
         const user = req?.token;
         try {
-            const teams = await Team.find({ createdBy: user });
+            const teams = await Team.find({ createdBy: user }).populate({
+                path: 'players',
+                select: 'name dni age',
+            });
             res.status(200).json(teams);
         } catch (err) {
             errorHandler(err, res);
         }
     },
 
-    postTeam: async (req, res) => {
+    updateTeam: async (req, res) => {
         const user = req?.token;
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -30,12 +33,25 @@ module.exports = {
                     return newObj;
                 });
                 const existing = await Player.find(
-                    { dni: { $in: body.players.map((x) => x.dni) } },
+                    {
+                        $or: [
+                            { dni: { $in: body.players.filter((x) => x.dni).map((x) => x.dni) } },
+                            {
+                                $and: [
+                                    { name: { $in: body.players.map((x) => x.name) } },
+                                    { dni: null },
+                                ],
+                            },
+                        ],
+                    },
                     null,
                     { session }
                 );
                 const newPlayers = body.players.filter(
-                    (player) => !existing.map((x) => x.dni).includes(player.dni)
+                    (player) =>
+                        !existing.some(
+                            (x) => (x.dni && x.dni === player.dni) || x.name === player.name
+                        )
                 );
                 const docs = await Player.create(newPlayers, { session });
                 body.players = [...docs, ...existing].map((x) => x._id);
@@ -47,7 +63,7 @@ module.exports = {
                 session,
             })
                 .populate({ path: 'players', select: 'name dni age' })
-                .then(async (tourney, err) => {
+                .then(async (team, err) => {
                     if (err) {
                         await session.abortTransaction();
                         session.endSession();
@@ -56,7 +72,7 @@ module.exports = {
                         await session.commitTransaction();
                         session.endSession();
                         res.status(201).json({
-                            result: tourney,
+                            result: team,
                             newData: await Team.find({
                                 createdBy: user,
                             }).populate({
@@ -78,11 +94,6 @@ module.exports = {
         }
     },
 
-    putTeam: async (req, res) => {
-        try {
-        } catch (e) {}
-    },
-
     deleteTeam: async (req, res) => {
         const user = req?.token;
         const session = await mongoose.startSession();
@@ -93,7 +104,7 @@ module.exports = {
             } = req;
 
             const isOnTournament = await Tournament.find({
-                teams: { $in: [mongoose.Types.ObjectId(id)] },
+                teams: { $in: [new mongoose.Types.ObjectId(id)] },
                 status: { $ne: 'Terminado' },
             });
 
@@ -108,7 +119,10 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: response,
-                            newData: await Team.find({ createdBy: user }),
+                            newData: await Team.find({ createdBy: user }).populate({
+                                path: 'players',
+                                select: 'name dni age',
+                            }),
                         });
                     })
                     .catch(async (err) => {

@@ -30,8 +30,16 @@ const MultiAddModal = (props) => {
         let newList = [];
         try {
             if (tabIndex === 0) {
+                const pref = (prefijo ? pref : title).toLowerCase();
+                const offset = Math.max(
+                    ...existingElements
+                        .map((x) => (x?.name ? x.name.toLowerCase() : x.toLowerCase()))
+                        .filter((x) => x.includes(pref))
+                        .map((x) => Number(x.replace(pref, '')))
+                );
+
                 newList = Array.from({ length: total }, (_, i) => {
-                    const value = `${prefijo ? prefijo : title} ${i + 1}`.toLowerCase();
+                    const value = `${pref} ${offset + i + 1}`;
                     if (type === 'equipo') return value;
                     else return { name: value, dni: null, age: null };
                 });

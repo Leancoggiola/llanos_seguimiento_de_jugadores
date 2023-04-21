@@ -1,6 +1,6 @@
 import { capitalize } from 'lodash';
-import { useDispatch } from 'react-redux';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 // Components
 import {
     actionIcDelete,
@@ -8,6 +8,7 @@ import {
     contentIcKnockoutStage,
     editorIcBorderAll,
     editorIcFormatListNumbered,
+    editorIcModeEdit,
 } from '../../assets/icons';
 import { Card, CardBody, CardHeader } from '../../commonComponents/Card';
 import Icon from '../../commonComponents/Icon';
@@ -20,9 +21,7 @@ import { deleteTourneyRequest } from '../../middleware/actions/tourneyActions';
 import './TourneyCard.scss';
 
 const TourneyCard = (props) => {
-    const {
-        tourney: { name, status, type, _id },
-    } = props;
+    const { tourney, setSelectedTourney } = props;
     const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
 
@@ -34,29 +33,29 @@ const TourneyCard = (props) => {
 
     const getIcons = () => {
         const icons = [];
-        if (type.includes('Liga')) icons.push(editorIcFormatListNumbered);
-        if (type.includes('Grupos')) icons.push(editorIcBorderAll);
-        if (type.includes('+')) icons.push(contentIcAdd);
-        if (type.includes('Eliminatoria')) icons.push(contentIcKnockoutStage);
+        if (tourney.type.includes('Liga')) icons.push(editorIcFormatListNumbered);
+        if (tourney.type.includes('Grupos')) icons.push(editorIcBorderAll);
+        if (tourney.type.includes('+')) icons.push(contentIcAdd);
+        if (tourney.type.includes('Eliminatoria')) icons.push(contentIcKnockoutStage);
         return icons;
     };
 
     const handleDelete = () => {
-        dispatch(deleteTourneyRequest({ postBody: _id }));
+        dispatch(deleteTourneyRequest({ body: tourney._id }));
         setShowModal(false);
     };
 
     return (
         <Card className="tourney-card">
             <CardHeader className="tourney-card-header">
-                <h2>{capitalize(name)}</h2>
-                <Pill variant={getStatusVariant()}>{capitalize(status)}</Pill>
+                <h2>{capitalize(tourney.name)}</h2>
+                <Pill variant={getStatusVariant()}>{capitalize(tourney.status)}</Pill>
             </CardHeader>
             <CardBody className="tourney-card-body">
                 <div className="tourney-card-body-formats">
                     <p>
                         <strong>Formato: </strong>
-                        {type}
+                        {tourney.type}
                     </p>
                     <div>
                         {getIcons().map((x, index) => (
@@ -64,9 +63,14 @@ const TourneyCard = (props) => {
                         ))}
                     </div>
                 </div>
-                <IconButton onClick={() => setShowModal(true)}>
-                    <Icon src={actionIcDelete} />
-                </IconButton>
+                <div className="tourney-card-header-actions">
+                    <IconButton onClick={() => setSelectedTourney(tourney)}>
+                        <Icon src={editorIcModeEdit} />
+                    </IconButton>
+                    <IconButton onClick={() => setShowModal(true)}>
+                        <Icon src={actionIcDelete} />
+                    </IconButton>
+                </div>
             </CardBody>
             <DeleteConfirmation
                 show={showModal}

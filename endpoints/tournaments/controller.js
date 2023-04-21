@@ -18,38 +18,7 @@ module.exports = {
         }
     },
 
-    deleteTournaments: async (req, res) => {
-        const user = req?.token;
-        const session = await mongoose.startSession();
-        session.startTransaction();
-        try {
-            const {
-                body: { id },
-            } = req;
-            await Tournament.findByIdAndDelete(id, { session, runValidators: true })
-                .then(async (response) => {
-                    await session.commitTransaction();
-                    session.endSession();
-                    res.status(201).json({
-                        result: response,
-                        newData: await Tournament.find({
-                            createdBy: user,
-                        }).populate({ path: 'teams', select: 'name players' }),
-                    });
-                })
-                .catch(async (err) => {
-                    await session.abortTransaction();
-                    session.endSession();
-                    errorHandler(err, res);
-                });
-        } catch (err) {
-            await session.abortTransaction();
-            session.endSession();
-            errorHandler(err, res);
-        }
-    },
-
-    postTournaments: async (req, res) => {
+    updateTournaments: async (req, res) => {
         const user = req?.token;
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -109,8 +78,34 @@ module.exports = {
         }
     },
 
-    putTournaments: async (req, res) => {
+    deleteTournaments: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
-        } catch (err) {}
+            const {
+                body: { id },
+            } = req;
+            await Tournament.findByIdAndDelete(id, { session, runValidators: true })
+                .then(async (response) => {
+                    await session.commitTransaction();
+                    session.endSession();
+                    res.status(201).json({
+                        result: response,
+                        newData: await Tournament.find({
+                            createdBy: user,
+                        }).populate({ path: 'teams', select: 'name players' }),
+                    });
+                })
+                .catch(async (err) => {
+                    await session.abortTransaction();
+                    session.endSession();
+                    errorHandler(err, res);
+                });
+        } catch (err) {
+            await session.abortTransaction();
+            session.endSession();
+            errorHandler(err, res);
+        }
     },
 };
