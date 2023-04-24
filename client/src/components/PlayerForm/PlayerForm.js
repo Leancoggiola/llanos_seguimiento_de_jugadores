@@ -1,74 +1,54 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
+import Button from '../../commonComponents/Button';
 import FormField from '../../commonComponents/FormField';
+import FormFieldError from '../../commonComponents/FormFieldError';
 import Input from '../../commonComponents/Input';
 import Label from '../../commonComponents/Label';
-import List from '../../commonComponents/List';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
-import { Option, Select } from '../../commonComponents/Select';
-import MultiAddModal from '../MultiAddModal';
 // Assets
-import teamIcon from '../../assets/team-icon.png';
+import playerIcon from '../../assets/shirt-icon.png';
 // Middleware
-import { postTeamRequest } from '../../middleware/actions/teamActions';
+import { postPlayerRequest, putPlayerRequest } from '../../middleware/actions/playerActions';
 // Styling
 import './PlayerForm.scss';
 
 const PlayerForm = (props) => {
-    const { team, onClose } = props;
+    const { player, onClose } = props;
 
-    const [nombre, setNombre] = useState('');
-    const [jugadores, setJugadores] = useState([]);
-    const [showMultiAdd, setMultiAdd] = useState(false);
-
-    const playerList = useSelector((state) => state.player.playerList);
-    const teamCrud = useSelector((state) => state.team.crud);
+    const [nombre, setNombre] = useState(player?.name ? player.name : '');
+    const [dni, setDNI] = useState(player?.dni ? player.dni : '');
+    const [age, setAge] = useState(player?.age ? player.age : '');
 
     const dispatch = useDispatch();
 
+    const playerCrud = useSelector((state) => state.player.crud);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        const postBody = {
+        const body = {
             name: nombre,
-            players: jugadores,
+            dni: dni,
+            age: age,
         };
-        dispatch(postTeamRequest({ postBody, resolve: onClose }));
+        if (player.name) {
+            dispatch(putPlayerRequest({ body, resolve: onClose }));
+        } else {
+            dispatch(postPlayerRequest({ body, resolve: onClose }));
+        }
     };
 
-    const handlePlayerChange = (e) => {
-        const player = playerList.data
-            .filter((x) => e.includes(x._id))
-            .map((x) => x.name);
-        const newPlayer = jugadores.filter(
-            (x) => !playerList.data.map((player) => player.name).includes(x)
-        );
-        setJugadores([...new Set([...newPlayer, ...player])]);
-    };
-
-    const handleNewPlayers = (data) => {
-        setJugadores([...new Set([...jugadores, ...data])]);
-    };
-
-    const handleRemove = (item) => {
-        const newPlayers = jugadores.filter((x) => x !== item);
-        setJugadores([...newPlayers]);
-    };
-
-    const isRemovable = (item) => {
-        return !playerList.data.some((x) => x.name === item);
-    };
-
-    if (teamCrud.loading) {
+    if (playerCrud.loading) {
         return <LoadingSpinner fullscreen={true} />;
     }
 
     return (
-        <section className="team-form">
+        <section className="player-form">
             <div className="img-container">
-                <img src={teamIcon} alt={'team-icon'} />
+                <img src={playerIcon} alt={'player-icon'} />
             </div>
-            <h1>Nuevo Equipo</h1>
+            <h1>{player?.name ? 'Editar' : 'Nuevo'} Jugador</h1>
             <form noValidate>
                 <FormField>
                     <Label>Nombre</Label>
@@ -77,58 +57,48 @@ const PlayerForm = (props) => {
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                         required={true}
-                    ></Input>
-                </FormField>
-                <h1>Jugadores</h1>
-                <FormField>
-                    <Label>Jugador</Label>
-                    <Select
-                        value={jugadores}
-                        onChange={(e) => handlePlayerChange(e)}
-                        filter={true}
-                        multiple={true}
-                    >
-                        {playerList.data.map((option, index) => (
-                            <Option value={option._id} key={option._id + index}>
-                                {option.name}
-                            </Option>
-                        ))}
-                    </Select>
-                </FormField>
-                <div className="team-form-new-player">
-                    <span onClick={() => setMultiAdd(true)}>Nuevo jugador</span>
-                </div>
-                {jugadores.length > 0 && (
-                    <List
-                        items={jugadores}
-                        removeBtn={isRemovable}
-                        onRemove={handleRemove}
                     />
-                )}
-                <div className="team-form-action-buttons">
-                    <button
+                    {player?.name && nombre === '' && (
+                        <FormFieldError>Este campo es requerido</FormFieldError>
+                    )}
+                </FormField>
+                <FormField>
+                    <Label>DNI</Label>
+                    <Input
+                        type="text"
+                        value={dni}
+                        onChange={(e) => setDNI(e.target.value)}
+                        maxLength="8"
+                        required={true}
+                    />
+                    {player?.name && dni === '' && (
+                        <FormFieldError>Este campo es requerido</FormFieldError>
+                    )}
+                </FormField>
+                <FormField>
+                    <Label>Edad</Label>
+                    <Input
+                        type="number"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                        min={1}
+                        max={99}
+                    />
+                </FormField>
+                <div className="player-form-action-buttons">
+                    <Button type="button" variant="secondary" onClick={onClose}>
+                        Cancelar
+                    </Button>
+                    <Button
                         type="submit"
-                        onClick={onClose}
-                        className="btn btn-secondary"
-                    >
-                        <strong>Cancelar</strong>
-                    </button>
-                    <button
-                        type="submit"
+                        variant="primary"
                         onClick={(e) => handleSubmit(e)}
-                        className="btn btn-secondary"
+                        disabled={player?.name && (dni === '' || nombre === '')}
                     >
-                        <strong>Crear</strong>
-                    </button>
+                        {player?.name ? 'Editar' : 'Crear'}
+                    </Button>
                 </div>
             </form>
-            <MultiAddModal
-                show={showMultiAdd}
-                onClose={() => setMultiAdd(false)}
-                type={'jugador'}
-                handleClose={handleNewPlayers}
-                names={playerList.data.map((x) => x.name)}
-            />
         </section>
     );
 };

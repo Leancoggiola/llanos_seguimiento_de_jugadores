@@ -7,6 +7,7 @@ import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
 import TourneyCard from '../../components/TourneyCard';
 import TourneyForm from '../../components/TourneyForm';
+import TourneyDetails from '../../components/TourneyDetails';
 // Middleware
 import { navbarBack, navbarNewEntry } from '../../middleware/actions/navbarActions';
 // Styling
@@ -16,19 +17,19 @@ import './Tournaments.scss';
 const Tournaments = () => {
     const tourneyList = useSelector((state) => state.tourney.tourneyList);
     const [tourneyForm, setTourneyForm] = useState(false);
+    const [tourneyDetails, setTourneyDetails] = useState(false);
     const [selectedTourney, setSelectedTourney] = useState(null);
 
     const dispatch = useDispatch();
 
-    const handleABMTourney = () => {
+    const handleABMTourney = (isEdit) => {
         setTourneyForm(true);
         dispatch(navbarNewEntry({ action: setTourneyForm, param: false }));
     };
 
-    const handleClose = () => {
-        setSelectedTourney(null);
-        dispatch(navbarBack());
-    };
+    useEffect(() => {
+        !tourneyForm && setSelectedTourney(null);
+    }, [tourneyForm]);
 
     useEffect(() => {
         selectedTourney && handleABMTourney();
@@ -38,9 +39,14 @@ const Tournaments = () => {
 
     return (
         <section className="tournament-page-container">
-            {tourneyForm && <TourneyForm onClose={handleClose} tourney={selectedTourney} />}
-            {!tourneyForm && (
-                <>
+            {tourneyForm && (
+                <TourneyForm onClose={() => dispatch(navbarBack())} tourney={selectedTourney} />
+            )}
+            {tourneyDetails && (
+                <TourneyDetails onClose={() => dispatch(navbarBack())} tourney={selectedTourney} />
+            )}
+            {!tourneyForm && !tourneyDetails && (
+                <article>
                     {!isEmpty(tourneyList.data) &&
                         tourneyList.data.map((tourney, index) => (
                             <TourneyCard
@@ -49,10 +55,10 @@ const Tournaments = () => {
                                 setSelectedTourney={setSelectedTourney}
                             />
                         ))}
-                    <IconButton className="add-new" onClick={handleABMTourney}>
+                    <IconButton className="add-new" onClick={() => handleABMTourney(false)}>
                         <Icon src={contentIcAddCircle} />
                     </IconButton>
-                </>
+                </article>
             )}
         </section>
     );

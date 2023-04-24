@@ -6,15 +6,21 @@
         flex-flow: row nowrap;
     }
     &-body {
+        width: 100%;
         display: flex;
-        justify-content: space-between;
+        justify-content:center;
         align-items: center;
         &-formats {
             text-align: center;
-        }
-        svg {
-            width: 2rem;
-            height: auto;
+            &-icons {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                svg {
+                    width: 3rem;
+                    height: auto;
+                }
+            }
         }
     }
 }

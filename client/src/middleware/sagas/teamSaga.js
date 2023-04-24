@@ -79,7 +79,6 @@ function* putTeamWork(action) {
             data: body,
         };
         const response = yield call(serviceCall, options);
-        debugger;
         yield put(putTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
         if (response.result.players.length) yield put(getPlayersRequest());

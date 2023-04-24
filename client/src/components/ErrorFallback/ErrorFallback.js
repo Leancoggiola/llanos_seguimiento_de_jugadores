@@ -1,23 +1,21 @@
+import Button from '../../commonComponents/Button';
 // Styling
-import './ErrorFallback.scss'
+import './ErrorFallback.scss';
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
     return (
-        <div className='error-fallback'>
-            <div className='no-content-found'>
-                <p className='main-text'>
-                   {error.message}
-                </p>
-                <p className='main-text'>
+        <div className="error-fallback">
+            <div className="no-content-found">
+                <p className="main-text">{error.message}</p>
+                <p className="main-text">
                     Algo salio mal. Es necesario recargar la pagina o intentar mas tarde.
                 </p>
-                <button type='button' className='btn btn-primary' onClick={() => resetErrorBoundary()}>
+                <Button type="button" onClick={() => resetErrorBoundary()}>
                     Reintentar
-                </button>
+                </Button>
             </div>
         </div>
-
-    )
-}
+    );
+};
 
 export default ErrorFallback;

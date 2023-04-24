@@ -19,7 +19,7 @@ const playerSchema = Schema({
         lowercase: true,
         trim: true,
         maxLength: 8,
-        match: /^\d{7,8}$/,
+        match: [/^\d{7,8}$/, 'Ingresa un DNI valido'],
     },
     age: { type: Number, required: false, min: 1, max: 99 },
     // yellow_cards_per_match: { type: Object, require: false},
@@ -68,6 +68,19 @@ const matchSchema = Schema({
     },
 });
 
+const groupSchema = Schema({
+    name: {
+        type: String,
+        required: false,
+    },
+    teams: {
+        type: [Schema.Types.ObjectId],
+        ref: 'teams',
+        required: false,
+        default: [],
+    },
+});
+
 const tournamentsSchema = Schema({
     name: {
         type: String,
@@ -80,9 +93,9 @@ const tournamentsSchema = Schema({
         required: false,
         default: [],
     },
-    matchs: {
+    groups: {
         type: [Schema.Types.ObjectId],
-        ref: 'matches',
+        ref: 'groups',
         required: false,
         default: [],
     },
@@ -119,6 +132,7 @@ const userSchema = Schema({
 
 const MatchDetails = mongoose.model('matchDetails', matchDetailsSchema);
 const Match = mongoose.model('matches', matchSchema);
+const Group = mongoose.model('groups', groupSchema);
 const User = mongoose.model('users', userSchema);
 const Tournament = mongoose.model('tournaments', tournamentsSchema);
 const Team = mongoose.model('teams', teamsSchema);

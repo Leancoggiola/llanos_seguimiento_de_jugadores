@@ -22,19 +22,45 @@
     --border-color-navigation : #{$grey-600};
     --border-hover: #{$grey-500};
 
+    --btn-padding: 0.42rem;
+    --btn-padding-medium: 0.57rem;
+    --btn-padding-large: 0.715rem;
+
     --btn-primary-color-bg: #{$branding};
+    --btn-primary-color-border: #{$branding};
     --btn-primary-color: #{$black};
     --btn-primary-hover-bg: #{$grey-200};
-    --btn-primary-hover: #{$black};
+    --btn-primary-hover-border: #{$grey-200};
+    --btn-primary-hover-color: #{$black};
 
-    --btn-primary-color-disabled-bg: #{$grey-600};
-    --btn-primary-color-disabled: #{$grey-400};
-    --btn-primary-border-disabled: #{$grey-600};
+    --btn-primary-alt-color-bg: #{$grey-200};
+    --btn-primary-alt-color-border: #{$grey-200};
+    --btn-primary-alt-color: #{$black};
+    --btn-primary-alt-hover-bg: #{$branding};
+    --btn-primary-alt-hover-border: #{$branding};
+    --btn-primary-alt-hover-color: #{$black};
 
-    --btn-secondary-color-bg: transparent;
+    --btn-secondary-color-bg: #{$black};
+    --btn-secondary-color-border: #{$grey-200};
     --btn-secondary-color: #{$white};
-    --btn-secondary-hover-bg: #{$grey-200};
-    --btn-secondary-hover: #{$black};
+    --btn-secondary-hover-bg: #{$black};
+    --btn-secondary-hover-border: #{$branding};
+    --btn-secondary-hover-color: #{$branding};
+
+    --btn-warn-color-bg: #{$error};
+    --btn-warn-color-border: #{$error};
+    --btn-warn-color: #{$black};
+    --btn-warn-hover-bg: #{$grey-200};
+    --btn-warn-hover-border: #{$grey-200};
+    --btn-warn-hover-color: #{$black};
+
+    --btn-color-disabled-bg: #{$grey-600};
+    --btn-color-disabled: #{$grey-400};
+    --btn-border-disabled: #{$grey-600};
+
+    --btn-text-color: #{$white};
+    --btn-text-disabled: #{$grey-400};
+    --btn-text-alt-color: #{$branding};
 
     --btn-icon-hover-bg: #{$grey-450};
     --btn-icon-hover-color:#{$white};
@@ -104,6 +130,40 @@
 
     --progress-bar-color: #{$branding};
     --progress-bar-bg-color: #{$grey-550};
+
+    --progress-indicator-heading-color: #{$white}; 
+  --progress-indicator-body-color: #{$white}; 
+  --progress-indicator-bar-color: #{$grey-400}; 
+  --progress-indicator-bg-color: transparent;
+  --progress-indicator-border-color: #{$grey-400};
+  --progress-indicator-completed-heading-color: #{$white};
+  --progress-indicator-completed-body-color: #{$grey-400};
+  --progress-indicator-completed-hover-body-color: #{$white};
+  --progress-indicator-completed-bar-color: #{$yellow-400};
+  --progress-indicator-completed-bg-color: #{$yellow-400};
+  --progress-indicator-completed-border-color: #{$yellow-400};
+  --progress-indicator-completed-fill-color: #{$black};
+  --progress-indicator-active-heading-color: #{$white};
+  --progress-indicator-active-body-color: #{$white};
+  --progress-indicator-active-bar-color: #{$yellow-400};
+  --progress-indicator-active-bg-color: transparent;
+  --progress-indicator-active-border-color: #{$yellow-400};
+  --progress-indicator-active-fill-color: transparent;
+  --progress-indicator-disabled-heading-color: #{$grey-400};
+  --progress-indicator-disabled-body-color: #{$grey-400};
+  --progress-indicator-disabled-bar-color: #{$grey-580};
+  --progress-indicator-disabled-bg-color: transparent;
+  --progress-indicator-disabled-border-color: #{$grey-580};
+  --progress-indicator-disabled-fill-color: #{$grey-600};
+  --progress-indicator-error-heading-color: #{$white};
+  --progress-indicator-error-bar-color: #{$red-300};
+  --progress-indicator-error-bg-color: #{$red-300};
+  --progress-indicator-error-border-color: #{$red-300};
+  --progress-indicator-error-fill-color: #{$grey-600};
+  --progress-indicator-warning-bg-color: #{$orange-warning};
+  --progress-indicator-warning-bar-color: #{$orange-warning};
+  --progress-indicator-warning-fill-color: #{$black};
+  --progress-indicator-warning-border-color: var(--error);
 }
 
     

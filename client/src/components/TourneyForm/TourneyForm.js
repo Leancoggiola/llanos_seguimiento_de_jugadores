@@ -1,8 +1,9 @@
 import { capitalize } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
 import { contentIcRemove } from '../../assets/icons';
+import Button from '../../commonComponents/Button';
 import FormField from '../../commonComponents/FormField';
 import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
@@ -25,14 +26,23 @@ const TourneyForm = (props) => {
     const { tourney, onClose } = props;
 
     const [nombre, setNombre] = useState(tourney?.name ? tourney.name : '');
-    const [modalidad, setModalidad] = useState();
-    const [equipos, setEquipos] = useState(tourney?.teams ? tourney.teams.map((x) => x._id) : []);
+    const [modalidad, setModalidad] = useState(tourney?.name ? tourney.type : '');
+    const [equipos, setEquipos] = useState([]);
+    const [equiposDropdown, setEquiposDropdown] = useState(
+        tourney?.teams ? tourney.teams.map((x) => x._id) : []
+    );
+    const [equiposList, setList] = useState([]);
     const [showMultiAdd, setMultiAdd] = useState(false);
 
     const teamList = useSelector((state) => state.team.teamList);
     const tourneyCrud = useSelector((state) => state.tourney.crud);
 
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const teamData = teamList.data.filter((x) => equiposDropdown.includes(x._id));
+        setList([...new Set([...equipos, ...teamData])]);
+    }, [equipos, equiposDropdown]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -42,19 +52,11 @@ const TourneyForm = (props) => {
             type: modalidad,
             teams: equipos,
         };
-        if (tourney.name) {
+        if (tourney?.name) {
             dispatch(putTourneyRequest({ body, resolve: onClose }));
         } else {
             dispatch(postTourneyRequest({ body, resolve: onClose }));
         }
-    };
-
-    const handleEquipoChange = (e) => {
-        const team = teamList.data.filter((x) => e.includes(x._id)).map((x) => x.name);
-        const newEquipo = equipos.filter(
-            (x) => !teamList.data.map((team) => team.name).includes(x)
-        );
-        setEquipos([...new Set([...newEquipo, ...team])]);
     };
 
     const handleNewEquipos = (data) => {
@@ -62,12 +64,12 @@ const TourneyForm = (props) => {
     };
 
     const handleRemove = (item) => {
-        const newEquipos = equipos.filter((x) => x !== item);
+        const newEquipos = equipos.filter((x) => x.name !== item.name);
         setEquipos([...newEquipos]);
     };
 
     const isRemovable = (item) => {
-        return !teamList.data.some((x) => x.name === item);
+        return !teamList.data.some((x) => x.name === item.name);
     };
 
     if (tourneyCrud.loading) {
@@ -75,11 +77,11 @@ const TourneyForm = (props) => {
     }
 
     return (
-        <section className="tourney-form">
+        <article className="tourney-form">
             <div className="img-container">
                 <img src={trophyIcon} alt={'trophy-icon'} />
             </div>
-            <h1>Nuevo Torneo</h1>
+            <h1>{tourney?.name ? 'Editar' : 'Nuevo'} Torneo</h1>
             <form noValidate>
                 <FormField>
                     <Label>Nombre</Label>
@@ -104,8 +106,8 @@ const TourneyForm = (props) => {
                 <FormField>
                     <Label>Equipos</Label>
                     <Select
-                        value={equipos}
-                        onChange={(e) => handleEquipoChange(e)}
+                        value={equiposDropdown}
+                        onChange={(e) => setEquiposDropdown(e)}
                         filter={true}
                         multiple={true}
                     >
@@ -117,13 +119,16 @@ const TourneyForm = (props) => {
                     </Select>
                 </FormField>
                 <div className="tourney-form-new-team">
-                    <span onClick={() => setMultiAdd(true)}>Nuevo equipo</span>
+                    <Button type="button" variant="text-alt" onClick={() => setMultiAdd(true)}>
+                        Nuevo equipo
+                    </Button>
+                    <span></span>
                 </div>
-                {equipos.length > 0 && (
+                {equiposList.length > 0 && (
                     <List>
-                        {equipos.map((equipo, index) => (
-                            <div className="team-form-equipo-list" key={equipo + index}>
-                                <p>{capitalize(equipo)}</p>
+                        {equiposList.map((equipo, index) => (
+                            <div className="team-form-equipo-list" key={equipo._id + index}>
+                                <p>{capitalize(equipo.name)}</p>
                                 {isRemovable(equipo) && (
                                     <IconButton onClick={() => handleRemove(equipo)}>
                                         <Icon src={contentIcRemove} />
@@ -134,16 +139,12 @@ const TourneyForm = (props) => {
                     </List>
                 )}
                 <div className="tourney-form-action-buttons">
-                    <button type="submit" onClick={onClose} className="btn btn-secondary">
-                        <strong>Cancelar</strong>
-                    </button>
-                    <button
-                        type="submit"
-                        onClick={(e) => handleSubmit(e)}
-                        className="btn btn-secondary"
-                    >
-                        <strong>Crear</strong>
-                    </button>
+                    <Button type="button" variant="secondary" onClick={onClose}>
+                        Cancelar
+                    </Button>
+                    <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)}>
+                        {tourney?.name ? 'Editar' : 'Crear'}
+                    </Button>
                 </div>
             </form>
             <MultiAddModal
@@ -153,7 +154,7 @@ const TourneyForm = (props) => {
                 handleClose={handleNewEquipos}
                 existingElements={[...teamList.data, ...equipos]}
             />
-        </section>
+        </article>
     );
 };
 

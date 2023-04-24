@@ -1,12 +1,13 @@
+import { capitalize } from 'lodash';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { capitalize } from 'lodash';
 // Components
-import { Modal, ModalHeader, ModalBody, ModalFooter } from '../../commonComponents/Modal';
-import { TabControl, TabNavigator } from '../../commonComponents/TabNavigator';
+import Button from '../../commonComponents/Button';
 import FormField from '../../commonComponents/FormField';
-import Label from '../../commonComponents/Label';
 import Input from '../../commonComponents/Input';
+import Label from '../../commonComponents/Label';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from '../../commonComponents/Modal';
+import { TabControl, TabNavigator } from '../../commonComponents/TabNavigator';
 import Textarea from '../../commonComponents/Textarea';
 // Middleware
 import { updateToastData } from '../../middleware/actions/navbarActions';
@@ -182,12 +183,12 @@ const MultiAddModal = (props) => {
             </TabNavigator>
             <ModalBody>{renderTab()}</ModalBody>
             <ModalFooter className="multi-add-modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => onClose()}>
+                <Button type="button" variant="secondary" onClick={() => onClose()}>
                     Cancelar
-                </button>
-                <button type="button" className="btn btn-secondary" onClick={handleSubmit}>
+                </Button>
+                <Button type="button" variant="primary" onClick={handleSubmit}>
                     Confirmar
-                </button>
+                </Button>
             </ModalFooter>
         </Modal>
     );

@@ -29,49 +29,6 @@ body {
         font-size: 1rem;
     }
 
-    .btn {        
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 6rem;
-        padding: 0.5rem;
-
-        text-align: center;
-        text-decoration: none;
-
-        border-radius: 0;
-        border-style: solid;
-        border-width: 1px;
-
-        cursor: pointer;
-        overflow: visible;
-        position: relative;
-
-        &-primary {
-            background-color: var(--btn-primary-color-bg);
-            border-color: var(--btn-primary-color-bg);
-            color: var(--btn-primary-color);
-        }
-
-        &-secondary {
-            background-color: var(--btn-secondary-color-bg);
-            border-color: var(--btn-secondary-color);
-            color: var(--btn-secondary-color);
-        }
-
-        &:hover, &:focus {
-            background-color: var(--btn-primary-hover-bg);
-            border-color: var(--btn-primary-hover-bg);
-            color: var(--btn-primary-color);
-        }
-
-        &:disabled {
-            background-color: var(--btn-primary-color-disabled-bg);
-            border-color: var(--btn-primary-border-disabled);
-            color: var(--btn-primary-color-disabled);
-        }
-    }
-
     .confirmation-modal {
         h3 { text-align: center;}
     }

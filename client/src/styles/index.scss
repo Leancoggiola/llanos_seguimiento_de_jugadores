@@ -8,8 +8,9 @@ body {
     --avatar-size: 2.5rem;
     --search-suggestion-item-height: 3rem;
 
-    --easy-in-out-fast: 150ms ease-in-out;
-    --easy-in-out-expo: cubic-bezier(1,0,0,1);
+    --ease-in-out: 300ms ease-in-out;
+    --ease-in-out-fast: 150ms ease-in-out;
+    --ease-in-out-expo: cubic-bezier(1,0,0,1);
 
     --status-pending: rgb(255, 255, 255);
     --status-pending-bg: rgba(255, 255, 255, 0.25);
@@ -20,8 +21,4 @@ body {
 
     --focus: rbga(23,119,207,0.5);
     --focus-state: 0 0 0 2px var(--focus);
-
-    $mobile-bp: 768px;
-    $mobile-bp: 768px;
-    $mobile-bp: 768px;
 }

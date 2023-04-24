@@ -1,29 +1,24 @@
-import { capitalize } from 'lodash';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { capitalize } from 'lodash';
 // Components
 import {
-    actionIcDelete,
-    contentIcAdd,
     contentIcKnockoutStage,
     editorIcBorderAll,
     editorIcFormatListNumbered,
-    editorIcModeEdit,
 } from '../../assets/icons';
 import { Card, CardBody, CardHeader } from '../../commonComponents/Card';
 import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
 import { Pill } from '../../commonComponents/Pill';
-import DeleteConfirmation from '../DeleteConfirmation';
 // Middleware
-import { deleteTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyCard.scss';
 
 const TourneyCard = (props) => {
     const { tourney, setSelectedTourney } = props;
-    const [showModal, setShowModal] = useState(false);
-    const dispatch = useDispatch();
+    const [groupScreen, setGroupScreen] = useState(false);
+    const [leagueScreen, setLeagueScreen] = useState(false);
+    const [knockoutScreen, setKnockoutScreen] = useState(false);
 
     const getStatusVariant = () => {
         if ('Nuevo') return 'info';
@@ -31,23 +26,20 @@ const TourneyCard = (props) => {
         return 'warning';
     };
 
-    const getIcons = () => {
-        const icons = [];
-        if (tourney.type.includes('Liga')) icons.push(editorIcFormatListNumbered);
-        if (tourney.type.includes('Grupos')) icons.push(editorIcBorderAll);
-        if (tourney.type.includes('+')) icons.push(contentIcAdd);
-        if (tourney.type.includes('Eliminatoria')) icons.push(contentIcKnockoutStage);
-        return icons;
-    };
-
-    const handleDelete = () => {
-        dispatch(deleteTourneyRequest({ body: tourney._id }));
-        setShowModal(false);
+    const getConfig = () => {
+        const config = [];
+        if (tourney.type.includes('Liga'))
+            config.push({ func: setLeagueScreen, icon: editorIcFormatListNumbered });
+        if (tourney.type.includes('Grupos'))
+            config.push({ func: setGroupScreen, icon: editorIcBorderAll });
+        if (tourney.type.includes('Eliminatoria'))
+            config.push({ func: setKnockoutScreen, icon: contentIcKnockoutStage });
+        return config;
     };
 
     return (
         <Card className="tourney-card">
-            <CardHeader className="tourney-card-header">
+            <CardHeader className="tourney-card-header" onClick={() => setSelectedTourney(tourney)}>
                 <h2>{capitalize(tourney.name)}</h2>
                 <Pill variant={getStatusVariant()}>{capitalize(tourney.status)}</Pill>
             </CardHeader>
@@ -57,28 +49,15 @@ const TourneyCard = (props) => {
                         <strong>Formato: </strong>
                         {tourney.type}
                     </p>
-                    <div>
-                        {getIcons().map((x, index) => (
-                            <Icon key={index} src={x} />
+                    <div className="tourney-card-body-formats-icons">
+                        {getConfig().map((x, index) => (
+                            <IconButton key={index} onClick={() => x.func(true)} tourney={tourney}>
+                                <Icon src={x.icon} />
+                            </IconButton>
                         ))}
                     </div>
                 </div>
-                <div className="tourney-card-header-actions">
-                    <IconButton onClick={() => setSelectedTourney(tourney)}>
-                        <Icon src={editorIcModeEdit} />
-                    </IconButton>
-                    <IconButton onClick={() => setShowModal(true)}>
-                        <Icon src={actionIcDelete} />
-                    </IconButton>
-                </div>
             </CardBody>
-            <DeleteConfirmation
-                show={showModal}
-                onClose={() => setShowModal(false)}
-                onSubmit={handleDelete}
-                message={'¿Seguro quieres eliminar este torneo?'}
-                className={'confirmation-modal'}
-            />
         </Card>
     );
 };

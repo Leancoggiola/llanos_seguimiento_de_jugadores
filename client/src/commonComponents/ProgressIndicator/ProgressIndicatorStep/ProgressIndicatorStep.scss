@@ -1,0 +1,373 @@
+.cc-progress-indicator-step {
+  width: 7.14rem;
+  padding: 0.85rem 0 0.43rem 0;
+  margin-right: 0.36rem;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  flex-grow: 1;
+  text-align: left;
+  border: none;
+  background-color: transparent;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:before {
+    background-color: var(--progress-indicator-bar-color);
+    content: '';
+    height: 0.3rem;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .cc-progress-indicator-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cc-progress-indicator-icon-svg {
+    position: absolute;
+    top: 0;
+    width: 1rem;
+    height: 1rem;
+    color: var(--progress-indicator-border-color);
+
+    .radio-dot-active,
+    .radio-dot-hover {
+      display: none;
+    }
+  }
+
+  .cc-progress-indicator-text-lines {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+      text-decoration-color: var(--progress-indicator-heading-color);
+
+      &:not(.cc-progress-indicator-step-disabled) {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &-default {
+    .cc-progress-indicator-icon {
+      .radio-outline {
+        color: var(--progress-indicator-bar-color);
+        stroke-width: 1;
+      }
+    }
+
+    .cc-progress-indicator-text-lines:hover + div,
+    .cc-progress-indicator-text-lines:focus + div {
+      .radio-outline {
+        stroke-width: 2;
+      }
+
+      .radio-dot-active {
+        display: none;
+      }
+
+      .radio-dot-hover {
+        display: none;
+      }
+    }
+  }
+
+  &-active {
+    &:hover,
+    &:focus {
+      .cc-progress-indicator-icon {
+        .radio-dot-active {
+          display: none;
+        }
+
+        .radio-dot-hover {
+          display: none;
+        }
+      }
+    }
+
+    &:before {
+      background-color: var(--progress-indicator-active-bar-color);
+    }
+
+    .cc-progress-indicator-icon {
+      .radio-dot-active {
+        display: none;
+      }
+
+      .radio-outline {
+        color: var(--progress-indicator-active-bar-color);
+        stroke-width: 2;
+      }
+
+      svg:not(.cc-progress-indicator-icon-svg) {
+        background-color: var(--progress-indicator-active-bg-color);
+        border-color: var(--progress-indicator-active-border-color);
+        fill: var(--progress-indicator-active-fill-color);
+      }
+    }
+
+    .cc-progress-indicator-heading {
+      font-weight: bold;
+      color: var(--progress-indicator-active-heading-color);
+    }
+
+    .cc-progress-indicator-body {
+      color: var(--progress-indicator-active-body-color);
+    }
+  }
+
+  &-completed {
+    &:before {
+      background-color: var(--progress-indicator-completed-bar-color);
+    }
+
+    .radio-outline {
+      stroke-width: 0;
+    }
+
+    &:hover,
+    &:focus {
+      .cc-progress-indicator-heading,
+      .cc-progress-indicator-body {
+        font-weight: bold;
+      }
+    }
+
+    .cc-progress-indicator-icon svg:not(.cc-progress-indicator-icon-svg) {
+      background-color: var(--progress-indicator-completed-bg-color);
+      border-color: var(--progress-indicator-completed-border-color);
+      fill: var(--progress-indicator-completed-fill-color);
+    }
+
+    .cc-progress-indicator-heading {
+      color: var(--progress-indicator-completed-heading-color);
+    }
+  }
+
+  &-error {
+    .cc-progress-indicator-icon-svg {
+      display: none;
+    }
+
+    &:before {
+      background-color: var(--progress-indicator-error-bar-color);
+    }
+
+    .cc-progress-indicator-icon svg:not(.cc-progress-indicator-icon-svg) {
+      background-color: var(--progress-indicator-error-bg-color);
+      border-color: var(--progress-indicator-error-border-color);
+      fill: var(--progress-indicator-error-fill-color);
+      padding: 0.07rem;
+    }
+
+    .cc-progress-indicator-heading {
+      font-weight: var(--weight-bold);
+    }
+  }
+
+  &-warning {
+    .cc-progress-indicator-icon-svg {
+      display: none;
+    }
+
+    &:before {
+      background-color: var(--progress-indicator-warning-bar-color);
+    }
+
+    .cc-progress-indicator-icon svg:not(.cc-progress-indicator-icon-svg) {
+      background-color: var(--progress-indicator-warning-bg-color);
+      border-color: var(--progress-indicator-warning-border-color);
+      fill: var(--progress-indicator-warning-fill-color);
+      padding: 0.07rem;
+    }
+
+    .cc-progress-indicator-heading {
+      font-weight: var(--weight-bold);
+    }
+  }
+
+  &-disabled {
+    cursor: not-allowed;
+
+    &:before {
+      background-color: var(--progress-indicator-disabled-bar-color);
+    }
+
+    .cc-progress-indicator-text-lines {
+      cursor: not-allowed;
+
+      &:hover,
+      &:focus {
+        text-decoration: none;
+
+        p {
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .cc-progress-indicator-icon svg:not(.cc-progress-indicator-icon-svg) {
+      background-color: var(--progress-indicator-disabled-bg-color);
+      border-color: var(--progress-indicator-disabled-border-color);
+      fill: var(--progress-indicator-disabled-fill-color);
+    }
+
+    .cc-progress-indicator-heading {
+      color: var(--progress-indicator-disabled-heading-color);
+    }
+
+    .cc-progress-indicator-body {
+      color: var(--progress-indicator-disabled-body-color);
+    }
+
+    .radio-outline {
+      color: var(--progress-indicator-disabled-bar-color);
+    }
+
+    .radio-dot-active,
+    .cc-progress-indicator-completed-icon path,
+    .radio-dot-hover {
+      display: none;
+    }
+  }
+}
+
+.cc-progress-indicator-icon {
+  flex-shrink: 0;
+  padding: 0;
+  width: 1rem;
+
+  svg:not(.cc-progress-indicator-icon-svg) {
+    background-color: var(--progress-indicator-bg-color);
+    border-radius: 50%;
+    fill: transparent;
+    height: 1rem;
+    width: 1rem;
+
+    .cc-progress-indicator-direction-col & {
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  &:hover:not(.cc-progress-indicator-step-disabled) {
+    .cc-progress-indicator-heading {
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cc-progress-indicator-icon:before {
+      top: -0.99rem;
+    }
+  }
+}
+
+.cc-progress-indicator-heading {
+  color: var(--progress-indicator-heading-color);
+  line-height: 1;
+  margin: 0 0 0 0.43rem;
+}
+
+.cc-progress-indicator-body {
+  color: var(--progress-indicator-body-color);
+  font-size: 0.85rem;
+  font-weight: lighter;
+  line-height: 1.2;
+  margin: 0.3rem 0 0.57rem 1.36rem;
+}
+
+.cc-progress-indicator-direction-row {
+  .cc-progress-indicator-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .cc-progress-indicator-step:before {
+    margin-left: 1.36rem;
+    margin-top: 0.36rem;
+  }
+
+  .cc-progress-indicator-heading {
+    margin: 0.14rem 0 0 1.36rem;
+  }
+}
+
+.cc-progress-indicator-direction-col {
+  .cc-progress-indicator-step {
+    min-height: 4.3rem;
+    margin-bottom: 0.3rem;
+    flex-direction: row-reverse;
+    width: fit-content;
+    padding: 0;
+    margin-right: 0;
+
+    &:before {
+      display: none;
+    }
+
+    &-active {
+      .cc-progress-indicator-icon {
+        &:after {
+          background-color: var(--progress-indicator-active-bar-color);
+        }
+      }
+    }
+
+    &-completed {
+      .cc-progress-indicator-icon {
+        &:after {
+          background-color: var(--progress-indicator-completed-bar-color);
+        }
+      }
+    }
+
+    &-error {
+      .cc-progress-indicator-icon {
+        &:after {
+          background-color: var(--progress-indicator-error-bar-color);
+        }
+      }
+    }
+
+    &-disabled {
+      .cc-progress-indicator-icon {
+        &:after {
+          background-color: var(--progress-indicator-disabled-bar-color);
+        }
+      }
+    }
+  }
+
+  .cc-progress-indicator-icon {
+    &:after {
+      content: '';
+      background-color: var(--progress-indicator-bar-color);
+      bottom: 0;
+      position: absolute;
+      top: 1.3rem;
+      width: 0.3rem;
+    }
+  }
+
+  .cc-progress-indicator-heading {
+    margin-top: 0;
+  }
+
+  .cc-progress-indicator-body {
+    margin-left: 0.4rem;
+  }
+}

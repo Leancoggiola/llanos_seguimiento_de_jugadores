@@ -5,6 +5,9 @@
         position: relative;
         padding-bottom: 6rem;
     }
+    .cc-form-field {
+        margin: 1.5rem 0;
+    }
     .img-container {
         display: flex;
         justify-content: center;
@@ -25,6 +28,14 @@
         display: block;
         margin-left: auto;
         margin-right: 0;
+    }
+
+    &-player-list {
+        display: grid;
+        grid-template-columns: 1fr max-content 24px;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
     }
 
     &-action-buttons {

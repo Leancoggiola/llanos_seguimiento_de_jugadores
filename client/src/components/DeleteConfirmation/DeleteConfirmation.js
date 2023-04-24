@@ -1,4 +1,5 @@
 // Components
+import Button from '../../commonComponents/Button';
 import { Modal, ModalBody, ModalFooter } from '../../commonComponents/Modal';
 // Styling
 import './DeleteConfirmation.scss';
@@ -18,16 +19,12 @@ const DeleteConfirmation = (props) => {
                 </ModalBody>
             )}
             <ModalFooter className="delete-modal-body">
-                <button
-                    type="button"
-                    className="delete-modal-body-delete-btn btn"
-                    onClick={onSubmit}
-                >
-                    Confirmar
-                </button>
-                <button type="button" className="btn-secondary btn" onClick={() => onClose()}>
+                <Button type="button" variant="secondary" onClick={() => onClose()}>
                     Cancelar
-                </button>
+                </Button>
+                <Button variant="warn" type="button" onClick={onSubmit}>
+                    Confirmar
+                </Button>
             </ModalFooter>
         </Modal>
     );

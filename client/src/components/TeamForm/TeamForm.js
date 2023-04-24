@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
 import { contentIcRemove } from '../../assets/icons';
+import Button from '../../commonComponents/Button';
 import FormField from '../../commonComponents/FormField';
 import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
@@ -46,7 +47,7 @@ const TeamForm = (props) => {
             name: nombre,
             players: jugadoresList,
         };
-        if (team.name) {
+        if (team?.name) {
             dispatch(putTeamRequest({ body, resolve: onClose }));
         } else {
             dispatch(postTeamRequest({ body, resolve: onClose }));
@@ -103,7 +104,9 @@ const TeamForm = (props) => {
                     </Select>
                 </FormField>
                 <div className="team-form-new-player">
-                    <span onClick={() => setMultiAdd(true)}>Nuevo jugador</span>
+                    <Button type="button" variant="text-alt" onClick={() => setMultiAdd(true)}>
+                        Nuevo jugador
+                    </Button>
                 </div>
                 {jugadoresList.length > 0 && (
                     <List>
@@ -121,16 +124,12 @@ const TeamForm = (props) => {
                     </List>
                 )}
                 <div className="team-form-action-buttons">
-                    <button type="submit" onClick={onClose} className="btn btn-secondary">
-                        <strong>Cancelar</strong>
-                    </button>
-                    <button
-                        type="submit"
-                        onClick={(e) => handleSubmit(e)}
-                        className="btn btn-secondary"
-                    >
-                        <strong>Crear</strong>
-                    </button>
+                    <Button type="button" variant="secondary" onClick={onClose}>
+                        Cancelar
+                    </Button>
+                    <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)}>
+                        {team?.name ? 'Editar' : 'Crear'}
+                    </Button>
                 </div>
             </form>
             <MultiAddModal

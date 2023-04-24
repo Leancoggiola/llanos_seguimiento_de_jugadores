@@ -25,10 +25,9 @@ const Teams = () => {
         dispatch(navbarNewEntry({ action: setTeamForm, param: false }));
     };
 
-    const handleClose = () => {
-        setSelectedTeam(null);
-        dispatch(navbarBack());
-    };
+    useEffect(() => {
+        !teamForm && setSelectedTeam(null);
+    }, [teamForm]);
 
     useEffect(() => {
         selectedTeam && handleABMTeam();
@@ -38,7 +37,7 @@ const Teams = () => {
 
     return (
         <section className="team-page-container">
-            {teamForm && <TeamForm onClose={handleClose} team={selectedTeam} />}
+            {teamForm && <TeamForm onClose={() => dispatch(navbarBack())} team={selectedTeam} />}
             {!teamForm && (
                 <>
                     {!isEmpty(teamList.data) &&

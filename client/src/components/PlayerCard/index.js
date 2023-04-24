@@ -1,2 +1,2 @@
-import PlayerForm from './PlayerForm';
-export default PlayerForm;
+import PlayerCard from './PlayerCard';
+export default PlayerCard;

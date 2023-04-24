@@ -78,7 +78,6 @@ function* putPlayerWork(action) {
             data: body,
         };
         const response = yield call(serviceCall, options);
-        debugger;
         yield put(putPlayerSuccess(response.result));
         yield put(getPlayersSuccess(response.newData));
         yield put(

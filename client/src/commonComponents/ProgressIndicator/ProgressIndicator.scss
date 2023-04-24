@@ -1,0 +1,9 @@
+.cc-progress-indicator {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  &-direction-col {
+    flex-direction: column;
+  }
+}

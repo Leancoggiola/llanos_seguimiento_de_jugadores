@@ -52,15 +52,16 @@ const Select = (props) => {
     const [searchOption, setSearchOption] = useState('');
     const [hasSelectedMultipleOptions, setHasSelectedMultipleOption] = useState(false);
 
-    const selectWrapperRef = useRef();
+    const [selectWrapperRef, setSelectWrapperRef] = useState();
+    const [wrapperOptionsRef, setWrapperOptionsRef] = useState();
     const selectTriggerRef = useRef();
-    const wrapperOptionsRef = useRef();
+    const clickOutsideRef = useRef();
     const firstRender = useRef(true);
 
     const totalOptions = Children.count(optionsChildrenSorted);
     const formFieldContext = useContext(FormFieldContext);
 
-    const popper = usePopper(selectWrapperRef.current, wrapperOptionsRef.current, {
+    const popper = usePopper(selectWrapperRef, wrapperOptionsRef, {
         placement: 'auto',
         modifiers: [
             { name: 'offset', options: { offset: [0, 0] } },
@@ -267,8 +268,8 @@ const Select = (props) => {
         if (
             !isOpen &&
             event?.target &&
-            selectWrapperRef?.current &&
-            !selectWrapperRef.current.contains(event.target)
+            clickOutsideRef?.current &&
+            !clickOutsideRef.current.contains(event.target)
         ) {
             setIsOpen(false);
         }
@@ -402,7 +403,10 @@ const Select = (props) => {
             {!firstRender.current && (
                 <div
                     id={formFieldContext.id}
-                    ref={selectWrapperRef}
+                    ref={(ref) => {
+                        setSelectWrapperRef(ref);
+                        clickOutsideRef.current = ref;
+                    }}
                     className={classes}
                     onFocus={() => formFieldContext.toggleFocus(true)}
                     onBlur={() => formFieldContext.toggleFocus(false)}
@@ -430,7 +434,7 @@ const Select = (props) => {
                     </button>
                     <div
                         className="cc-select-wrapper-options"
-                        ref={wrapperOptionsRef}
+                        ref={(ref) => setWrapperOptionsRef(ref)}
                         style={styles.popper}
                         {...attributes?.popper}
                     >

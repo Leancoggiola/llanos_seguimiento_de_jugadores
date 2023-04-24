@@ -1,4 +1,4 @@
-.motif-error-message {
+.cc-form-field-error {
     font-size: 0.85rem;
     font-weight: lighter;
     color: var(--error);
@@ -7,15 +7,14 @@
     margin-top: 0.3rem;
     margin-bottom: 0;
 
-    .motif-error-icon {
+    .cc-form-field-error-icon {
         position: relative;
         margin: -0.07rem 0.35rem -0.07rem -0.07rem;
-        height: 1.3rem;
-        width: 1.3rem;
-        fill: var(--error);
-    }
-
-    svg {
-        flex-shrink: 0;
+        color: var(--error);
+        svg {
+            height: 1.3rem;
+            width: 1.3rem;
+            flex-shrink: 0;
+        }
     }
 }
