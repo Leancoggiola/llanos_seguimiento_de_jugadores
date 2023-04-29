@@ -1,0 +1,132 @@
+.cc-accordion-trigger {
+  width: calc(100% + 0.14rem);
+  margin: -0.07rem -0.07rem 0 -0.07rem;
+  padding: 0.9rem 1.4rem 0.9rem 0.7rem;
+  background: none;
+  border: solid 0.07rem transparent;
+  display: flex;
+  align-items: center;
+  max-height: 3.15rem;
+
+  &:focus {
+    background-color: transparent;
+    border: solid 0.0rem var(--accordion-hover-header-border-color);
+
+    .cc-accordion-icons svg {
+      fill: var(--app-bg)
+    }
+  }
+
+  &:hover {
+    background-color: transparent;
+    border: solid 0.0rem var(--accordion-hover-header-border-color);
+
+    .cc-accordion-title-content {
+      color: var(--accordion-hover-header-font-color);
+    }
+
+    .cc-accordion-icons svg {
+      fill: var(--app-bg)
+    }
+  }
+
+  .cc-accordion-icons {
+    flex-shrink: 0;
+  }
+}
+
+.cc-accordion-content-visible {
+  > .cc-accordion-trigger {
+    .cc-accordion-expand-icon {
+      opacity: 0;
+    }
+
+    .cc-accordion-collapse-icon {
+      opacity: 1;
+    }
+  }
+}
+
+.cc-accordion-title-content {
+  text-align: left;
+  font-size: 1.15rem;
+  line-height: 1.4rem;
+  color: var(--accordion-color);
+  margin-right: 1rem;
+}
+
+.cc-accordion-expand-icon {
+  opacity: 1;
+}
+
+.cc-accordion-collapse-icon {
+  opacity: 0;
+}
+
+.cc-accordion-icons {
+  position: relative;
+  height: 1.4rem;
+  width: 1.4rem;
+  margin-right: 0.6rem;
+
+  svg {
+    fill: var(--accordion-color);
+  }
+}
+
+.cc-accordion-collapse-icon,
+.cc-accordion-expand-icon {
+  transition: opacity var(--ease-in-out-fast);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.cc-accordion-editorial {
+  .cc-accordion-trigger {
+    padding: 1.3rem 1.4rem 1.3rem 1.4rem;
+    justify-content: space-between;
+    max-height: 4.3rem;
+
+    .cc-accordion-icons {
+      order: 2;
+      right: 0.7rem;
+      height: 2.15rem;
+      width: 2.15rem;
+      margin: -0.7rem;
+
+      svg {
+        height: 2.15rem;
+        width: 2.15rem;
+      }
+    }
+  }
+
+  .cc-accordion-title-content {
+    order: 1;
+    font-size: 1.4rem;
+    line-height: 1.7rem;
+    padding-right: 1.8rem;
+  }
+
+  .cc-accordion-content * {
+    font-size: 1.15rem;
+    line-height: 1.7rem;
+  }
+}
+
+.cc-accordion-trigger-align-right {
+  .cc-accordion-trigger {
+    justify-content: space-between;
+    padding-left: 1.4rem;
+
+    .cc-accordion-icons {
+      order: 2;
+      margin-right: 0;
+    }
+  }
+
+  .cc-accordion-content {
+    padding: 0 1.4rem;
+  }
+}

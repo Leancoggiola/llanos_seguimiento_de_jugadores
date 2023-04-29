@@ -10,7 +10,6 @@ import IconButton from '../../commonComponents/IconButton';
 import Input from '../../commonComponents/Input';
 import Label from '../../commonComponents/Label';
 import List from '../../commonComponents/List';
-import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 import { Option, Select } from '../../commonComponents/Select';
 import MultiAddModal from '../MultiAddModal';
 // Assets
@@ -35,7 +34,6 @@ const TourneyForm = (props) => {
     const [showMultiAdd, setMultiAdd] = useState(false);
 
     const teamList = useSelector((state) => state.team.teamList);
-    const tourneyCrud = useSelector((state) => state.tourney.crud);
 
     const dispatch = useDispatch();
 
@@ -50,7 +48,7 @@ const TourneyForm = (props) => {
             name: nombre,
             status: 'Nuevo',
             type: modalidad,
-            teams: equipos,
+            teams: equiposList,
         };
         if (tourney?.name) {
             dispatch(putTourneyRequest({ body, resolve: onClose }));
@@ -71,10 +69,6 @@ const TourneyForm = (props) => {
     const isRemovable = (item) => {
         return !teamList.data.some((x) => x.name === item.name);
     };
-
-    if (tourneyCrud.loading) {
-        return <LoadingSpinner fullscreen={true} />;
-    }
 
     return (
         <article className="tourney-form">

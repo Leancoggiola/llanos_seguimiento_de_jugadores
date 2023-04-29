@@ -65,6 +65,17 @@ const matchSchema = Schema({
         type: [Schema.Types.ObjectId],
         ref: 'matchDetails',
         required: false,
+        default: [],
+    },
+    week: {
+        type: Number,
+        require: [true, 'Jornada requerida'],
+        default: -1,
+    },
+    matchOrder: {
+        type: Number,
+        require: [true, 'Partido orden requerida'],
+        default: -1,
     },
 });
 
@@ -76,6 +87,12 @@ const groupSchema = Schema({
     teams: {
         type: [Schema.Types.ObjectId],
         ref: 'teams',
+        required: false,
+        default: [],
+    },
+    matchs: {
+        type: [Schema.Types.ObjectId],
+        ref: 'matches',
         required: false,
         default: [],
     },
@@ -96,6 +113,11 @@ const tournamentsSchema = Schema({
     groups: {
         type: [Schema.Types.ObjectId],
         ref: 'groups',
+        required: false,
+        default: [],
+    },
+    configs: {
+        type: [{}],
         required: false,
         default: [],
     },
@@ -128,6 +150,43 @@ const userSchema = Schema({
         ref: 'tournaments',
         required: false,
     },
+    groupConfig: {
+        totalGroups: {
+            type: String,
+            default: '1',
+            match: [/^\d{1,2}$/, 'Ingresa un numero valido'],
+        },
+        enconters: {
+            type: String,
+            default: '1',
+            match: [/^\d{1,2}$/, 'Ingresa un numero valido'],
+        },
+        winPnts: {
+            type: String,
+            default: '3',
+            match: [/^\d{1,2}$/, 'Ingresa un numero valido'],
+        },
+        drawPnts: {
+            type: String,
+            default: '1',
+            match: [/^\d{1,2}$/, 'Ingresa un numero valido'],
+        },
+        losePnts: {
+            type: String,
+            default: '0',
+            match: [/^\d{1,2}$/, 'Ingresa un numero valido'],
+        },
+        nextStepRules: {
+            type: String,
+            default: 'Total',
+        },
+        draftType: {
+            type: String,
+            default: 'random',
+            enum: ['random', 'manual'],
+        },
+    },
+    knockoutConfig: {},
 });
 
 const MatchDetails = mongoose.model('matchDetails', matchDetailsSchema);

@@ -1,0 +1,30 @@
+.cc-accordion-content {
+  display: inline-block;
+  font-weight: lighter;
+  line-height: 1.6rem;
+  padding: 0 2.85rem 0 2.85rem;
+  width: 100%;
+}
+
+.cc-accordion-editorial {
+  .cc-accordion-content {
+    padding: 0 1.4rem 0 1.4rem;
+  }
+
+  .cc-accordion-trigger {
+    padding-left: 2.5rem;
+  }
+}
+
+.cc-accordion-content-visible {
+  &.cc-accordion-editorial {
+    .cc-accordion-trigger {
+      &:hover,
+      &:focus {
+        border-left-color: var(--accordion-accent-color);
+        border-bottom: 0;
+        border-top: none;
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 const { User, Team, Tournament, Player } = require('../models.js');
+const { errorHandler } = require('../helpers.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -11,8 +12,8 @@ module.exports = {
             );
             if (user) res.status(200).json('Logged');
             else res.sendStatus(403);
-        } catch (e) {
-            res.status(e?.status ? e.status : 404).json({ message: e.message });
+        } catch (err) {
+            errorHandler(err, res);
         }
     },
 
@@ -33,15 +34,18 @@ module.exports = {
                         httpOnly: false,
                         maxAge: 1 * 24 * 60 * 60 * 1000,
                     });
-                    res.status(200).json({ message: 'Logeado' });
+                    res.status(200).json({
+                        groupConfig: user.groupConfig,
+                        knockoutConfig: user.knockoutConfig,
+                    });
                 } else {
-                    res.status(400).json({ message: 'Contraseña Incorrecta' });
+                    errorHandler({ message: 'Contraseña Incorrecto' }, res);
                 }
             } else {
-                res.status(400).json({ message: 'Usuario Incorrecto' });
+                errorHandler({ message: 'Usuario Incorrecto' }, res);
             }
         } catch (e) {
-            res.status(e?.status ? e.status : 404).json({ message: e.message });
+            errorHandler(err, res);
         }
     },
 

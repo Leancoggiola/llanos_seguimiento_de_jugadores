@@ -1,5 +1,5 @@
 const { errorHandler } = require('../helpers.js');
-const { Tournament, Team, User } = require('../models.js');
+const { Tournament, Team } = require('../models.js');
 const mongoose = require('mongoose');
 
 module.exports = {

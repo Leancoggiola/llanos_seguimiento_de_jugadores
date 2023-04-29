@@ -1,8 +1,8 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-export const ModalContext = createContext({ closeModal: null })
+export const ModalContext = createContext({ closeModal: null });
 
-export const SelectContext = createContext()
+export const SelectContext = createContext();
 
 export const FormFieldContext = createContext({
     disabled: false,
@@ -16,40 +16,48 @@ export const FormFieldContext = createContext({
     required: false,
     value: '',
     setDisabled: function setDisabled() {
-        return null
+        return null;
     },
     setFormElementType: function setFormElementType() {
-        return null
+        return null;
     },
     setHasPlaceholder: function setHasPlaceholder() {
-        return null
+        return null;
     },
     setHasContent: function setHasContent() {
-        return null
+        return null;
     },
     setId: function setId() {
-        return null
+        return null;
     },
     setInvalid: function setInvalid() {
-        return null
+        return null;
     },
     setRequired: function setRequired() {
-        return null
+        return null;
     },
     setValue: function setValue() {
-        return null
+        return null;
     },
     toggleFocus: function toggleFocus() {
-        return null
+        return null;
     },
     setActive: function setActive() {
-        return null
-    }
+        return null;
+    },
 });
 
 export const TabNavigationContext = createContext();
+
+export const AccordionContext = createContext({
+    visible: false,
+    toggleAccordion: null,
+    alignIconRight: false,
+    useChevronIcon: false,
+});
 
 export const ModalProvider = ModalContext.Provider;
 export const SelectProvider = SelectContext.Provider;
 export const FormFieldProvider = FormFieldContext.Provider;
 export const TabNavigationProvider = TabNavigationContext.Provider;
+export const AccordionProvider = AccordionContext.Provider;

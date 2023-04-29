@@ -1,0 +1,36 @@
+.group-config {
+    &-navigator .cc-tab-button {
+        width: 100%;
+    }
+    &-content {
+        margin: 1rem 0.5rem;
+        .cc-form-field {
+            margin: 1rem 0;
+        }
+        &-groups {
+            text-align: center;
+        }
+        &-teams-list {
+                display: grid;
+                grid-template-columns: 1fr max-content;
+                justify-content: center;
+                align-items: center;
+        }
+        &-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row-reverse;
+            svg {
+                height: 2rem;
+                width: auto;
+            }
+        }
+        .jornada-container {
+            margin: 1rem 0;
+            h4 {
+            color: var(--app-highlight);
+            font-weight: bold;
+        }}
+    }
+}

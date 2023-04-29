@@ -34,7 +34,7 @@
         }
 
         &:disabled {
-            color: var(--tab-navigator-disabled-color);
+            color: var(--tab-navigator-disabled-color)!important;
             &:hover {
                 color: var(--tab-navigator-disabled-color);
                 border-bottom-color: transparent;

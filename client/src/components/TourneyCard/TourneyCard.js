@@ -15,10 +15,17 @@ import { Pill } from '../../commonComponents/Pill';
 import './TourneyCard.scss';
 
 const TourneyCard = (props) => {
-    const { tourney, setSelectedTourney } = props;
-    const [groupScreen, setGroupScreen] = useState(false);
-    const [leagueScreen, setLeagueScreen] = useState(false);
-    const [knockoutScreen, setKnockoutScreen] = useState(false);
+    const { tourney, setSelectedTourney, setOption, setTourneyForm } = props;
+
+    const handleDetails = (option) => {
+        setSelectedTourney(tourney);
+        setOption(option);
+    };
+
+    const handleEditTourney = () => {
+        setSelectedTourney(tourney);
+        setTourneyForm(true);
+    };
 
     const getStatusVariant = () => {
         if ('Nuevo') return 'info';
@@ -29,17 +36,20 @@ const TourneyCard = (props) => {
     const getConfig = () => {
         const config = [];
         if (tourney.type.includes('Liga'))
-            config.push({ func: setLeagueScreen, icon: editorIcFormatListNumbered });
+            config.push({ func: () => handleDetails('liga'), icon: editorIcFormatListNumbered });
         if (tourney.type.includes('Grupos'))
-            config.push({ func: setGroupScreen, icon: editorIcBorderAll });
+            config.push({ func: () => handleDetails('grupo'), icon: editorIcBorderAll });
         if (tourney.type.includes('Eliminatoria'))
-            config.push({ func: setKnockoutScreen, icon: contentIcKnockoutStage });
+            config.push({
+                func: () => handleDetails('eliminatoria'),
+                icon: contentIcKnockoutStage,
+            });
         return config;
     };
 
     return (
         <Card className="tourney-card">
-            <CardHeader className="tourney-card-header" onClick={() => setSelectedTourney(tourney)}>
+            <CardHeader className="tourney-card-header" onClick={() => handleEditTourney()}>
                 <h2>{capitalize(tourney.name)}</h2>
                 <Pill variant={getStatusVariant()}>{capitalize(tourney.status)}</Pill>
             </CardHeader>

@@ -1,54 +1,47 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 // Components
-import LoadingSpinner from '../../commonComponents/LoadingSpinner';
-import { ProgressIndicator, ProgressIndicatorStep } from '../../commonComponents/ProgressIndicator';
-import { TabControl, TabNavigator } from '../../commonComponents/TabNavigator';
-// Assets
+import { contentIcSave } from '../../assets/icons';
+import Button from '../../commonComponents/Button';
+import Icon from '../../commonComponents/Icon/Icon.js';
+import GroupConfig from './GroupConfig/GroupConfig.js';
 // Middleware
-import { postTourneyRequest, putTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyDetails.scss';
-import Icon from '../../commonComponents/Icon';
-import { contentIcKnockoutStage, contentIcTrophy, editorIcBorderAll } from '../../assets/icons';
-
-const MODALIDADES = ['Grupos+Eliminatoria'];
 
 const TourneyDetails = (props) => {
-    const { tourney, onClose } = props;
+    const { tourney, option, onClose, setOption } = props;
 
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tourneyData, setTourneyData] = useState(tourney);
 
-    // if (tourneyCrud.loading) {
-    //     return <LoadingSpinner fullscreen={true} />;
-    // }
+    const enableSave = () => {
+        return JSON.stringify(tourney) === JSON.stringify(tourneyData);
+    };
 
     const renderTab = () => {
-        return null;
+        switch (option) {
+            case 'grupo':
+                return <GroupConfig tourney={tourneyData} setTourneyData={setTourneyData} />;
+            case 'grupo':
+                return <></>;
+            case 'grupo':
+                return <></>;
+            default:
+                return null;
+        }
     };
 
     return (
         <section className="tourney-details">
-            <TabNavigator defaultActiveKey={tabIndex} className="tourney-details-navigator">
-                <TabControl onClick={() => setTabIndex(0)}>
-                    <Icon src={contentIcTrophy} />
-                </TabControl>
-                <TabControl onClick={() => setTabIndex(1)}>
-                    <Icon src={editorIcBorderAll} />
-                </TabControl>
-                <TabControl onClick={() => setTabIndex(2)}>
-                    <Icon src={contentIcKnockoutStage} />{' '}
-                </TabControl>
-            </TabNavigator>
             <article className="tourney-details-container">{renderTab()}</article>
-            <ProgressIndicator>
-                <ProgressIndicatorStep body={'Config'} status={'completed'} />
-                <ProgressIndicatorStep />
-                <ProgressIndicatorStep />
-            </ProgressIndicator>
-            {/* <div className="img-container">
-                <img src={trophyIcon} alt={'trophy-icon'} />
-            </div> */}
+            <footer className="tourney-details-footer">
+                <Button type="button" variant="secondary">
+                    Cancelar
+                </Button>
+                <Button type="button" variant="primary" disabled={enableSave()}>
+                    Guardar
+                    <Icon src={contentIcSave} />
+                </Button>
+            </footer>
         </section>
     );
 };

@@ -18,6 +18,16 @@
     --label-color: #{$white};
     --icon-color: #{$white};
 
+    --accordion-accent-color: #{$branding};
+    --accordion-bg-color: #{$grey-600};
+    --accordion-color: #{$white};
+    --accordion-border-color: #{$grey-580};
+    --accordion-functional-expanded-bg-color: #{$grey-600};
+    --accordion-editorial-expanded-bg-color: #{$grey-600};
+    --accordion-hover-header-bg-color: #{$grey-580};
+    --accordion-hover-header-border-color: #{$grey-500};
+    --accordion-hover-header-font-color: #{$white};
+
     --border-color: #{$grey-500};
     --border-color-navigation : #{$grey-600};
     --border-hover: #{$grey-500};
@@ -132,38 +142,42 @@
     --progress-bar-bg-color: #{$grey-550};
 
     --progress-indicator-heading-color: #{$white}; 
-  --progress-indicator-body-color: #{$white}; 
-  --progress-indicator-bar-color: #{$grey-400}; 
-  --progress-indicator-bg-color: transparent;
-  --progress-indicator-border-color: #{$grey-400};
-  --progress-indicator-completed-heading-color: #{$white};
-  --progress-indicator-completed-body-color: #{$grey-400};
-  --progress-indicator-completed-hover-body-color: #{$white};
-  --progress-indicator-completed-bar-color: #{$yellow-400};
-  --progress-indicator-completed-bg-color: #{$yellow-400};
-  --progress-indicator-completed-border-color: #{$yellow-400};
-  --progress-indicator-completed-fill-color: #{$black};
-  --progress-indicator-active-heading-color: #{$white};
-  --progress-indicator-active-body-color: #{$white};
-  --progress-indicator-active-bar-color: #{$yellow-400};
-  --progress-indicator-active-bg-color: transparent;
-  --progress-indicator-active-border-color: #{$yellow-400};
-  --progress-indicator-active-fill-color: transparent;
-  --progress-indicator-disabled-heading-color: #{$grey-400};
-  --progress-indicator-disabled-body-color: #{$grey-400};
-  --progress-indicator-disabled-bar-color: #{$grey-580};
-  --progress-indicator-disabled-bg-color: transparent;
-  --progress-indicator-disabled-border-color: #{$grey-580};
-  --progress-indicator-disabled-fill-color: #{$grey-600};
-  --progress-indicator-error-heading-color: #{$white};
-  --progress-indicator-error-bar-color: #{$red-300};
-  --progress-indicator-error-bg-color: #{$red-300};
-  --progress-indicator-error-border-color: #{$red-300};
-  --progress-indicator-error-fill-color: #{$grey-600};
-  --progress-indicator-warning-bg-color: #{$orange-warning};
-  --progress-indicator-warning-bar-color: #{$orange-warning};
-  --progress-indicator-warning-fill-color: #{$black};
-  --progress-indicator-warning-border-color: var(--error);
+    --progress-indicator-body-color: #{$white}; 
+    --progress-indicator-bar-color: #{$grey-400}; 
+    --progress-indicator-bg-color: transparent;
+    --progress-indicator-border-color: #{$grey-400};
+    --progress-indicator-completed-heading-color: #{$white};
+    --progress-indicator-completed-body-color: #{$grey-400};
+    --progress-indicator-completed-hover-body-color: #{$white};
+    --progress-indicator-completed-bar-color: #{$yellow-400};
+    --progress-indicator-completed-bg-color: #{$yellow-400};
+    --progress-indicator-completed-border-color: #{$yellow-400};
+    --progress-indicator-completed-fill-color: #{$black};
+    --progress-indicator-active-heading-color: #{$white};
+    --progress-indicator-active-body-color: #{$white};
+    --progress-indicator-active-bar-color: #{$yellow-400};
+    --progress-indicator-active-bg-color: transparent;
+    --progress-indicator-active-border-color: #{$yellow-400};
+    --progress-indicator-active-fill-color: transparent;
+    --progress-indicator-disabled-heading-color: #{$grey-400};
+    --progress-indicator-disabled-body-color: #{$grey-400};
+    --progress-indicator-disabled-bar-color: #{$grey-580};
+    --progress-indicator-disabled-bg-color: transparent;
+    --progress-indicator-disabled-border-color: #{$grey-580};
+    --progress-indicator-disabled-fill-color: #{$grey-600};
+    --progress-indicator-error-heading-color: #{$white};
+    --progress-indicator-error-bar-color: #{$red-300};
+    --progress-indicator-error-bg-color: #{$red-300};
+    --progress-indicator-error-border-color: #{$red-300};
+    --progress-indicator-error-fill-color: #{$grey-600};
+    --progress-indicator-warning-bg-color: #{$orange-warning};
+    --progress-indicator-warning-bar-color: #{$orange-warning};
+    --progress-indicator-warning-fill-color: #{$black};
+    --progress-indicator-warning-border-color: var(--error);
+
+    --table-border-color: #{$grey-580};
+    --table-bg-color: #{$black};
+    --table-odd-row-color: #{$grey-650};
 }
 
     

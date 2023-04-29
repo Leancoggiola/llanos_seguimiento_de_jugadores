@@ -1,0 +1,86 @@
+.cc-accordion {
+  display: block;
+  border: 1px solid var(--accordion-border-color);
+  background-color: var(--accordion-bg-color);
+
+  &-functional-alt {
+    background-color: var(--accordion-functional-expanded-bg-color);
+  }
+
+}
+
+.cc-accordion-content-visible:not(.cc-metadata) {
+  background-color: var(--accordion-functional-expanded-bg-color);
+
+  .cc-accordion-trigger {
+    border: 1px solid var(--accordion-border-color);
+    background-color: var(--accordion-bg-color);
+
+    &:focus,
+    &:hover {
+      background-color: var(--accordion-hover-header-bg-color);
+      border: solid 0.07rem var(--accordion-hover-header-border-color);
+
+      .cc-accordion-title-content {
+        color: var(--accordion-hover-header-font-color);
+      }
+
+      .cc-accordion-icons svg {
+        fill: var(--accordion-hover-header-font-color);
+      }
+    }
+  }
+
+  &.cc-accordion-functional-alt {
+    background-color: var(--accordion-bg-color);
+
+    .cc-accordion-trigger {
+      border: 1px solid var(--accordion-border-color);
+      background-color: var(--accordion-functional-expanded-bg-color);
+
+      &:focus,
+      &:hover {
+        background-color: var(--accordion-hover-header-bg-color);
+        border: solid 0.07rem var(--accordion-hover-header-border-color);
+  
+        .cc-accordion-title-content {
+          color: var(--accordion-hover-header-font-color);
+        }
+  
+        .cc-accordion-icons svg {
+          fill: var(--accordion-hover-header-font-color);
+        }
+      }
+    }
+  }
+}
+
+.cc-accordion-editorial {
+  &.cc-accordion-content-visible:not(.cc-metadata) {
+    background-color: var(--accordion-editorial-expanded-bg-color);
+    box-shadow: -2px 0 0 0 var(--accordion-accent-color);
+
+    .cc-accordion-trigger {
+      border: 1px solid var(--accordion-border-color);
+      background-color: transparent;
+
+      &:focus,
+      &:hover {
+        background-color: var(--accordion-hover-header-bg-color);
+        border: solid 0.07rem var(--accordion-hover-header-border-color);
+  
+        .cc-accordion-title-content {
+          color: var(--accordion-hover-header-font-color);
+        }
+  
+        .cc-accordion-icons svg {
+          fill: var(--accordion-hover-header-font-color);
+        }
+      }
+    }
+  }
+}
+
+.cc-accordion + .cc-accordion {
+  margin-top: -0.07rem;
+}

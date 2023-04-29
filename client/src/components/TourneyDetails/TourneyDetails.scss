@@ -1,7 +1,18 @@
 .tourney-details {
     position: relative;
     height: 100%;
-    &-navigator .cc-tab-button {
+    &-footer{
+        position: fixed;
+        background-color: var(--navigation-bg);
+        bottom: 0;
         width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0.5rem;
+        svg {
+            height: 1.25rem!important;
+            width: auto;
+        }
     }
 }

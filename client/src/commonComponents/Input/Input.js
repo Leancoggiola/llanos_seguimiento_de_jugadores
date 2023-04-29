@@ -6,74 +6,92 @@ import { navigationIcClose } from '../../assets/icons';
 import IconButton from '../IconButton';
 import Icon from '../Icon';
 // Styling
-import './Input.scss'
+import './Input.scss';
 
 const Input = (props) => {
-    const { 
-        disabled=false,
-        id='',
-        className='',
-        required=false,
-        onBlur=()=>{},
-        onChange=()=>{},
-        onFocus=()=>{},
-        placeholder='',
-        type='text',
-        value='',
-        hideClearButton=true
+    const {
+        disabled = false,
+        id = '',
+        className = '',
+        required = false,
+        onBlur = () => {},
+        onChange = () => {},
+        onFocus = () => {},
+        placeholder = '',
+        type = 'text',
+        value = '',
+        hideClearButton = true,
     } = props;
     let nextUniqueId = 0;
 
-    const others = omit(props, ['disabled', 'id', 'className', 'required', 'onBlur', 'onChange', 'onFocus', 'placeholder', 'type', 'value', 'hideClearButton']);
+    const others = omit(props, [
+        'disabled',
+        'id',
+        'className',
+        'required',
+        'onBlur',
+        'onChange',
+        'onFocus',
+        'placeholder',
+        'type',
+        'value',
+        'hideClearButton',
+    ]);
 
     const formFieldContext = useContext(FormFieldContext);
     const inputValue = value.toString();
-    const inputRef = useRef(null)
+    const inputRef = useRef(null);
 
     useEffect(() => {
         formFieldContext.setRequired(required);
         formFieldContext.setDisabled(disabled);
         formFieldContext.setFormElementType('textInput');
-        id ? formFieldContext.setId(id) : formFieldContext.setId('cc-input-'+nextUniqueId++)
-    }, [])
+        id ? formFieldContext.setId(id) : formFieldContext.setId('cc-input-' + nextUniqueId++);
+    }, []);
 
     useEffect(() => {
         formFieldContext.setValue(inputValue);
         formFieldContext.setHasContent(inputValue.length > 0);
-    }, [value])
+    }, [value]);
 
     const handleBlur = (event) => {
         formFieldContext.toggleFocus(event);
-        onBlur(event)
-    }
+        onBlur(event);
+    };
 
     const handleChange = (event) => {
-        if(type === 'number' && others.max || others.min) {
-            if (Number(event.target.value) >= Number(others.min) && Number(event.target.value) <= Number(others.max)) {
+        if ((type === 'number' && others.max) || others.min) {
+            if (
+                Number(event.target.value) >= Number(others.min) &&
+                Number(event.target.value) <= Number(others.max)
+            ) {
                 formFieldContext.setValue(event.target.value);
-                onChange(event)
+                onChange(event);
             }
         } else {
             formFieldContext.setValue(event.target.value);
-            onChange(event)
+            onChange(event);
         }
-    }
+    };
 
     const handleFocus = (event) => {
         formFieldContext.toggleFocus(event);
-        onFocus(event)
-    }
+        onFocus(event);
+    };
 
     const handleClear = () => {
-        handleChange({target: { value: '' }});
+        handleChange({ target: { value: '' } });
         inputRef.current.focus();
-    }
+    };
 
-    const classes = `cc-input ${formFieldContext.invalid ? 'cc-input-invalid ' : ''}${className ? className : ''}`;
+    const classes = `cc-input ${formFieldContext.invalid ? 'cc-input-invalid ' : ''}${
+        className ? className : ''
+    }`;
 
     return (
-        <div className='cc-input-component'>
-            <input id={formFieldContext.id}
+        <div className="cc-input-component">
+            <input
+                id={formFieldContext.id}
                 ref={inputRef}
                 disabled={disabled}
                 className={classes}
@@ -86,13 +104,17 @@ const Input = (props) => {
                 placeholder={placeholder}
                 {...others}
             />
-            {inputValue.length > 0 && !hideClearButton &&
-            <IconButton className='cc-input-clear-button' onClick={handleClear} disabled={disabled}>
-                <Icon src={navigationIcClose}/>
-            </IconButton>
-            }
+            {inputValue.length > 0 && !hideClearButton && (
+                <IconButton
+                    className="cc-input-clear-button"
+                    onClick={handleClear}
+                    disabled={disabled}
+                >
+                    <Icon src={navigationIcClose} />
+                </IconButton>
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default Input;

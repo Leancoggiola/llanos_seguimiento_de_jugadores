@@ -20,6 +20,7 @@ import {
     TOURNEY_DELETE_NEW_TOURNEY,
     TOURNEY_GET_TOURNEY_LIST,
     TOURNEY_POST_NEW_TOURNEY,
+    TOURNEY_PUT_TOURNEY,
 } from '../constants/tourney';
 
 // Workers
@@ -138,8 +139,17 @@ function* postTourneyWatch() {
     yield takeLatest(getRequest(TOURNEY_POST_NEW_TOURNEY), postTourneyWork);
 }
 
+function* putTourneyWatch() {
+    yield takeLatest(getRequest(TOURNEY_PUT_TOURNEY), putTourneyWork);
+}
+
 function* deleteTourneyWatch() {
     yield takeLatest(getRequest(TOURNEY_DELETE_NEW_TOURNEY), deleteTourneyWork);
 }
 
-export const tourneySaga = [getTourneysWatch(), postTourneyWatch(), deleteTourneyWatch()];
+export const tourneySaga = [
+    getTourneysWatch(),
+    postTourneyWatch(),
+    putTourneyWatch(),
+    deleteTourneyWatch(),
+];
