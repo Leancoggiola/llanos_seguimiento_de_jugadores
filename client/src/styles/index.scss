@@ -21,4 +21,12 @@ body {
 
     --focus: rbga(23,119,207,0.5);
     --focus-state: 0 0 0 2px var(--focus);
+
+    --shield-bg-local: #9EC5Fe;
+    --shield-border-local: #084298;
+    --shield-bg-away: #A3CFBB;
+    --shield-border-away: #0F5132;
+
+    --shield-bg-disabled: #747480;
+    --shield-border-disabled: #3A3A4A;
 }

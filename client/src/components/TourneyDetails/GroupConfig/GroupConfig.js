@@ -19,13 +19,33 @@ import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator
 import Table from '../../../commonComponents/Table';
 import MatchCard from '../MatchCard/MatchCard';
 // Middleware
-import { updateToastData } from '../../../middleware/actions/navbarActions';
+import { navbarNewEntry, updateToastData } from '../../../middleware/actions/navbarActions';
 // Styling
 import './GroupConfig.scss';
+import MatchDetails from '../MatchDetails/MatchDetails';
 
 const GroupConfig = (props) => {
     const { tourney, setTourneyData } = props;
     const [tabIndex, setTabIndex] = useState(0);
+
+    const getScore = (match) => {
+        if (isEmpty(match.details)) {
+            return 'Sin resultados';
+        } else {
+            const goals = match.teams.reduce(
+                (prev, curr, index) => {
+                    prev[index] = match.details.filter((x) =>
+                        curr.players.map((x) => x._id).includes(x.player._id)
+                            ? x.type === 'gol'
+                            : x.type === 'autogol'
+                    ).length;
+                    return prev;
+                },
+                [0, 0]
+            );
+            return goals.join(':');
+        }
+    };
 
     return (
         <div className="group-config">
@@ -42,8 +62,16 @@ const GroupConfig = (props) => {
             </TabNavigator>
             <div className="group-config-content">
                 {tabIndex === 0 && <Equipos tourney={tourney} setTourneyData={setTourneyData} />}
-                {tabIndex === 1 && <Grupos tourney={tourney} setTourneyData={setTourneyData} />}
-                {tabIndex === 2 && <Calendario tourney={tourney} setTourneyData={setTourneyData} />}
+                {tabIndex === 1 && (
+                    <Grupos tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />
+                )}
+                {tabIndex === 2 && (
+                    <Calendario
+                        tourney={tourney}
+                        setTourneyData={setTourneyData}
+                        getScore={getScore}
+                    />
+                )}
             </div>
         </div>
     );
@@ -88,7 +116,7 @@ const Equipos = ({ tourney, setTourneyData }) => {
     );
 };
 
-const Grupos = ({ tourney, setTourneyData }) => {
+const Grupos = ({ tourney, setTourneyData, getScore }) => {
     const { groupConfig } = useSelector((state) => state.auth);
 
     const [totalGroups, setTotalGroups] = useState(
@@ -163,8 +191,28 @@ const Grupos = ({ tourney, setTourneyData }) => {
         setTourneyData({ ...tourney });
     };
 
+    const orderList = (a, b) => {
+        if (a.pts > b.pts) {
+            return -1;
+        } else if (a.pts < b.pts) {
+            return 1;
+        } else {
+            const valuesA = a['ga/gc'].split(':');
+            const valuesB = b['ga/gc'].split(':');
+            const diferenciaA = Number(valuesA[0]) - Number(valuesA[1]);
+            const diferenciaB = Number(valuesB[0]) - Number(valuesB[1]);
+            if (diferenciaA > diferenciaB) {
+                return -1;
+            } else if (diferenciaA < diferenciaB) {
+                return 1;
+            } else {
+                return a.dif - b.dif;
+            }
+        }
+    };
+
     const columnDefs = [
-        { headerName: '#', field: 'position' },
+        { headerName: '#', field: 'position', comparator: orderList, numered: true },
         { headerName: 'Nombre', field: 'name' },
         { headerName: 'J', field: 'pj' },
         { headerName: 'G', field: 'pg' },
@@ -176,16 +224,38 @@ const Grupos = ({ tourney, setTourneyData }) => {
     ];
 
     const formatData = (data) => {
-        return data.map((team, index) => ({
-            position: index + 1,
+        const getTable = (team) => {
+            const results = { pj: 0, pg: 0, pe: 0, pp: 0, 'ga/gc': '0:0', dif: 0, pts: 0 };
+            const matches = data.matchs.filter((x) => x.teams.map((x) => x._id).includes(team._id));
+            results.pj = matches.filter((x) => x.winner).length;
+            results.pg = matches.filter((x) => x.winner && x.winner === team._id).length;
+            results.pe = matches.filter((x) => x.winner && x.winner === 'empate').length;
+            results.pp = matches.filter((x) => x.winner && x.winner !== team._id).length;
+            results.pts = results.pg * 3 + results.pe * 1;
+            results['ga/gc'] = matches
+                .reduce(
+                    (prev, curr) => {
+                        let i = curr.winner && curr.winner === team._id ? 0 : 1;
+                        let j = curr.winner && curr.winner === team._id ? 1 : 0;
+                        const values = getScore(curr).split(':');
+
+                        return !curr.winner
+                            ? [Number(prev[i]) + 0, Number(prev[j]) + 0]
+                            : [
+                                  Number(prev[i]) + Number(values[i]),
+                                  Number(prev[j]) + Number(values[j]),
+                              ];
+                    },
+                    [0, 0]
+                )
+                .join(':');
+            results.dif =
+                Number(results['ga/gc'].split(':')[0]) - Number(results['ga/gc'].split(':')[1]);
+            return results;
+        };
+        return data.teams.map((team, index) => ({
             name: capitalize(team.name),
-            pj: 0,
-            pg: 0,
-            pe: 0,
-            pp: 0,
-            'ga/gc': '0:0',
-            dif: 0,
-            pts: 0,
+            ...getTable(team),
         }));
     };
 
@@ -195,7 +265,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
                 tourney.groups.map((group, index) => (
                     <div key={group.name + index} className="group-config-content-groups">
                         <h3>{group.name}</h3>
-                        <Table columnDefs={columnDefs} dataSource={formatData(group.teams)} />
+                        <Table columnDefs={columnDefs} dataSource={formatData(group)} />
                     </div>
                 ))
             ) : (
@@ -289,7 +359,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
     );
 };
 
-const Calendario = ({ tourney, setTourneyData }) => {
+const Calendario = ({ tourney, setTourneyData, getScore }) => {
     const addCalendar = () => {
         const enconters = tourney.configs.group.enconters;
 
@@ -317,6 +387,7 @@ const Calendario = ({ tourney, setTourneyData }) => {
                                         ? [visitante[j], local[j]]
                                         : [local[j], visitante[j]],
                                 details: [],
+                                winner: null,
                             });
                         }
                     }
@@ -327,17 +398,63 @@ const Calendario = ({ tourney, setTourneyData }) => {
                 .filter((x) => !x.teams.includes('ODD'))
                 .sort((a, b) => a.week - b.week);
         });
-        console.log(tourney);
         setTourneyData({ ...tourney });
     };
 
+    const dispatch = useDispatch();
+
+    const [matchDetails, setMatchDetails] = useState(null);
+    const [open, setOpen] = useState(true);
+
+    const firstAccordionConf = {
+        open,
+        onOpen: () => setOpen(true),
+        onClose: () => setOpen(false),
+    };
+
+    const goToMatchDetails = (match) => {
+        setMatchDetails(match);
+        dispatch(navbarNewEntry({ action: setMatchDetails, param: false }));
+    };
+
+    useEffect(() => {
+        if (matchDetails) {
+            tourney.groups.forEach((g) => {
+                g.matchs.forEach((m) => {
+                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week) {
+                        m.details = matchDetails.details;
+                        const results = getScore(m).split(':');
+                        m.winner =
+                            results[0] === results[1]
+                                ? 'empate'
+                                : results[0] > results[1]
+                                ? m.teams[0]._id
+                                : m.teams[1]._id;
+                    }
+                });
+            });
+            setTourneyData({ ...tourney });
+        }
+    }, [matchDetails]);
+
     return (
         <>
-            {tourney.groups.every((x) => x.matchs.length > 0) ? (
-                tourney.groups.map((group) => {
+            {matchDetails ? (
+                <MatchDetails
+                    match={matchDetails}
+                    setMatchDetails={setMatchDetails}
+                    getScore={getScore}
+                />
+            ) : tourney.groups.every((x) => x.matchs.length > 0) ? (
+                tourney.groups.map((group, index) => {
                     const jornadas = [...new Set(group.matchs.map((x) => x.week))];
                     return (
-                        <Accordion key={group.name} alignIconRight useChevronIcon>
+                        <Accordion
+                            key={group.name}
+                            alignIconRight
+                            useChevronIcon
+                            {...(index === 0 ? { ...firstAccordionConf } : null)}
+                        >
                             <AccordionTrigger>{group.name}</AccordionTrigger>
                             <AccordionContent>
                                 {jornadas.map((i) => (
@@ -345,8 +462,13 @@ const Calendario = ({ tourney, setTourneyData }) => {
                                         <h4>{`Jornada ${i}`}</h4>
                                         {group.matchs
                                             .filter((x) => x.week === i)
-                                            .map((x) => (
-                                                <MatchCard match={x} />
+                                            .map((x, index) => (
+                                                <MatchCard
+                                                    match={x}
+                                                    getScore={getScore}
+                                                    goToMatchDetails={goToMatchDetails}
+                                                    key={`match-card-${index}`}
+                                                />
                                             ))}
                                     </div>
                                 ))}

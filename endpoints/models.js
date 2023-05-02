@@ -44,7 +44,7 @@ const matchDetailsSchema = Schema({
     type: {
         type: String,
         required: [true, 'Se requiere tipo'],
-        enum: ['Gol', 'Tarjeta Amarilla', 'Tarjeta Roja'],
+        enum: ['gol', 'autogol', 'tarjeta amarilla', 'tarjeta roja'],
     },
     player: {
         type: Schema.Types.ObjectId,
@@ -66,6 +66,11 @@ const matchSchema = Schema({
         ref: 'matchDetails',
         required: false,
         default: [],
+    },
+    winner: {
+        type: String,
+        require: false,
+        default: null,
     },
     week: {
         type: Number,
