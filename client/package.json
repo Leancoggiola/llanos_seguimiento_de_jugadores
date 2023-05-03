@@ -8,7 +8,6 @@
     "axios": "^1.2.2",
     "dotenv": "^16.0.3",
     "focus-trap-react": "^10.0.2",
-    "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-animate-height": "^3.1.1",

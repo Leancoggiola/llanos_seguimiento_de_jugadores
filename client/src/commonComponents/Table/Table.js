@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import './Table.scss';
 
 const Table = (props) => {
-    const { className = '', columnDefs = null, dataSource = [] } = props;
+    const { className = '', columnDefs = null, dataSource = [], defaultColumnDef = {} } = props;
 
     const [data, setData] = useState([...dataSource]);
     const [show, setShow] = useState(false);
@@ -28,7 +28,9 @@ const Table = (props) => {
             <thead className="cc-table-header">
                 <tr>
                     {columnDefs.map((x, index) => (
-                        <th key={x.headerName + index}>{x.headerName}</th>
+                        <th key={x.headerName + index} style={{ ...defaultColumnDef, ...x?.style }}>
+                            {x.headerName}
+                        </th>
                     ))}
                 </tr>
             </thead>

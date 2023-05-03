@@ -3,29 +3,28 @@
   margin: 1rem 0;
   border-collapse: collapse;
   border: 1px solid var(--table-border-color);
-  &-header tr{
-    height: 3.15rem;
-    min-height: 3.15rem;
-    th {
-      font-weight: bold;
-      border-bottom: 1px solid var(--table-border-color);
+
+  tbody {
+    tr:nth-child(2n-1) {
+      background-color: var(--table-odd-row-color);
     }
   }
-  &-body {
-    tr {
-      height: 3.15rem;
-      min-height: 3.15rem;
-      &:nth-child(2n-1) {
-        background-color: var(--table-odd-row-color);
-      }
-      td {
-        font-weight: lighter;
-        text-align: center;
-        border-bottom: 1px solid var(--table-border-color);
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
+
+  tr {
+    height: 3.15rem;
+    min-height: 3.15rem;
+    border-bottom: 1px solid var(--table-border-color);
+    th {
+      font-weight: bold;
+      width: max-content;
+      padding: 0 0.5rem;
+    }
+    td {
+      font-weight: lighter;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 }

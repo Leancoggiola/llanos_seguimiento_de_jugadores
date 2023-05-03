@@ -21,8 +21,8 @@ import MatchCard from '../MatchCard/MatchCard';
 // Middleware
 import { navbarNewEntry, updateToastData } from '../../../middleware/actions/navbarActions';
 // Styling
-import './GroupConfig.scss';
 import MatchDetails from '../MatchDetails/MatchDetails';
+import './GroupConfig.scss';
 
 const GroupConfig = (props) => {
     const { tourney, setTourneyData } = props;
@@ -213,7 +213,7 @@ const Grupos = ({ tourney, setTourneyData, getScore }) => {
 
     const columnDefs = [
         { headerName: '#', field: 'position', comparator: orderList, numered: true },
-        { headerName: 'Nombre', field: 'name' },
+        { headerName: 'Nombre', field: 'name', style: { width: '100%' } },
         { headerName: 'J', field: 'pj' },
         { headerName: 'G', field: 'pg' },
         { headerName: 'E', field: 'pe' },
