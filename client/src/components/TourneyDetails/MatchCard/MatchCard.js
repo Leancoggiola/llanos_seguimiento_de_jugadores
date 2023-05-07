@@ -1,4 +1,5 @@
-import { capitalize, isEmpty } from 'lodash';
+import { capitalize } from 'lodash';
+import { generateMatchPdf } from '../../../pdfs/matchPdf';
 // Components
 import {
     actionIcDateRange,
@@ -23,7 +24,7 @@ const MatchCard = (props) => {
                 </IconButton>
             </div>
             <div className="print-logo">
-                <IconButton>
+                <IconButton onClick={() => generateMatchPdf(match)}>
                     <Icon src={actionIcPrint} />
                 </IconButton>
             </div>

@@ -18,10 +18,10 @@ import { Option, Select } from '../../../commonComponents/Select';
 import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator';
 import Table from '../../../commonComponents/Table';
 import MatchCard from '../MatchCard/MatchCard';
+import MatchDetails from '../MatchDetails/MatchDetails';
 // Middleware
 import { navbarNewEntry, updateToastData } from '../../../middleware/actions/navbarActions';
 // Styling
-import MatchDetails from '../MatchDetails/MatchDetails';
 import './GroupConfig.scss';
 
 const GroupConfig = (props) => {
