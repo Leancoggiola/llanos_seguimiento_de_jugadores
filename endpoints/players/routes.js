@@ -2,11 +2,11 @@ const express = require('express');
 const { verifyToken } = require('../../middlewares/AuthMiddlewares.js');
 const router = express.Router();
 
-const { getPlayers, updatePlayer, deletePlayer } = require('./controller.js');
+const { getPlayers, updatePlayer, deletePlayer, addPlayer } = require('./controller.js');
 
 router.get('/getPlayers', verifyToken, getPlayers);
-router.delete('/deletePlayer', verifyToken, deletePlayer);
-router.post('/postPlayer', verifyToken, updatePlayer);
-router.put('/putPlayer', verifyToken, updatePlayer);
+router.delete('/deletePlayer/:id', verifyToken, deletePlayer);
+router.post('/postPlayer', verifyToken, addPlayer);
+router.put('/putPlayer/:id', verifyToken, updatePlayer);
 
 module.exports = router;

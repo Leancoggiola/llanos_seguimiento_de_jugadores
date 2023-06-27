@@ -16,12 +16,7 @@ import {
 import { getRequest } from '../index.js';
 
 import { updateToastData } from '../actions/navbarActions.js';
-import {
-    TOURNEY_DELETE_NEW_TOURNEY,
-    TOURNEY_GET_TOURNEY_LIST,
-    TOURNEY_POST_NEW_TOURNEY,
-    TOURNEY_PUT_TOURNEY,
-} from '../constants/tourney';
+import { TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_PUT_TOURNEY } from '../constants/tourney';
 
 // Workers
 function* getTourneysWork() {
@@ -62,19 +57,17 @@ function* postTourneyWork(action) {
         resolve && resolve();
     } catch (e) {
         yield put(postTourneyFailure(e));
-        yield put(
-            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
-        );
+        yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));
     }
 }
 
 function* putTourneyWork(action) {
     const {
-        payload: { body, resolve },
+        payload: { body, resolve, id },
     } = action;
     try {
         const options = {
-            url: '/api/tournaments/putTournaments',
+            url: `/api/tournaments/putTournaments/${id}`,
             method: 'PUT',
             data: body,
         };
@@ -93,19 +86,17 @@ function* putTourneyWork(action) {
         resolve && resolve();
     } catch (e) {
         yield put(putTourneyFailure(e));
-        yield put(
-            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
-        );
+        yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));
     }
 }
 
 function* deleteTourneyWork(action) {
     const {
-        payload: { body, resolve },
+        payload: { body, resolve, id },
     } = action;
     try {
         const options = {
-            url: '/api/tournaments/deleteTournaments',
+            url: `/api/tournaments/deleteTournaments/${id}`,
             method: 'DELETE',
             data: { id: body },
         };
@@ -124,9 +115,7 @@ function* deleteTourneyWork(action) {
         resolve && resolve();
     } catch (e) {
         yield put(deleteTourneyFailure(e));
-        yield put(
-            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
-        );
+        yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));
     }
 }
 
@@ -147,9 +136,4 @@ function* deleteTourneyWatch() {
     yield takeLatest(getRequest(TOURNEY_DELETE_NEW_TOURNEY), deleteTourneyWork);
 }
 
-export const tourneySaga = [
-    getTourneysWatch(),
-    postTourneyWatch(),
-    putTourneyWatch(),
-    deleteTourneyWatch(),
-];
+export const tourneySaga = [getTourneysWatch(), postTourneyWatch(), putTourneyWatch(), deleteTourneyWatch()];

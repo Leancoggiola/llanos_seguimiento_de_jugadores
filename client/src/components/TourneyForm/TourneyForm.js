@@ -2,7 +2,7 @@ import { capitalize } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
-import { contentIcRemove } from '../../assets/icons';
+import { actionIcDelete, contentIcRemove } from '../../assets/icons';
 import Button from '../../commonComponents/Button';
 import FormField from '../../commonComponents/FormField';
 import Icon from '../../commonComponents/Icon';
@@ -15,23 +15,23 @@ import MultiAddModal from '../MultiAddModal';
 // Assets
 import trophyIcon from '../../assets/trophy-icon.png';
 // Middleware
-import { postTourneyRequest, putTourneyRequest } from '../../middleware/actions/tourneyActions';
+import { postTourneyRequest, putTourneyRequest, deleteTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyForm.scss';
+import DeleteConfirmation from '../DeleteConfirmation/DeleteConfirmation';
 
 const MODALIDADES = ['Grupos+Eliminatoria'];
 
 const TourneyForm = (props) => {
     const { tourney, onClose } = props;
 
-    const [nombre, setNombre] = useState(tourney?.name ? tourney.name : '');
-    const [modalidad, setModalidad] = useState(tourney?.name ? tourney.type : '');
+    const [nombre, setNombre] = useState(tourney?._id ? tourney.name : '');
+    const [modalidad, setModalidad] = useState(tourney?._id ? tourney.type : '');
     const [equipos, setEquipos] = useState([]);
-    const [equiposDropdown, setEquiposDropdown] = useState(
-        tourney?.teams ? tourney.teams.map((x) => x._id) : []
-    );
+    const [equiposDropdown, setEquiposDropdown] = useState(tourney?.teams ? tourney.teams.map((x) => x._id) : []);
     const [equiposList, setList] = useState([]);
     const [showMultiAdd, setMultiAdd] = useState(false);
+    const [showDelete, setDelete] = useState(false);
 
     const teamList = useSelector((state) => state.team.teamList);
 
@@ -50,11 +50,15 @@ const TourneyForm = (props) => {
             type: modalidad,
             teams: equiposList,
         };
-        if (tourney?.name) {
-            dispatch(putTourneyRequest({ body, resolve: onClose }));
+        if (tourney?._id) {
+            dispatch(putTourneyRequest({ body, resolve: onClose, id: tourney._id }));
         } else {
             dispatch(postTourneyRequest({ body, resolve: onClose }));
         }
+    };
+
+    const handleDelete = () => {
+        dispatch(deleteTourneyRequest({ id: tourney._id, resolve: onClose }));
     };
 
     const handleNewEquipos = (data) => {
@@ -75,16 +79,11 @@ const TourneyForm = (props) => {
             <div className="img-container">
                 <img src={trophyIcon} alt={'trophy-icon'} />
             </div>
-            <h1>{tourney?.name ? 'Editar' : 'Nuevo'} Torneo</h1>
+            <h1>{tourney?._id ? 'Editar' : 'Nuevo'} Torneo</h1>
             <form noValidate>
                 <FormField>
                     <Label>Nombre</Label>
-                    <Input
-                        type="text"
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                        required={true}
-                    ></Input>
+                    <Input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required={true}></Input>
                 </FormField>
                 <FormField>
                     <Label>Modalidad</Label>
@@ -99,12 +98,7 @@ const TourneyForm = (props) => {
                 <h1>Equipos</h1>
                 <FormField>
                     <Label>Equipos</Label>
-                    <Select
-                        value={equiposDropdown}
-                        onChange={(e) => setEquiposDropdown(e)}
-                        filter={true}
-                        multiple={true}
-                    >
+                    <Select value={equiposDropdown} onChange={(e) => setEquiposDropdown(e)} filter={true} multiple={true}>
                         {teamList.data.map((option, index) => (
                             <Option value={option._id} key={option._id + index}>
                                 {capitalize(option.name)}
@@ -121,7 +115,7 @@ const TourneyForm = (props) => {
                 {equiposList.length > 0 && (
                     <List>
                         {equiposList.map((equipo, index) => (
-                            <div className="team-form-equipo-list" key={equipo._id + index}>
+                            <div className="tourney-form-equipo-list" key={equipo._id + index}>
                                 <p>{capitalize(equipo.name)}</p>
                                 {isRemovable(equipo) && (
                                     <IconButton onClick={() => handleRemove(equipo)}>
@@ -136,18 +130,18 @@ const TourneyForm = (props) => {
                     <Button type="button" variant="secondary" onClick={onClose}>
                         Cancelar
                     </Button>
+                    {tourney?._id && (
+                        <IconButton type="button" onClick={() => setDelete(true)} className="tourney-form-action-buttons-del">
+                            <Icon src={actionIcDelete} />
+                        </IconButton>
+                    )}
                     <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)}>
-                        {tourney?.name ? 'Editar' : 'Crear'}
+                        {tourney?._id ? 'Editar' : 'Crear'}
                     </Button>
                 </div>
             </form>
-            <MultiAddModal
-                show={showMultiAdd}
-                onClose={() => setMultiAdd(false)}
-                type={'equipo'}
-                handleClose={handleNewEquipos}
-                existingElements={[...teamList.data, ...equipos]}
-            />
+            <MultiAddModal show={showMultiAdd} onClose={() => setMultiAdd(false)} type={'equipo'} handleClose={handleNewEquipos} existingElements={[...teamList.data, ...equipos]} />
+            <DeleteConfirmation show={showDelete} onClose={() => setDelete(false)} onSubmit={handleDelete} message={'¿Estas seguro de eliminar este torneo?'} />
         </article>
     );
 };

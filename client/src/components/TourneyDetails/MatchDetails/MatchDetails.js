@@ -66,7 +66,7 @@ const MatchDetails = (props) => {
                 {match.details
                     .sort((a, b) => a.time_in_match - b.time_in_match)
                     .map((det, index) => {
-                        const side = match.teams[0].players.some((x) => x._id === det.player);
+                        const side = match.teams[0].players.some((x) => x._id === det.player._id);
                         return (
                             <Fragment key={det.player?.name + index}>
                                 <div

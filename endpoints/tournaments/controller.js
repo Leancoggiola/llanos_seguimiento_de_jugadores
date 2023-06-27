@@ -7,14 +7,70 @@ module.exports = {
     getTournaments: async (req, res) => {
         const user = req?.token;
         try {
-            const tourneys = await Tournament.find({
-                createdBy: user,
-            }).populate({ path: 'teams', select: 'name players' });
+            const tourneys = await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name players' });
             res.status(200).json(tourneys);
         } catch (err) {
-            res.status(err?.cause ? err.cause : 400).json({
-                message: err.message,
-            });
+            await errorHandler(session, err, res);
+        }
+    },
+
+    addTournament: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const { body } = req;
+            const newTeamId = new mongoose.Types.ObjectId();
+            body['createdBy'] = user;
+            body['_id'] = newTeamId;
+
+            if (body.teams.length > 0) {
+                const existing = body.teams.filter((x) => x._id).map((x) => x._id);
+                const newTeams = body.teams
+                    .filter((x) => !x._id)
+                    .map((team) => {
+                        return {
+                            _id: new mongoose.Types.ObjectId(),
+                            name: team.name,
+                            players: [],
+                            createdBy: user,
+                            tourney_ids: [newTeamId],
+                        };
+                    });
+
+                // Añadir teams nuevos a la DB
+                let docs;
+                await Team.insertMany(newTeams, { session })
+                    .then(async (doc, err) => {
+                        if (err) await errorHandler(session, err, res);
+                        else docs = doc.map((x) => x._id);
+                    })
+                    .catch(async (err) => await errorHandler(session, err, res));
+
+                // Actualizar el team id de los jugadores existentes
+                await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: newTeamId } }, { session })
+                    .then(async (_, err) => {
+                        if (err) await errorHandler(session, err, res);
+                    })
+                    .catch(async (err) => await errorHandler(session, err, res));
+
+                body.teams = [...existing, ...docs];
+            }
+
+            const doc = new Tournament({ ...body });
+            await doc
+                .save({ session })
+                .then(async (tourney, err) => {
+                    if (err) await errorHandler(session, err, res);
+                    else {
+                        await session.commitTransaction();
+                        session.endSession();
+                        res.status(201).json({ result: tourney, newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }) });
+                    }
+                })
+                .catch(async (err) => await errorHandler(session, err, res));
+        } catch (err) {
+            await errorHandler(session, err, res);
         }
     },
 
@@ -25,56 +81,73 @@ module.exports = {
         try {
             const { body } = req;
             body['createdBy'] = user;
+            const id = req.params.id;
+
             if (body.teams.length > 0) {
-                const existing = await Team.find({ name: { $in: body.teams } }, null, { session });
-                const newTeams = body.teams.filter(
-                    (team) => !existing.map((x) => x.name).includes(team)
-                );
-                const docs = await Team.create(
-                    newTeams.map((x) => ({
-                        name: x,
-                        players: [],
-                        createdBy: user,
-                    })),
-                    { session }
-                );
-                body.teams = [...docs, ...existing].map((x) => x._id);
+                const existing = body.teams.filter((x) => x._id).map((x) => x._id);
+                const newTeams = body.teams
+                    .filter((x) => !x._id)
+                    .map((team) => {
+                        return {
+                            _id: new mongoose.Types.ObjectId(),
+                            name: team.name,
+                            players: [],
+                            createdBy: user,
+                            tourney_ids: [id],
+                        };
+                    });
+
+                // Añadir teams nuevos a la DB
+                let docs;
+                await Team.insertMany(newTeams, { session })
+                    .then(async (doc, err) => {
+                        if (err) await errorHandler(session, err, res);
+                        else docs = doc.map((x) => x._id);
+                    })
+                    .catch(async (err) => await errorHandler(session, err, res));
+
+                // Actualizar el team id de los jugadores existentes
+                await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: id } }, { session })
+                    .then(async (_, err) => {
+                        if (err) await errorHandler(session, err, res);
+                    })
+                    .catch(async (err) => await errorHandler(session, err, res));
+
+                body.teams = [...existing, ...docs];
             }
-            await Tournament.findOneAndUpdate({}, body, {
+
+            await Tournament.findById(id)
+                .then(async (tourney, err) => {
+                    if (err) await errorHandler(session, err, res);
+                    else {
+                        // Remove tourney id from team
+                        const newData = tourney.teams.filter((x) => !body.teams.includes(x.toString()));
+                        await Team.updateMany({ _id: { $in: newData } }, { $pull: { tourney_ids: id } }, { session })
+                            .then(async (_, err) => {
+                                if (err) await errorHandler(session, err, res);
+                            })
+                            .catch(async (err) => await errorHandler(session, err, res));
+                    }
+                })
+                .catch(async (err) => await errorHandler(session, err, res));
+
+            await Tournament.findOneAndUpdate({ _id: id }, body, {
                 new: true,
-                upsert: true,
+                upsert: false,
                 runValidators: true,
                 session,
             })
-                .populate({ path: 'teams', select: 'name players' })
                 .then(async (tourney, err) => {
-                    if (err) {
-                        await session.abortTransaction();
-                        session.endSession();
-                        errorHandler(err, res);
-                    } else {
+                    if (err) await errorHandler(session, err, res);
+                    else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({
-                            result: tourney,
-                            newData: await Tournament.find({
-                                createdBy: user,
-                            }).populate({
-                                path: 'teams',
-                                select: 'name players',
-                            }),
-                        });
+                        res.status(201).json({ result: tourney, newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }) });
                     }
                 })
-                .catch(async (err) => {
-                    await session.abortTransaction();
-                    session.endSession();
-                    errorHandler(err, res);
-                });
+                .catch(async (err) => await errorHandler(session, err, res));
         } catch (err) {
-            await session.abortTransaction();
-            session.endSession();
-            errorHandler(err, res);
+            await errorHandler(session, err, res);
         }
     },
 
@@ -83,29 +156,24 @@ module.exports = {
         const session = await mongoose.startSession();
         session.startTransaction();
         try {
-            const {
-                body: { id },
-            } = req;
+            const id = req.params.id;
+
+            // Remove tournament from teams
+            await Team.updateMany({ $in: { tourney_ids: id } }, { $pull: { tourney_ids: id } }, { session })
+                .then(async (_, err) => {
+                    if (err) await errorHandler(session, err, res);
+                })
+                .catch(async (err) => await errorHandler(session, err, res));
+
             await Tournament.findByIdAndDelete(id, { session, runValidators: true })
                 .then(async (response) => {
                     await session.commitTransaction();
                     session.endSession();
-                    res.status(201).json({
-                        result: response,
-                        newData: await Tournament.find({
-                            createdBy: user,
-                        }).populate({ path: 'teams', select: 'name players' }),
-                    });
+                    res.status(201).json({ result: response, newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }) });
                 })
-                .catch(async (err) => {
-                    await session.abortTransaction();
-                    session.endSession();
-                    errorHandler(err, res);
-                });
+                .catch(async (err) => await errorHandler(session, err, res));
         } catch (err) {
-            await session.abortTransaction();
-            session.endSession();
-            errorHandler(err, res);
+            await errorHandler(session, err, res);
         }
     },
 };

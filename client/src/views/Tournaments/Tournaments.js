@@ -44,41 +44,25 @@ const Tournaments = () => {
         }
     }, [tourneyForm]);
 
-    if (tourneyList.error || tourneyCrud.error)
-        return (
-            <ErrorMessage
-                message={tourneyList?.error ? tourneyList.error.message : tourneyCrud.error.message}
-            />
-        );
+    if (tourneyList.error || tourneyCrud.error) return <ErrorMessage message={tourneyList?.error ? tourneyList.error.message : tourneyCrud.error.message} />;
 
     if (tourneyList.loading || tourneyCrud.loading) {
-        return <LoadingSpinner fullscreen={true} />;
+        return (
+            <section className="tournament-page-container">
+                <LoadingSpinner fullscreen={true} />
+            </section>
+        );
     }
 
     return (
         <section className="tournament-page-container">
-            {tourneyForm && (
-                <TourneyForm onClose={() => dispatch(navbarBack())} tourney={selectedTourney} />
-            )}
-            {tourneyDetails && (
-                <TourneyDetails
-                    onClose={() => dispatch(navbarBack())}
-                    tourney={selectedTourney}
-                    option={optionSelected}
-                    setOption={setOption}
-                />
-            )}
+            {tourneyForm && <TourneyForm onClose={() => dispatch(navbarBack())} tourney={selectedTourney} />}
+            {tourneyDetails && <TourneyDetails onClose={() => dispatch(navbarBack())} tourney={selectedTourney} option={optionSelected} setOption={setOption} />}
             {!tourneyForm && !tourneyDetails && (
                 <article>
                     {!isEmpty(tourneyList.data) &&
                         tourneyList.data.map((tourney, index) => (
-                            <TourneyCard
-                                key={tourney.name + index}
-                                tourney={tourney}
-                                setTourneyForm={setTourneyForm}
-                                setOption={setOption}
-                                setSelectedTourney={setSelectedTourney}
-                            />
+                            <TourneyCard key={tourney.name + index} tourney={tourney} setTourneyForm={setTourneyForm} setOption={setOption} setSelectedTourney={setSelectedTourney} />
                         ))}
                     <IconButton className="add-new" onClick={() => setTourneyForm(true)}>
                         <Icon src={contentIcAddCircle} />

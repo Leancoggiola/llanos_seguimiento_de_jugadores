@@ -9,7 +9,31 @@ module.exports = {
             const players = await Player.find({ createdBy: user });
             res.status(200).json(players);
         } catch (err) {
-            errorHandler(err, res);
+            await errorHandler(session, err, res);
+        }
+    },
+
+    addPlayer: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const { body } = req;
+            body['createdBy'] = user;
+            const doc = new Player({ ...body });
+            await doc
+                .save({ session })
+                .then(async (player, err) => {
+                    if (err) await errorHandler(session, err, res);
+                    else {
+                        await session.commitTransaction();
+                        session.endSession();
+                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }) });
+                    }
+                })
+                .catch(async (err) => await errorHandler(session, err, res));
+        } catch (err) {
+            await errorHandler(session, err, res);
         }
     },
 
@@ -20,37 +44,23 @@ module.exports = {
         try {
             const { body } = req;
             body['createdBy'] = user;
-            await Player.findOneAndUpdate({ name: body.name }, body, {
+            await Player.findOneAndUpdate({ _id: req.params.id }, body, {
                 new: true,
-                upsert: true,
+                upsert: false,
                 runValidators: true,
                 session,
             })
                 .then(async (player, err) => {
-                    if (err) {
-                        await session.abortTransaction();
-                        session.endSession();
-                        errorHandler(err, res);
-                    } else {
+                    if (err) await errorHandler(session, err, res);
+                    else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({
-                            result: player,
-                            newData: await Player.find({
-                                createdBy: user,
-                            }),
-                        });
+                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }) });
                     }
                 })
-                .catch(async (err) => {
-                    await session.abortTransaction();
-                    session.endSession();
-                    errorHandler(err, res);
-                });
+                .catch(async (err) => await errorHandler(session, err, res));
         } catch (err) {
-            await session.abortTransaction();
-            session.endSession();
-            errorHandler(err, res);
+            await errorHandler(session, err, res);
         }
     },
 
@@ -59,37 +69,28 @@ module.exports = {
         const session = await mongoose.startSession();
         session.startTransaction();
         try {
-            const {
-                body: { id },
-            } = req;
+            const id = req.params.id;
+            const player = await Player.findById(req.params.id);
 
-            const isOnTournament = await Tournament.find({
-                'players._id': { $in: [mongoose.Types.ObjectId(id)] },
-                status: { $ne: 'Terminado' },
-            });
-
-            if (isOnTournament.length > 0) {
-                res.status(404).json({ message: 'Elimina el equipo de todo los torneos primero' });
-            } else {
+            const deletePlayer = async () => {
                 await Player.findByIdAndDelete(id, { session })
                     .then(async (response) => {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({
-                            result: response,
-                            newData: await Player.find({ createdBy: user }),
-                        });
+                        res.status(201).json({ result: response, newData: await Player.find({ createdBy: user }) });
                     })
-                    .catch(async (err) => {
-                        await session.abortTransaction();
-                        session.endSession();
-                        errorHandler(err, res);
-                    });
+                    .catch(async (err) => await errorHandler(session, err, res));
+            };
+
+            if (!player.team_id) {
+                await deletePlayer();
+            } else {
+                const isOnTournament = await Tournament.find({ status: { $ne: 'Terminado' }, teams: { $nin: [player.team_id] } });
+                if (isOnTournament?.length) res.status(404).json({ message: 'El jugador se encuentra en un torneo activo.' });
+                else await deletePlayer();
             }
         } catch (err) {
-            await session.abortTransaction();
-            session.endSession();
-            errorHandler(err, res);
+            await errorHandler(session, err, res);
         }
     },
 };

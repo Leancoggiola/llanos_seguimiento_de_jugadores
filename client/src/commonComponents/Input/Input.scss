@@ -8,7 +8,7 @@
         &::placeholder {
             font-size: 1rem;
             color: var(--app-color);
-            transition: opacity var(--easy-in-out-fast);
+            transition: opacity var(--ease-in-out-fast);
             opacity: 0;
         }
 
@@ -19,7 +19,7 @@
         &::-webkit-input-placeholder {
             font-size: 1rem;
             color: var(--app-color);
-            transition: opacity var(--easy-in-out-fast);
+            transition: opacity var(--ease-in-out-fast);
             opacity: 0;
         }
 
@@ -30,7 +30,7 @@
         &:-ms-input-placeholder {
             font-size: 1rem;
             color: var(--app-color);
-            transition: opacity var(--easy-in-out-fast);
+            transition: opacity var(--ease-in-out-fast);
             opacity: 0;
         }
 

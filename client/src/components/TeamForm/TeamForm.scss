@@ -18,7 +18,12 @@
             width: auto;
         }
     }
-
+    & > h1 {
+        margin: 0 0.5rem;
+    }
+    &-fields {
+        margin: 0 0.5rem;
+    }
     &-new-player {
         text-align: right;
         cursor: pointer;

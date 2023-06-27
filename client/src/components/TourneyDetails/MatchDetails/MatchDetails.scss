@@ -58,6 +58,7 @@
         .home-det,.time-det,.away-det {
             display: flex;
             align-items: center;
+            gap: 0.75rem;
             white-space: break-spaces;
         }
         .home-det {

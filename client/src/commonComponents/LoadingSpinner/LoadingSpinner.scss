@@ -32,7 +32,7 @@
         
         @for $i from 1 through 3 {
             &:nth-child(#{$i}) {
-                animation: loaderAnimation 2s var(--easy-in-out-expo);
+                animation: loaderAnimation 2s var(--ease-in-out-expo);
                 animation-delay: 1 - ($i * 0.2s);
                 animation-iteration-count: infinite;
             }

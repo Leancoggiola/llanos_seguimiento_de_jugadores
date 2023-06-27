@@ -38,8 +38,7 @@ const Home = () => {
         }
     };
 
-    if (teamLoading || tourneyLoading)
-        return <LoadingSpinner showPosRelative={true} fullscreen={true} />;
+    if (teamLoading || tourneyLoading) return <LoadingSpinner fullscreen={true} />;
 
     return <main className="home-container">{setPage()}</main>;
 };

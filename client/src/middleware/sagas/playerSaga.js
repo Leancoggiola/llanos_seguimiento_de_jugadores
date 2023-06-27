@@ -1,26 +1,12 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { serviceCall } from '../../config/serviceCall.js';
-import {
-    getPlayersFailure,
-    getPlayersSuccess,
-    postPlayerFailure,
-    postPlayerSuccess,
-    deletePlayerFailure,
-    deletePlayerSuccess,
-    putPlayerSuccess,
-    putPlayerFailure,
-} from '../actions/playerActions.js';
+import { getPlayersFailure, getPlayersSuccess, postPlayerFailure, postPlayerSuccess, deletePlayerFailure, deletePlayerSuccess, putPlayerSuccess, putPlayerFailure } from '../actions/playerActions.js';
 import { getPlayersRequest } from '../actions/playerActions.js';
 
 import { getRequest } from '../index.js';
 
-import {
-    PLAYER_DELETE_NEW_PLAYER,
-    PLAYER_GET_PLAYER_LIST,
-    PLAYER_POST_NEW_PLAYER,
-    PLAYER_PUT_PLAYER,
-} from '../constants/player.js';
+import { PLAYER_DELETE_NEW_PLAYER, PLAYER_GET_PLAYER_LIST, PLAYER_POST_NEW_PLAYER, PLAYER_PUT_PLAYER } from '../constants/player.js';
 import { updateToastData } from '../actions/navbarActions.js';
 
 // Workers
@@ -61,19 +47,17 @@ function* postPlayerWork(action) {
         resolve && resolve();
     } catch (e) {
         yield put(postPlayerFailure(e));
-        yield put(
-            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
-        );
+        yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));
     }
 }
 
 function* putPlayerWork(action) {
     const {
-        payload: { body, resolve },
+        payload: { body, resolve, id },
     } = action;
     try {
         const options = {
-            url: '/api/players/putPlayer',
+            url: `/api/players/putPlayer/${id}`,
             method: 'PUT',
             data: body,
         };
@@ -91,21 +75,19 @@ function* putPlayerWork(action) {
         resolve && resolve();
     } catch (e) {
         yield put(putPlayerFailure(e));
-        yield put(
-            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
-        );
+        yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));
     }
 }
 
 function* deletePlayerWork(action) {
     const {
-        payload: { body, resolve },
+        payload: { id, resolve },
     } = action;
     try {
         const options = {
-            url: '/api/players/deletePlayer',
+            url: `/api/players/deletePlayer/${id}`,
             method: 'DELETE',
-            data: { id: body },
+            data: { id },
         };
         const response = yield call(serviceCall, options);
         yield put(deletePlayerSuccess(response.result));
@@ -121,9 +103,7 @@ function* deletePlayerWork(action) {
         resolve && resolve();
     } catch (e) {
         yield put(deletePlayerFailure(e));
-        yield put(
-            updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true })
-        );
+        yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));
     }
 }
 
@@ -144,9 +124,4 @@ function* deletePlayerWatch() {
     yield takeLatest(getRequest(PLAYER_DELETE_NEW_PLAYER), deletePlayerWork);
 }
 
-export const playerSaga = [
-    getPlayersWatch(),
-    postPlayerWatch(),
-    putPlayerWatch(),
-    deletePlayerWatch(),
-];
+export const playerSaga = [getPlayersWatch(), postPlayerWatch(), putPlayerWatch(), deletePlayerWatch()];

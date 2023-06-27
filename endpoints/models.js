@@ -22,10 +22,8 @@ const playerSchema = Schema({
         match: [/^\d{7,8}$/, 'Ingresa un DNI valido'],
     },
     age: { type: Number, required: false, min: 1, max: 99 },
-    // yellow_cards_per_match: { type: Object, require: false},
-    // red_cards_per_match: { type: Object, require: false},
-    // sanction_per_tourney: { type: Object, require: false},
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    team_id: { type: Schema.Types.ObjectId, ref: 'teams', default: null },
 });
 
 const teamsSchema = Schema({
@@ -38,6 +36,7 @@ const teamsSchema = Schema({
     },
     players: { type: [Schema.Types.ObjectId], ref: 'players', default: [] },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    tourney_ids: { type: [Schema.Types.ObjectId], ref: 'tournaments', default: [] },
 });
 
 const matchDetailsSchema = Schema({

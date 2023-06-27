@@ -18,7 +18,7 @@ const PlayerCard = (props) => {
     const dispatch = useDispatch();
 
     const handleDelete = () => {
-        dispatch(deletePlayerRequest({ player: player._id }));
+        dispatch(deletePlayerRequest({ id: player._id }));
         setShowModal(false);
     };
 
@@ -35,13 +35,7 @@ const PlayerCard = (props) => {
                     </IconButton>
                 </div>
             </CardHeader>
-            <DeleteConfirmation
-                show={showModal}
-                onClose={() => setShowModal(false)}
-                onSubmit={handleDelete}
-                message={'¿Seguro quieres eliminar este jugador?'}
-                className={'confirmation-modal'}
-            />
+            <DeleteConfirmation show={showModal} onClose={() => setShowModal(false)} onSubmit={handleDelete} message={'¿Seguro quieres eliminar este jugador?'} className={'confirmation-modal'} />
         </Card>
     );
 };

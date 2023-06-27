@@ -43,6 +43,7 @@
         display: flex;
         width: calc(100%);
         justify-content: space-between;
+        align-items: center;
         position: fixed;
         background-color: var(--navigation-bg);
         bottom: 0;
@@ -50,6 +51,12 @@
         margin: 0 -0.5rem;
         button {
             margin: 0 1rem;
+        }
+        &-del{
+            height: max-content;
+            padding: 0.25rem;
+            background: var(--error);
+            border-radius: 50%;
         }
     }
 }

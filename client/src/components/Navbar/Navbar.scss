@@ -11,16 +11,17 @@
 
     &-collapse {
         width: var(--vertical-nav-collapse-width);
-        transition: width 0.5s;
+        transition: width 0.5s, height 0.5s ease;
         @media screen and (max-width: 576px){
-            display: none;
+            height: 0%;
         }
     }
     &-expanded {
         width: var(--vertical-nav-expanded-width);
-        transition: width 0.5s;
+        transition: width 0.5s, height 0.5s ease;;
         @media screen and (max-width: 576px){
             display: flex;
+            height: 100%;
             width: var(--vertical-nav-collapse-width);
         }
     }

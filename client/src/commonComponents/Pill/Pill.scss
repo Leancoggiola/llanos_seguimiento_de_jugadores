@@ -26,8 +26,8 @@
         background-color: var(--chip-bg);
         border: 1px solid var(--chip-color);
         border-radius: 2rem;
-        transition: color var(--easy-in-out-fast), background-color var(--easy-in-out-fast),
-            box-shadow var(--easy-in-out-fast), border-color var(--easy-in-out-fast);
+        transition: color var(--ease-in-out-fast), background-color var(--ease-in-out-fast),
+            box-shadow var(--ease-in-out-fast), border-color var(--ease-in-out-fast);
 
         &.cc-pill-success {
             color: var(--chip-success-color);

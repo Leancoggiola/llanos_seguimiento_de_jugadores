@@ -32,8 +32,8 @@ const PlayerForm = (props) => {
             dni: dni,
             age: age,
         };
-        if (player.name) {
-            dispatch(putPlayerRequest({ body, resolve: onClose }));
+        if (player?._id) {
+            dispatch(putPlayerRequest({ body, resolve: onClose, id: player._id }));
         } else {
             dispatch(postPlayerRequest({ body, resolve: onClose }));
         }
@@ -52,49 +52,23 @@ const PlayerForm = (props) => {
             <form noValidate>
                 <FormField>
                     <Label>Nombre</Label>
-                    <Input
-                        type="text"
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                        required={true}
-                    />
-                    {player?.name && nombre === '' && (
-                        <FormFieldError>Este campo es requerido</FormFieldError>
-                    )}
+                    <Input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required={true} />
+                    {player?.name && nombre === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
                 </FormField>
                 <FormField>
                     <Label>DNI</Label>
-                    <Input
-                        type="text"
-                        value={dni}
-                        onChange={(e) => setDNI(e.target.value)}
-                        maxLength="8"
-                        required={true}
-                    />
-                    {player?.name && dni === '' && (
-                        <FormFieldError>Este campo es requerido</FormFieldError>
-                    )}
+                    <Input type="text" value={dni} onChange={(e) => setDNI(e.target.value)} maxLength="8" required={true} />
+                    {player?.name && dni === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
                 </FormField>
                 <FormField>
                     <Label>Edad</Label>
-                    <Input
-                        type="number"
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                        min={1}
-                        max={99}
-                    />
+                    <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} min={1} max={99} />
                 </FormField>
                 <div className="player-form-action-buttons">
                     <Button type="button" variant="secondary" onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        onClick={(e) => handleSubmit(e)}
-                        disabled={player?.name && (dni === '' || nombre === '')}
-                    >
+                    <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)} disabled={player?.name && (dni === '' || nombre === '')}>
                         {player?.name ? 'Editar' : 'Crear'}
                     </Button>
                 </div>

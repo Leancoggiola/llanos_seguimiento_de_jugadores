@@ -4,7 +4,7 @@
     background: none;
     border: none;
     padding: 0;
-    transition: box-shadow var(--easy-in-out-fast);
+    transition: box-shadow var(--ease-in-out-fast);
     color: var(--app-color);
 
     &:hover {
@@ -38,6 +38,6 @@
     
     path {
         fill: currentColor;
-        transition: fill var(--easy-in-out-fast);
+        transition: fill var(--ease-in-out-fast);
     }
 }
