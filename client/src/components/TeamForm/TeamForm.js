@@ -85,11 +85,13 @@ const TeamForm = (props) => {
                     <FormField>
                         <Label>Jugador</Label>
                         <Select value={jugadoresDropdown} onChange={(e) => setJugadoresDropdown(e)} filter={true} multiple={true}>
-                            {playerList.data.map((option, index) => (
-                                <Option value={option._id} key={option._id + index}>
-                                    {capitalize(option.name)}
-                                </Option>
-                            ))}
+                            {playerList.data
+                                .filter((x) => x.team_id === team?._id || !x.team_id)
+                                .map((option, index) => (
+                                    <Option value={option._id} key={option._id + index}>
+                                        {capitalize(option.name)}
+                                    </Option>
+                                ))}
                         </Select>
                     </FormField>
                     <div className="team-form-new-player">

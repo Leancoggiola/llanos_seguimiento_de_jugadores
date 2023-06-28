@@ -82,7 +82,6 @@
 
     &-modal {
         &-body {
-            min-height: 20rem;
             width: 100%;
             &-type {
                 padding-top: 1rem;
@@ -93,9 +92,7 @@
                 text-align: center;
                 & > div {
                     height: max-content;
-                    img {
-                        height: 3rem;
-                    }
+                    img { height: 3rem; }
                 }
             }
             &-team {

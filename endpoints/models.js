@@ -14,7 +14,7 @@ const playerSchema = Schema({
         required: false,
         index: {
             unique: true,
-            partialFilterExpression: { dni: { $exists: true } },
+            partialFilterExpression: { dni: { $type: 'string' } },
         },
         lowercase: true,
         trim: true,

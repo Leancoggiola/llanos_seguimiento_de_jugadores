@@ -1,13 +1,13 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { serviceCall } from '../../config/serviceCall.js';
-import { getTeamsFailure, getTeamsSuccess, postTeamFailure, postTeamSuccess, deleteTeamFailure, deleteTeamSuccess, putTeamSuccess, putTeamFailure } from '../actions/teamActions.js';
-import { getPlayersRequest } from '../actions/playerActions.js';
+import { getPlayersSuccess } from '../actions/playerActions.js';
+import { deleteTeamFailure, deleteTeamSuccess, getTeamsFailure, getTeamsSuccess, postTeamFailure, postTeamSuccess, putTeamFailure, putTeamSuccess } from '../actions/teamActions.js';
 
 import { getRequest } from '../index.js';
 
-import { TEAM_DELETE_NEW_TEAM, TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM, TEAM_PUT_TEAM } from '../constants/team.js';
 import { updateToastData } from '../actions/navbarActions.js';
+import { TEAM_DELETE_NEW_TEAM, TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM, TEAM_PUT_TEAM } from '../constants/team.js';
 
 // Workers
 function* getTeamsWork() {
@@ -36,7 +36,7 @@ function* postTeamWork(action) {
         const response = yield call(serviceCall, options);
         yield put(postTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
-        if (response.result.players.length) yield put(getPlayersRequest());
+        yield put(getPlayersSuccess(response.newPlayers));
         yield put(updateToastData({ show: true, variant: 'success', message: 'Equipo creado con exito', closeBtn: true }));
         resolve && resolve();
     } catch (e) {
@@ -58,7 +58,7 @@ function* putTeamWork(action) {
         const response = yield call(serviceCall, options);
         yield put(putTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
-        if (response.result.players.length) yield put(getPlayersRequest());
+        yield put(getPlayersSuccess(response.newPlayers));
         yield put(updateToastData({ show: true, variant: 'success', message: 'Equipo editado con exito', closeBtn: true }));
         resolve && resolve();
     } catch (e) {
@@ -80,7 +80,7 @@ function* deleteTeamWork(action) {
         const response = yield call(serviceCall, options);
         yield put(deleteTeamSuccess(response.result));
         yield put(getTeamsSuccess(response.newData));
-        if (response.result.players.length) yield put(getPlayersRequest());
+        yield put(getPlayersSuccess(response.newPlayers));
         yield put(updateToastData({ show: true, variant: 'success', message: 'Equipo eliminado con exito', closeBtn: true }));
         resolve && resolve();
     } catch (e) {

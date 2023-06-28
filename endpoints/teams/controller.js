@@ -69,10 +69,8 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: team,
-                            newData: await Team.find({ createdBy: user }).populate({
-                                path: 'players',
-                                select: '_id name dni age',
-                            }),
+                            newData: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newPlayers: await Player.find({ createdBy: user }),
                         });
                     }
                 })
@@ -89,17 +87,17 @@ module.exports = {
         try {
             const { body } = req;
             body['createdBy'] = user;
+            const id = req.params.id;
             if (body.players.length) {
                 const existing = body.players.filter((x) => x._id).map((x) => x._id);
                 const newPlayers = body.players
                     .filter((x) => !x._id)
                     .map((player) => {
                         return {
-                            _id: new mongoose.Types.ObjectId(),
                             name: player.name,
                             dni: player?.dni ? player.dni : null,
                             age: player?.age ? player.age : 18,
-                            team_id: req.params.id,
+                            team_id: id,
                             createdBy: user,
                         };
                     });
@@ -114,7 +112,7 @@ module.exports = {
                     .catch(async (err) => await errorHandler(session, err, res));
 
                 // Actualizar el team id de los jugadores existentes
-                await Player.updateMany({ _id: { $in: existing } }, { $set: { team_id: req.params.id } }, { session })
+                await Player.updateMany({ _id: { $in: existing } }, { $set: { team_id: id } }, { session })
                     .then(async (_, err) => {
                         if (err) await errorHandler(session, err, res);
                     })
@@ -123,7 +121,14 @@ module.exports = {
                 body.players = [...existing, ...docs];
             }
 
-            await Team.findOneAndUpdate({ _id: req.params.id }, body, {
+            //Remove team id de los players
+            await Player.updateMany({ team_id: id, _id: { $nin: body.players } }, { $set: { team_id: null } }, { session })
+                .then(async (_, err) => {
+                    if (err) await errorHandler(session, err, res);
+                })
+                .catch(async (err) => await errorHandler(session, err, res));
+
+            await Team.findOneAndUpdate({ _id: id }, body, {
                 new: true,
                 upsert: false,
                 runValidators: true,
@@ -134,9 +139,10 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({
+                        res.status(200).json({
                             result: team,
                             newData: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newPlayers: await Player.find({ createdBy: user }),
                         });
                     }
                 })
@@ -164,7 +170,7 @@ module.exports = {
                 });
             } else {
                 //Remove team id de los players
-                await Player.updateMany({ team_id: req.params.id }, { $set: { team_id: null } }, { session })
+                await Player.updateMany({ team_id: id }, { $set: { team_id: null } }, { session })
                     .then(async (_, err) => {
                         if (err) await errorHandler(session, err, res);
                     })
@@ -174,9 +180,10 @@ module.exports = {
                     .then(async (response) => {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({
+                        res.status(200).json({
                             result: response,
                             newData: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newPlayers: await Player.find({ createdBy: user }),
                         });
                     })
                     .catch(async (err) => await errorHandler(session, err, res));

@@ -9,16 +9,12 @@ import IconButton from '../../../commonComponents/IconButton';
 import Input from '../../../commonComponents/Input';
 import Label from '../../../commonComponents/Label';
 import { Modal, ModalBody, ModalFooter } from '../../../commonComponents/Modal';
-import {
-    ProgressIndicator,
-    ProgressIndicatorStep,
-} from '../../../commonComponents/ProgressIndicator';
+import { ProgressIndicator, ProgressIndicatorStep } from '../../../commonComponents/ProgressIndicator';
 import { Option, Select } from '../../../commonComponents/Select';
 import DeleteConfirmation from '../../DeleteConfirmation';
 // Assets
 import goalIcon from '../../../assets/goal-icon.png';
 import redCardIcon from '../../../assets/red-card-icon.png';
-import selfGoalIcon from '../../../assets/self-goal-icon.png';
 import yellowCardIcon from '../../../assets/yellow-card-icon.png';
 // Styling
 import './MatchDetails.scss';
@@ -35,8 +31,6 @@ const MatchDetails = (props) => {
         switch (type) {
             case 'gol':
                 return goalIcon;
-            case 'autogol':
-                return selfGoalIcon;
             case 'tarjeta amarilla':
                 return yellowCardIcon;
             case 'tarjeta roja':
@@ -69,10 +63,7 @@ const MatchDetails = (props) => {
                         const side = match.teams[0].players.some((x) => x._id === det.player._id);
                         return (
                             <Fragment key={det.player?.name + index}>
-                                <div
-                                    className={side ? 'home-det' : 'away-det'}
-                                    style={{ gridRow: index + 2 }}
-                                >
+                                <div className={side ? 'home-det' : 'away-det'} style={{ gridRow: index + 2 }}>
                                     {side && <img src={getImage(det.type)} alt="type-img" />}
                                     {capitalize(det.player?.name)}
                                     {!side && <img src={getImage(det.type)} alt="type-img" />}
@@ -84,24 +75,11 @@ const MatchDetails = (props) => {
                         );
                     })}
             </div>
-            <IconButton
-                className="match-details-add-detail add-new"
-                onClick={() => setDetailsForm(true)}
-            >
+            <IconButton className="match-details-add-detail add-new" onClick={() => setDetailsForm(true)}>
                 <Icon src={contentIcAddCircle} />
             </IconButton>
-            <DetailModal
-                show={detailsForm}
-                match={match}
-                onClose={() => setDetailsForm(false)}
-                setMatchDetails={setMatchDetails}
-            />
-            <DeleteConfirmation
-                show={showModal}
-                onClose={() => setShowModal(false)}
-                onSubmit={handleDelete}
-                message={'¿Seguro quieres eliminar este registro?'}
-            />
+            <DetailModal show={detailsForm} match={match} onClose={() => setDetailsForm(false)} setMatchDetails={setMatchDetails} />
+            <DeleteConfirmation show={showModal} onClose={() => setShowModal(false)} onSubmit={handleDelete} message={'¿Seguro quieres eliminar este registro?'} />
         </div>
     );
 };
@@ -164,10 +142,7 @@ const DetailModal = (props) => {
                             setTime();
                         }}
                     />
-                    <ProgressIndicatorStep
-                        body={'Jugador'}
-                        status={tabIndex === 1 ? 'active' : 'default'}
-                    />
+                    <ProgressIndicatorStep body={'Jugador'} status={tabIndex === 1 ? 'active' : 'default'} />
                 </ProgressIndicator>
                 <div className="match-details-modal-body">
                     {tabIndex === 0 && (
@@ -175,10 +150,6 @@ const DetailModal = (props) => {
                             <div onClick={() => setType('gol')}>
                                 <img src={goalIcon} alt="goal-icon" />
                                 <figcaption>Gol</figcaption>
-                            </div>
-                            <div onClick={() => setType('autogol')}>
-                                <img src={selfGoalIcon} alt="autogol-icon" />
-                                <figcaption>Gol en contra</figcaption>
                             </div>
                             <div onClick={() => setType('tarjeta amarilla')}>
                                 <img src={yellowCardIcon} alt="goal-icon" />
@@ -193,25 +164,11 @@ const DetailModal = (props) => {
                     {tabIndex === 1 && (
                         <>
                             <div className="match-details-modal-body-team">
-                                <div
-                                    className={`match-details-home-team${
-                                        team && team?.name !== match.teams[0].name
-                                            ? ' disabled'
-                                            : ''
-                                    }`}
-                                    onClick={() => setTeam(match.teams[0])}
-                                >
+                                <div className={`match-details-home-team${team && team?.name !== match.teams[0].name ? ' disabled' : ''}`} onClick={() => setTeam(match.teams[0])}>
                                     <Icon src={contentIcShield} />
                                     <h3>{capitalize(match.teams[0].name)}</h3>
                                 </div>
-                                <div
-                                    className={`match-details-away-team${
-                                        team && team?.name !== match.teams[1].name
-                                            ? ' disabled'
-                                            : ''
-                                    }`}
-                                    onClick={() => setTeam(match.teams[1])}
-                                >
+                                <div className={`match-details-away-team${team && team?.name !== match.teams[1].name ? ' disabled' : ''}`} onClick={() => setTeam(match.teams[1])}>
                                     <Icon src={contentIcShield} />
                                     <h3>{capitalize(match.teams[1].name)}</h3>
                                 </div>
@@ -223,10 +180,7 @@ const DetailModal = (props) => {
                                             <Label>Jugador</Label>
                                             <Select value={player} onChange={(e) => setPlayer(e)}>
                                                 {team.players.map((option, index) => (
-                                                    <Option
-                                                        value={option._id}
-                                                        key={option._id + index}
-                                                    >
+                                                    <Option value={option._id} key={option._id + index}>
                                                         {capitalize(option.name)}
                                                     </Option>
                                                 ))}
@@ -235,13 +189,7 @@ const DetailModal = (props) => {
                                     )}
                                     <FormField>
                                         <Label>Minuto</Label>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            max={200}
-                                            value={time_in_match}
-                                            onChange={(e) => setTime(e.target.value)}
-                                        />
+                                        <Input type="number" min={0} max={200} value={time_in_match} onChange={(e) => setTime(e.target.value)} />
                                     </FormField>
                                 </div>
                             )}

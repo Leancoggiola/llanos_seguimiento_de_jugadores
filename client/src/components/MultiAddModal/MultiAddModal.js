@@ -31,7 +31,7 @@ const MultiAddModal = (props) => {
         let newList = [];
         try {
             if (tabIndex === 0) {
-                const pref = (prefijo ? prefijo : title).toLowerCase();
+                const pref = (prefijo ? prefijo : title).toLowerCasse();
                 const offset = Math.max(existingElements.filter((x) => x.name.toLowerCase().match(/equipo \d{1,3}$/)).map((x) => Number(x.name.toLowerCase().replace('equipo', ''))));
 
                 newList = Array.from({ length: total }, (_, i) => {
@@ -72,7 +72,7 @@ const MultiAddModal = (props) => {
             return !newList.some((newElement) => existingElements.map((existing) => existing.name).includes(newElement.name));
         } else {
             return tabIndex === 0
-                ? newList.some((newElement) => existingElements.map((existing) => existing.name).includes(newElement.name))
+                ? !newList.some((newElement) => existingElements.map((existing) => existing.name).includes(newElement.name))
                 : !newList.some((x) => existingElements.map((x) => x.dni).includes(x.dni));
         }
     };

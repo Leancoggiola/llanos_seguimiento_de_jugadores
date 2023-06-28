@@ -65,7 +65,11 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: tourney, newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }) });
+                        res.status(201).json({
+                            result: tourney,
+                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }),
+                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                        });
                     }
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -142,7 +146,11 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: tourney, newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }) });
+                        res.status(200).json({
+                            result: tourney,
+                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }),
+                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                        });
                     }
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -166,10 +174,14 @@ module.exports = {
                 .catch(async (err) => await errorHandler(session, err, res));
 
             await Tournament.findByIdAndDelete(id, { session, runValidators: true })
-                .then(async (response) => {
+                .then(async (tourney) => {
                     await session.commitTransaction();
                     session.endSession();
-                    res.status(201).json({ result: response, newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }) });
+                    res.status(200).json({
+                        result: tourney,
+                        newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }),
+                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                    });
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
         } catch (err) {
