@@ -6,26 +6,8 @@ import { AccordionProvider } from '../contexts';
 import './Accordion.scss';
 
 const Accordion = (props) => {
-    const {
-        children,
-        className = '',
-        variant = 'functional',
-        onOpen = null,
-        onClose = null,
-        open = null,
-        useChevronIcon = false,
-        alignIconRight = false,
-    } = props;
-    const other = omit(props, [
-        'children',
-        'className',
-        'variant',
-        'onOpen',
-        'onClose',
-        'open',
-        'useChevronIcon',
-        'alignIconRight',
-    ]);
+    const { children, className = '', variant = 'functional', onOpen = null, onClose = null, open = null, useChevronIcon = false, alignIconRight = false } = props;
+    const other = omit(props, ['children', 'className', 'variant', 'onOpen', 'onClose', 'open', 'useChevronIcon', 'alignIconRight']);
 
     const [localVisible, setLocalVisible] = useState(false);
     const firstUpdate = useRef(true);
@@ -55,10 +37,10 @@ const Accordion = (props) => {
 
     const classes =
         `cc-accordion ` +
-        `${className ? className : ''}` +
         `${visible ? 'cc-accordion-content-visible ' : ''}` +
         `${alignIconRight ? 'cc-accordion-trigger-align-right ' : ''}` +
-        `cc--accordion-${variant}`;
+        `cc--accordion-${variant} ` +
+        `${className ? className : ''}`;
 
     const contextConfig = {
         visible,

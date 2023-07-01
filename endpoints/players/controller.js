@@ -6,10 +6,10 @@ module.exports = {
     getPlayers: async (req, res) => {
         const user = req?.token;
         try {
-            const players = await Player.find({ createdBy: user });
+            const players = await Player.find({ createdBy: user }).select('_id name age dni team_id');
             res.status(200).json(players);
         } catch (err) {
-            await errorHandler(session, err, res);
+            await errorHandler(null, err, res);
         }
     },
 
@@ -28,7 +28,7 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }) });
+                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }).select('_id name age dni team_id') });
                     }
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -46,6 +46,7 @@ module.exports = {
             body['createdBy'] = user;
             await Player.findOneAndUpdate({ _id: req.params.id }, body, {
                 new: true,
+                select: '_id name age dni team_id',
                 upsert: false,
                 runValidators: true,
                 session,
@@ -55,7 +56,7 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }) });
+                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }).select('_id name age dni team_id') });
                     }
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -77,7 +78,7 @@ module.exports = {
                     .then(async (response) => {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: response, newData: await Player.find({ createdBy: user }) });
+                        res.status(201).json({ result: response, newData: await Player.find({ createdBy: user }).select('_id name age dni team_id') });
                     })
                     .catch(async (err) => await errorHandler(session, err, res));
             };

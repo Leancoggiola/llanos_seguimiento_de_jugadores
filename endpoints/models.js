@@ -43,14 +43,14 @@ const matchDetailsSchema = Schema({
     type: {
         type: String,
         required: [true, 'Se requiere tipo'],
-        enum: ['gol', 'autogol', 'tarjeta amarilla', 'tarjeta roja'],
+        enum: ['gol', 'sin goles', 'tarjeta amarilla', 'tarjeta roja'],
     },
     player: {
         type: Schema.Types.ObjectId,
         ref: 'players',
-        required: [true, 'Se requiere jugador'],
+        required: false,
     },
-    time_in_match: { type: Number, required: [true, 'Se requiere minuto'] },
+    time_in_match: { type: Number, required: true },
 });
 
 const matchSchema = Schema({
@@ -121,9 +121,9 @@ const tournamentsSchema = Schema({
         default: [],
     },
     configs: {
-        type: [{}],
+        type: {},
         required: false,
-        default: [],
+        default: {},
     },
     status: {
         type: String,
@@ -193,12 +193,28 @@ const userSchema = Schema({
     knockoutConfig: {},
 });
 
+const logsSchema = Schema({
+    message: {
+        type: String,
+        required: [true, 'Se requiere mensaje'],
+    },
+    recordsDeleted: {
+        type: Number,
+        required: [true, 'Se requiere cantidad'],
+    },
+    isSuccessful: {
+        type: Boolean,
+        required: [true, 'Se requiere estatus'],
+    },
+});
+
+const Logs = mongoose.model('logs', logsSchema);
+const Group = mongoose.model('groups', groupSchema);
 const MatchDetails = mongoose.model('matchDetails', matchDetailsSchema);
 const Match = mongoose.model('matches', matchSchema);
-const Group = mongoose.model('groups', groupSchema);
-const User = mongoose.model('users', userSchema);
-const Tournament = mongoose.model('tournaments', tournamentsSchema);
-const Team = mongoose.model('teams', teamsSchema);
 const Player = mongoose.model('players', playerSchema);
+const Team = mongoose.model('teams', teamsSchema);
+const Tournament = mongoose.model('tournaments', tournamentsSchema);
+const User = mongoose.model('users', userSchema);
 
-module.exports = { User, Tournament, Team, Player, Match, MatchDetails };
+module.exports = { User, Tournament, Team, Player, Group, Match, MatchDetails, Logs };

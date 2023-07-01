@@ -1,5 +1,6 @@
+const { pick, omit } = require('lodash');
 const { errorHandler } = require('../helpers.js');
-const { Tournament, Team } = require('../models.js');
+const { Tournament, Team, User, Group, Match, MatchDetails } = require('../models.js');
 const mongoose = require('mongoose');
 
 module.exports = {
@@ -7,10 +8,46 @@ module.exports = {
     getTournaments: async (req, res) => {
         const user = req?.token;
         try {
-            const tourneys = await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name players' });
+            const tourneys = await Tournament.find({ createdBy: user });
             res.status(200).json(tourneys);
         } catch (err) {
-            await errorHandler(session, err, res);
+            await errorHandler(null, err, res);
+        }
+    },
+
+    getTournamentDetails: async (req, res) => {
+        const id = req.params.id;
+        try {
+            const tourney = await Tournament.findById(id).populate([
+                { path: 'teams', select: '_id name players tourney_ids', populate: { path: 'players', select: '_id name age dni team_id' } },
+                {
+                    path: 'groups',
+                    populate: [
+                        {
+                            path: 'matchs',
+                            populate: [
+                                {
+                                    path: 'details',
+                                    populate: { path: 'player', select: '_id name age dni team_id' },
+                                },
+                                {
+                                    path: 'teams',
+                                    select: '_id name players tourney_ids',
+                                    populate: { path: 'players', select: '_id name age dni team_id' },
+                                },
+                            ],
+                        },
+                        {
+                            path: 'teams',
+                            select: '_id name players tourney_ids',
+                            populate: { path: 'players', select: '_id name age dni team_id' },
+                        },
+                    ],
+                },
+            ]);
+            res.status(200).json(tourney);
+        } catch (err) {
+            await errorHandler(null, err, res);
         }
     },
 
@@ -67,8 +104,8 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: tourney,
-                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }),
-                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newData: await Tournament.find({ createdBy: user }),
+                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni team_id' }),
                         });
                     }
                 })
@@ -148,10 +185,38 @@ module.exports = {
                         session.endSession();
                         res.status(200).json({
                             result: tourney,
-                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }),
-                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newData: await Tournament.find({ createdBy: user }),
+                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni team_id' }),
                         });
                     }
+                })
+                .catch(async (err) => await errorHandler(session, err, res));
+        } catch (err) {
+            await errorHandler(session, err, res);
+        }
+    },
+
+    updateTournamentDetails: async (req, res) => {
+        const user = req?.token;
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+            const { body } = req;
+            body['createdBy'] = user;
+            const id = req.params.id;
+
+            await saveConfig(body.configs.group, user, session, res);
+            body.groups = await saveGroups(body.groups, session);
+
+            await Team.updateMany({ _id: { $in: body.teams.map((x) => x._id) } }, { $addToSet: { tourney_ids: body._id } }, { session });
+
+            await Tournament.findOneAndUpdate({ _id: id }, body, { session })
+                .then(async (tourney) => {
+                    await session.commitTransaction();
+                    session.endSession();
+                    res.status(200).json({
+                        result: tourney,
+                    });
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
         } catch (err) {
@@ -179,8 +244,8 @@ module.exports = {
                     session.endSession();
                     res.status(200).json({
                         result: tourney,
-                        newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: 'name players' }),
-                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                        newData: await Tournament.find({ createdBy: user }),
+                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni team_id' }),
                     });
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -188,4 +253,57 @@ module.exports = {
             await errorHandler(session, err, res);
         }
     },
+};
+
+const saveConfig = async (config, user, session, res) => {
+    await User.findOneAndUpdate({ _id: user }, { groupConfig: config }, { session })
+        .then(async (_, err) => {
+            if (err) await errorHandler(session, err, res);
+        })
+        .catch(async (err) => await errorHandler(session, err, res));
+};
+
+const saveGroups = async (groups, session) => {
+    const ids = [];
+    await Promise.all(
+        groups.map(async (group) => {
+            let doc;
+            group.teams = group.teams.map((x) => x._id);
+            // Save Matchs if are
+            if (group.matchs) group.matchs = await saveMatchs(group.matchs, session);
+
+            doc = await Group.findOneAndUpdate({ _id: group._id ?? new mongoose.Types.ObjectId() }, group, { session, new: true, upsert: true });
+            ids.push(doc._id);
+        })
+    );
+    return ids;
+};
+
+const saveMatchs = async (matchs, session) => {
+    const ids = [];
+    await Promise.all(
+        matchs.map(async (match) => {
+            let doc;
+            match.teams = match.teams.map((x) => x._id);
+            // Save details if are
+            if (match.details) match.details = await saveMatchDetails(match.details, session);
+
+            doc = await Match.findOneAndUpdate({ _id: match._id ?? new mongoose.Types.ObjectId() }, match, { session, new: true, upsert: true });
+            ids.push(doc._id);
+        })
+    );
+    return ids;
+};
+
+const saveMatchDetails = async (details, session) => {
+    const ids = [];
+    await Promise.all(
+        details.map(async (detail) => {
+            let doc;
+            detail.player = detail.player?._id ?? null;
+            doc = await MatchDetails.findOneAndUpdate({ _id: detail._id ?? new mongoose.Types.ObjectId() }, detail, { session, new: true, upsert: true });
+            ids.push(doc._id);
+        })
+    );
+    return ids;
 };

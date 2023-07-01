@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { capitalize } from 'lodash';
 // Components
-import {
-    contentIcKnockoutStage,
-    editorIcBorderAll,
-    editorIcFormatListNumbered,
-} from '../../assets/icons';
+import { contentIcKnockoutStage, editorIcBorderAll, editorIcFormatListNumbered } from '../../assets/icons';
 import { Card, CardBody, CardHeader } from '../../commonComponents/Card';
 import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
@@ -35,10 +31,8 @@ const TourneyCard = (props) => {
 
     const getConfig = () => {
         const config = [];
-        if (tourney.type.includes('Liga'))
-            config.push({ func: () => handleDetails('liga'), icon: editorIcFormatListNumbered });
-        if (tourney.type.includes('Grupos'))
-            config.push({ func: () => handleDetails('grupo'), icon: editorIcBorderAll });
+        if (tourney.type.includes('Liga')) config.push({ func: () => handleDetails('liga'), icon: editorIcFormatListNumbered });
+        if (tourney.type.includes('Grupos')) config.push({ func: () => handleDetails('grupo'), icon: editorIcBorderAll });
         if (tourney.type.includes('Eliminatoria'))
             config.push({
                 func: () => handleDetails('eliminatoria'),
@@ -49,8 +43,8 @@ const TourneyCard = (props) => {
 
     return (
         <Card className="tourney-card">
-            <CardHeader className="tourney-card-header" onClick={() => handleEditTourney()}>
-                <h2>{capitalize(tourney.name)}</h2>
+            <CardHeader className="tourney-card-header">
+                <h2 onClick={() => handleEditTourney()}>{capitalize(tourney.name)}</h2>
                 <Pill variant={getStatusVariant()}>{capitalize(tourney.status)}</Pill>
             </CardHeader>
             <CardBody className="tourney-card-body">

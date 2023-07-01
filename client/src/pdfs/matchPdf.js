@@ -54,22 +54,12 @@ const getBody = (team, details) => {
         team.players.forEach((player) => {
             const data = [{ content: capitalize(player.name), styles: { halign: 'left' } }, ''];
             if (details.length) {
-                let detail = details.filter(
-                    (x) => player._id === x.player._id && x.type === 'tarjeta amarilla'
-                )?.length;
+                let detail = details.filter((x) => player._id === x.player._id && x.type === 'tarjeta amarilla')?.length;
                 data.push(detail >= 1 ? 'X' : '');
                 data.push(detail >= 2 ? 'X' : '');
-                detail = details.filter(
-                    (x) => player._id === x.player._id && x.type === 'tarjeta roja'
-                )?.length;
+                detail = details.filter((x) => player._id === x.player._id && x.type === 'tarjeta roja')?.length;
                 data.push(detail === 1 ? 'X' : '');
-                detail = details
-                    .filter(
-                        (x) =>
-                            player._id === x.player._id &&
-                            (x.type === 'gol' || x.type === 'autogol')
-                    )
-                    ?.sort((a, b) => a.time_in_match - b.time_in_match);
+                detail = details.filter((x) => player._id === x.player._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match);
                 detail?.forEach((x) => {
                     data.push(x.type === 'gol' ? 'X' : 'C');
                 });
@@ -85,18 +75,13 @@ const getBody = (team, details) => {
     return players;
 };
 
-const generateMatchPdf = (match) => {
+const generateMatchPdf = (match, group) => {
     const doc = new jsPDF();
 
     doc.setFontSize(20);
     doc.setFont(undefined, 'bold');
     doc.text('Torneo A', 104, 10, { align: 'center' });
-    doc.line(
-        105 - doc.getTextWidth('Torneo A') / 2,
-        11,
-        107 + doc.getTextWidth('Torneo A') / 2,
-        11
-    );
+    doc.line(105 - doc.getTextWidth('Torneo A') / 2, 11, 107 + doc.getTextWidth('Torneo A') / 2, 11);
     doc.setFontSize(14);
     doc.setFont(undefined, 'normal');
     match.teams.forEach((team, index) => {
@@ -105,12 +90,7 @@ const generateMatchPdf = (match) => {
             align: 'center',
         });
         const textInit = 104 - doc.getTextWidth(`Equipo: ${capitalize(team.name)}`) / 2;
-        doc.line(
-            textInit,
-            (index === 0 ? 21 : 16) + finalY,
-            textInit + doc.getTextWidth(`Equipo:`),
-            (index === 0 ? 21 : 16) + finalY
-        );
+        doc.line(textInit, (index === 0 ? 21 : 16) + finalY, textInit + doc.getTextWidth(`Equipo:`), (index === 0 ? 21 : 16) + finalY);
         autoTable(doc, {
             startY: (index === 0 ? 25 : 20) + finalY,
             styles: {

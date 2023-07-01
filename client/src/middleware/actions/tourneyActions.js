@@ -1,11 +1,6 @@
 import { getFailure, getSuccess, getRequest } from '../index.js';
 
-import {
-    TOURNEY_GET_TOURNEY_LIST,
-    TOURNEY_POST_NEW_TOURNEY,
-    TOURNEY_DELETE_NEW_TOURNEY,
-    TOURNEY_PUT_TOURNEY,
-} from '../constants/tourney.js';
+import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_PUT_TOURNEY, TOURNEY_GET_TOURNEY_DETAILS, TOURNEY_PUT_TOURNEY_DETAILS } from '../constants/tourney.js';
 
 // GET Tourney LIST
 export const getTourneysRequest = (payload) => {
@@ -25,6 +20,27 @@ export const getTourneysSuccess = (payload) => {
 export const getTourneysFailure = (payload) => {
     return {
         type: getFailure(TOURNEY_GET_TOURNEY_LIST),
+        payload,
+    };
+};
+// GET Tourney Details LIST
+export const getTourneyDetailsRequest = (payload) => {
+    return {
+        type: getRequest(TOURNEY_GET_TOURNEY_DETAILS),
+        payload,
+    };
+};
+
+export const getTourneyDetailsSuccess = (payload) => {
+    return {
+        type: getSuccess(TOURNEY_GET_TOURNEY_DETAILS),
+        payload,
+    };
+};
+
+export const getTourneyDetailsFailure = (payload) => {
+    return {
+        type: getFailure(TOURNEY_GET_TOURNEY_DETAILS),
         payload,
     };
 };
@@ -67,6 +83,27 @@ export const putTourneySuccess = (payload) => {
 export const putTourneyFailure = (payload) => {
     return {
         type: getFailure(TOURNEY_PUT_TOURNEY),
+        payload,
+    };
+};
+// PUT Tourney Details
+export const putTourneyDetailsRequest = (payload) => {
+    return {
+        type: getRequest(TOURNEY_PUT_TOURNEY_DETAILS),
+        payload,
+    };
+};
+
+export const putTourneyDetailsSuccess = (payload) => {
+    return {
+        type: getSuccess(TOURNEY_PUT_TOURNEY_DETAILS),
+        payload,
+    };
+};
+
+export const putTourneyDetailsFailure = (payload) => {
+    return {
+        type: getFailure(TOURNEY_PUT_TOURNEY_DETAILS),
         payload,
     };
 };

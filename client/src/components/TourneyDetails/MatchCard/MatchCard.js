@@ -1,20 +1,14 @@
 import { capitalize } from 'lodash';
 import { generateMatchPdf } from '../../../pdfs/matchPdf';
 // Components
-import {
-    actionIcDateRange,
-    actionIcExitToApp,
-    actionIcHome,
-    actionIcLaunch,
-    actionIcPrint,
-} from '../../../assets/icons';
+import { actionIcDateRange, actionIcExitToApp, actionIcHome, actionIcLaunch, actionIcPrint } from '../../../assets/icons';
 import Icon from '../../../commonComponents/Icon';
 import IconButton from '../../../commonComponents/IconButton';
 // Styling
 import './MatchCard.scss';
 
 const MatchCard = (props) => {
-    const { match, goToMatchDetails, getScore } = props;
+    const { group, match, goToMatchDetails, getScore } = props;
 
     return (
         <div className="match-card">
@@ -24,12 +18,12 @@ const MatchCard = (props) => {
                 </IconButton>
             </div>
             <div className="print-logo">
-                <IconButton onClick={() => generateMatchPdf(match)}>
+                <IconButton onClick={() => generateMatchPdf(match, group)}>
                     <Icon src={actionIcPrint} />
                 </IconButton>
             </div>
             <div className="details-logo">
-                <IconButton onClick={() => goToMatchDetails(match)}>
+                <IconButton onClick={() => goToMatchDetails({ ...match, groupName: group.name })}>
                     <Icon src={actionIcLaunch} />
                 </IconButton>
             </div>

@@ -1,9 +1,4 @@
-import {
-    TOURNEY_GET_TOURNEY_LIST,
-    TOURNEY_POST_NEW_TOURNEY,
-    TOURNEY_DELETE_NEW_TOURNEY,
-    TOURNEY_PUT_TOURNEY,
-} from '../constants/tourney';
+import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_PUT_TOURNEY, TOURNEY_GET_TOURNEY_DETAILS, TOURNEY_PUT_TOURNEY_DETAILS } from '../constants/tourney';
 import { getFailure, getRequest, getSuccess } from '../index.js';
 
 const initial = { loading: false, data: null, error: null };
@@ -12,6 +7,7 @@ const STATUS_ENUM = ['Nuevo', 'Jugando', 'Terminado'];
 const initialState = {
     tourneyList: { ...initial },
     crud: { ...initial },
+    tourneyDetails: { ...initial },
 };
 
 export const tourneyReducer = (state = initialState, action) => {
@@ -39,6 +35,33 @@ export const tourneyReducer = (state = initialState, action) => {
             return {
                 ...state,
                 tourneyList: { loading: false, data: null, error: payload },
+            };
+        }
+        // GET TOURNEY DETAILS
+        case getRequest(TOURNEY_GET_TOURNEY_DETAILS): {
+            return {
+                ...state,
+                tourneyDetails: { loading: true, data: null, error: null },
+            };
+        }
+        case getSuccess(TOURNEY_GET_TOURNEY_DETAILS): {
+            const index = state.tourneyList.data.findIndex((x) => x._id === payload._id);
+            const newData = [...state.tourneyList.data];
+            newData[index] = { ...payload, fullData: true };
+            return {
+                ...state,
+                tourneyList: {
+                    loading: false,
+                    data: newData.sort((a, b) => STATUS_ENUM.indexOf(a) - STATUS_ENUM.indexOf(b)),
+                    error: null,
+                },
+                tourneyDetails: { loading: false, data: payload, error: null },
+            };
+        }
+        case getFailure(TOURNEY_GET_TOURNEY_DETAILS): {
+            return {
+                ...state,
+                tourneyDetails: { loading: false, data: null, error: payload },
             };
         }
         // POST TOURNEY
@@ -74,6 +97,22 @@ export const tourneyReducer = (state = initialState, action) => {
             };
         }
         case getFailure(TOURNEY_PUT_TOURNEY): {
+            return {
+                ...state,
+                crud: { loading: false, data: null, error: payload },
+            };
+        }
+        // PUT TOURNEY DETAILS
+        case getRequest(TOURNEY_PUT_TOURNEY_DETAILS): {
+            return {
+                ...state,
+                tourneyDetails: { loading: true, data: null, error: null },
+            };
+        }
+        case getSuccess(TOURNEY_PUT_TOURNEY_DETAILS): {
+            return { ...state };
+        }
+        case getFailure(TOURNEY_PUT_TOURNEY_DETAILS): {
             return {
                 ...state,
                 crud: { loading: false, data: null, error: payload },

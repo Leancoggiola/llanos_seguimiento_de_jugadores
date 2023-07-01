@@ -1,12 +1,8 @@
-import { capitalize, isEmpty, shuffle } from 'lodash';
+import { capitalize, cloneDeep, isEmpty, omit, shuffle } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
-import {
-    contentIcTeam,
-    editorIcFormatListNumbered,
-    notificationIcEventNote,
-} from '../../../assets/icons';
+import { contentIcTeam, editorIcFormatListNumbered, notificationIcEventNote } from '../../../assets/icons';
 import { Accordion, AccordionContent, AccordionTrigger } from '../../../commonComponents/Accordion';
 import Button from '../../../commonComponents/Button';
 import FormField from '../../../commonComponents/FormField';
@@ -17,6 +13,7 @@ import List from '../../../commonComponents/List';
 import { Option, Select } from '../../../commonComponents/Select';
 import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator';
 import Table from '../../../commonComponents/Table';
+import DeleteConfirmation from '../../DeleteConfirmation';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
 // Middleware
@@ -29,22 +26,16 @@ const GroupConfig = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const getScore = (match) => {
-        if (isEmpty(match.details)) {
-            return 'Sin resultados';
-        } else {
-            const goals = match.teams.reduce(
-                (prev, curr, index) => {
-                    prev[index] = match.details.filter((x) =>
-                        curr.players.map((x) => x._id).includes(x.player._id)
-                            ? x.type === 'gol'
-                            : x.type === 'autogol'
-                    ).length;
-                    return prev;
-                },
-                [0, 0]
-            );
-            return goals.join(':');
-        }
+        if (isEmpty(match.details)) return 'Sin resultados';
+        if (match.details.some((x) => x.type === 'sin goles')) return '0:0';
+        const goals = match.teams.reduce(
+            (prev, curr, index) => {
+                prev[index] = match.details.filter((x) => curr.players.map((x) => x._id).includes(x.player._id) && x.type === 'gol').length;
+                return prev;
+            },
+            [0, 0]
+        );
+        return goals.join(':');
     };
 
     return (
@@ -62,16 +53,8 @@ const GroupConfig = (props) => {
             </TabNavigator>
             <div className="group-config-content">
                 {tabIndex === 0 && <Equipos tourney={tourney} setTourneyData={setTourneyData} />}
-                {tabIndex === 1 && (
-                    <Grupos tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />
-                )}
-                {tabIndex === 2 && (
-                    <Calendario
-                        tourney={tourney}
-                        setTourneyData={setTourneyData}
-                        getScore={getScore}
-                    />
-                )}
+                {tabIndex === 1 && <Grupos tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />}
+                {tabIndex === 2 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />}
             </div>
         </div>
     );
@@ -84,7 +67,7 @@ const Equipos = ({ tourney, setTourneyData }) => {
 
     useEffect(() => {
         tourney.teams = teamList.data.filter((x) => equipoDrop.includes(x._id));
-        setTourneyData({ ...tourney });
+        setTourneyData(cloneDeep(tourney));
     }, [equipoDrop]);
 
     return (
@@ -92,12 +75,7 @@ const Equipos = ({ tourney, setTourneyData }) => {
             <h3>Equipos en el torneo</h3>
             <FormField>
                 <Label>Equipos</Label>
-                <Select
-                    value={equipoDrop}
-                    onChange={(e) => setDrop(e)}
-                    filter={true}
-                    multiple={true}
-                >
+                <Select value={equipoDrop} onChange={(e) => setDrop(e)} filter={true} multiple={true} disabled={tourney.groups.length}>
                     {teamList.data.map((option, index) => (
                         <Option value={option._id} key={option._id + index}>
                             {capitalize(option.name)}
@@ -116,37 +94,23 @@ const Equipos = ({ tourney, setTourneyData }) => {
     );
 };
 
-const Grupos = ({ tourney, setTourneyData, getScore }) => {
+const Grupos = ({ tourney, setTourneyData }) => {
     const { groupConfig } = useSelector((state) => state.auth);
 
-    const [totalGroups, setTotalGroups] = useState(
-        groupConfig?.totalGroups ? groupConfig.totalGroups : '1'
-    );
-    const [enconters, setEnconters] = useState(
-        groupConfig?.enconters ? groupConfig.enconters : '1'
-    );
+    const [deleteModal, setDeleteModal] = useState(false);
+
+    const [totalGroups, setTotalGroups] = useState(groupConfig?.totalGroups ? groupConfig.totalGroups : '1');
+    const [enconters, setEnconters] = useState(groupConfig?.enconters ? groupConfig.enconters : '1');
     const [winPnts, setWinPnts] = useState(groupConfig?.winPnts ? groupConfig.winPnts : '3');
     const [drawPnts, setDrawPnts] = useState(groupConfig?.drawPnts ? groupConfig.drawPnts : '1');
     const [losePnts, setLosePnts] = useState(groupConfig?.losePnts ? groupConfig.losePnts : '0');
-    const [nextStepRules, setNextStepRules] = useState(
-        groupConfig?.nextStepRules ? groupConfig.nextStepRules : 'Total'
-    );
-    const [draftType, setDraftType] = useState(
-        groupConfig?.draftType ? groupConfig.draftType : 'random'
-    );
+    const [nextStepRules, setNextStepRules] = useState(groupConfig?.nextStepRules ? groupConfig.nextStepRules : 'Total');
+    const [draftType, setDraftType] = useState(groupConfig?.draftType ? groupConfig.draftType : 'random');
 
     const dispath = useDispatch();
 
     const isDisabled = () => {
-        return (
-            !totalGroups ||
-            !enconters ||
-            !winPnts ||
-            !drawPnts ||
-            !losePnts ||
-            !nextStepRules ||
-            !draftType
-        );
+        return !totalGroups || !enconters || !winPnts || !drawPnts || !losePnts || !nextStepRules || !draftType;
     };
 
     const randomGroupSort = () => {
@@ -172,12 +136,11 @@ const Grupos = ({ tourney, setTourneyData, getScore }) => {
         do {
             for (let i = 0; i < groups.length; i++) {
                 if (teamsToSort.length === 0) break;
-                groups[i].teams.push(
-                    ...teamsToSort.splice(Math.floor(Math.random() * teamsToSort.length), 1)
-                );
+                groups[i].teams.push(...teamsToSort.splice(Math.floor(Math.random() * teamsToSort.length), 1));
             }
         } while (teamsToSort.length > 0);
         tourney.groups = groups;
+        tourney.configs = tourney?.configs ? tourney.configs : {};
         tourney.configs['group'] = {
             totalGroups,
             enconters,
@@ -187,8 +150,7 @@ const Grupos = ({ tourney, setTourneyData, getScore }) => {
             nextStepRules,
             draftType,
         };
-
-        setTourneyData({ ...tourney });
+        setTourneyData(cloneDeep(tourney));
     };
 
     const orderList = (a, b) => {
@@ -228,121 +190,86 @@ const Grupos = ({ tourney, setTourneyData, getScore }) => {
             const results = { pj: 0, pg: 0, pe: 0, pp: 0, 'ga/gc': '0:0', dif: 0, pts: 0 };
             const matches = data.matchs.filter((x) => x.teams.map((x) => x._id).includes(team._id));
             results.pj = matches.filter((x) => x.winner).length;
-            results.pg = matches.filter((x) => x.winner && x.winner === team._id).length;
+            results.pg = matches.filter((x) => x.winner && x.winner !== 'empate' && x.winner === team._id).length;
             results.pe = matches.filter((x) => x.winner && x.winner === 'empate').length;
-            results.pp = matches.filter((x) => x.winner && x.winner !== team._id).length;
+            results.pp = matches.filter((x) => x.winner && x.winner !== 'empate' && x.winner !== team._id).length;
             results.pts = results.pg * 3 + results.pe * 1;
             results['ga/gc'] = matches
                 .reduce(
                     (prev, curr) => {
-                        let i = curr.winner && curr.winner === team._id ? 0 : 1;
-                        let j = curr.winner && curr.winner === team._id ? 1 : 0;
-                        const values = getScore(curr).split(':');
-
-                        return !curr.winner
-                            ? [Number(prev[i]) + 0, Number(prev[j]) + 0]
-                            : [
-                                  Number(prev[i]) + Number(values[i]),
-                                  Number(prev[j]) + Number(values[j]),
-                              ];
+                        if (!isEmpty(curr.details)) {
+                            const ga = curr.details.filter((det) => det.type === 'gol' && team.players.some((play) => play._id === det.player._id)).length;
+                            const gc = curr.details.filter((det) => det.type === 'gol' && team.players.every((play) => play._id !== det.player._id)).length;
+                            prev = [prev[0] + ga, prev[1] + gc];
+                        }
+                        return prev;
                     },
                     [0, 0]
                 )
                 .join(':');
-            results.dif =
-                Number(results['ga/gc'].split(':')[0]) - Number(results['ga/gc'].split(':')[1]);
+            results.dif = Number(results['ga/gc'].split(':')[0]) - Number(results['ga/gc'].split(':')[1]);
             return results;
         };
-        return data.teams.map((team, index) => ({
+        return data.teams.map((team) => ({
             name: capitalize(team.name),
             ...getTable(team),
         }));
     };
 
+    const handleDeleteGroups = () => {
+        setTourneyData({
+            ...tourney,
+            groups: [],
+        });
+        setDeleteModal(false);
+    };
+
     return (
         <>
             {tourney.groups.length > 0 ? (
-                tourney.groups.map((group, index) => (
-                    <div key={group.name + index} className="group-config-content-groups">
-                        <h3>{group.name}</h3>
-                        <Table columnDefs={columnDefs} dataSource={formatData(group)} />
+                <>
+                    {tourney.groups.map((group, index) => (
+                        <div key={group.name + index} className="group-config-content-groups">
+                            <h3>{group.name}</h3>
+                            <Table columnDefs={columnDefs} dataSource={formatData(group)} />
+                        </div>
+                    ))}
+                    <div className="group-config-content-delete-btn">
+                        <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
+                            Eliminar grupos
+                        </Button>
                     </div>
-                ))
+                </>
             ) : (
                 <>
                     <form noValidate>
                         <FormField>
                             <Label>Número de grupos</Label>
-                            <Input
-                                type="number"
-                                min={0}
-                                max={32}
-                                required={true}
-                                value={totalGroups}
-                                onChange={(e) => setTotalGroups(e.target.value)}
-                            />
+                            <Input type="number" min={0} max={32} required={true} value={totalGroups} onChange={(e) => setTotalGroups(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Número de encuentros</Label>
-                            <Input
-                                type="number"
-                                min={0}
-                                max={5}
-                                required={true}
-                                value={enconters}
-                                onChange={(e) => setEnconters(e.target.value)}
-                            />
+                            <Input type="number" min={0} max={5} required={true} value={enconters} onChange={(e) => setEnconters(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Puntos por victoria</Label>
-                            <Input
-                                type="number"
-                                min={0}
-                                max={9}
-                                required={true}
-                                value={winPnts}
-                                onChange={(e) => setWinPnts(e.target.value)}
-                            />
+                            <Input type="number" min={0} max={9} required={true} value={winPnts} onChange={(e) => setWinPnts(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Puntos por empate</Label>
-                            <Input
-                                type="number"
-                                min={0}
-                                max={9}
-                                required={true}
-                                value={drawPnts}
-                                onChange={(e) => setDrawPnts(e.target.value)}
-                            />
+                            <Input type="number" min={0} max={9} required={true} value={drawPnts} onChange={(e) => setDrawPnts(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Puntos por derrota</Label>
-                            <Input
-                                type="number"
-                                min={0}
-                                max={9}
-                                required={true}
-                                value={losePnts}
-                                onChange={(e) => setLosePnts(e.target.value)}
-                            />
+                            <Input type="number" min={0} max={9} required={true} value={losePnts} onChange={(e) => setLosePnts(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Reglas de clasificación</Label>
-                            <Input
-                                type="text"
-                                required={true}
-                                disabled={true}
-                                value={nextStepRules}
-                                onChange={(e) => setNextStepRules(e.target.value)}
-                            />
+                            <Input type="text" required={true} disabled={true} value={nextStepRules} onChange={(e) => setNextStepRules(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Sorteo de grupos</Label>
-                            <Select
-                                value={draftType}
-                                onChange={(e) => setDraftType(e)}
-                                disabled={true}
-                            >
+                            <Select value={draftType} onChange={(e) => setDraftType(e)} disabled={true}>
                                 <Option value={'random'}>Al azar</Option>
                                 <Option value={'manual'}>Manual</Option>
                             </Select>
@@ -355,6 +282,7 @@ const Grupos = ({ tourney, setTourneyData, getScore }) => {
                     </div>
                 </>
             )}
+            <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteGroups} message={'¿Seguro quieres eliminar los grupos?'} />
         </>
     );
 };
@@ -382,10 +310,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                             matchs.push({
                                 week: i + 1 + (teamsToPlay.length - 1) * enc,
                                 matchOrder: j + 1,
-                                teams:
-                                    enc % 2 !== 0
-                                        ? [visitante[j], local[j]]
-                                        : [local[j], visitante[j]],
+                                teams: enc % 2 !== 0 ? [visitante[j], local[j]] : [local[j], visitante[j]],
                                 details: [],
                                 winner: null,
                             });
@@ -394,17 +319,16 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 }
             }
 
-            group.matchs = matchs
-                .filter((x) => !x.teams.includes('ODD'))
-                .sort((a, b) => a.week - b.week);
+            group.matchs = matchs.filter((x) => !x.teams.includes('ODD')).sort((a, b) => a.week - b.week);
         });
-        setTourneyData({ ...tourney });
+        setTourneyData(cloneDeep(tourney));
     };
 
     const dispatch = useDispatch();
 
     const [matchDetails, setMatchDetails] = useState(null);
     const [open, setOpen] = useState(true);
+    const [deleteModal, setDeleteModal] = useState(false);
 
     const firstAccordionConf = {
         open,
@@ -421,61 +345,67 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
         if (matchDetails) {
             tourney.groups.forEach((g) => {
                 g.matchs.forEach((m) => {
-                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week) {
-                        m.details = matchDetails.details;
-                        const results = getScore(m).split(':');
-                        m.winner =
-                            results[0] === results[1]
-                                ? 'empate'
-                                : results[0] > results[1]
-                                ? m.teams[0]._id
-                                : m.teams[1]._id;
+                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && g.name === matchDetails.groupName) {
+                        m.details = [...matchDetails.details];
+                        if (!isEmpty(m.details)) {
+                            const results = getScore(m).split(':');
+                            m.winner = results[0] === results[1] ? 'empate' : results[0] > results[1] ? m.teams[0]._id : m.teams[1]._id;
+                        } else m.winner = null;
                     }
                 });
             });
-            setTourneyData({ ...tourney });
+            setTourneyData(cloneDeep(tourney));
         }
     }, [matchDetails]);
+
+    const handleDeleteCalendar = () => {
+        setTourneyData({
+            ...tourney,
+            groups: tourney.groups.map((x) => ({ ...x, matchs: [] })),
+        });
+        setDeleteModal(false);
+    };
 
     return (
         <>
             {matchDetails ? (
-                <MatchDetails
-                    match={matchDetails}
-                    setMatchDetails={setMatchDetails}
-                    getScore={getScore}
-                />
+                <MatchDetails match={matchDetails} setMatchDetails={setMatchDetails} getScore={getScore} />
             ) : tourney.groups.every((x) => x.matchs.length > 0) ? (
-                tourney.groups.map((group, index) => {
-                    const jornadas = [...new Set(group.matchs.map((x) => x.week))];
-                    return (
-                        <Accordion
-                            key={group.name}
-                            alignIconRight
-                            useChevronIcon
-                            {...(index === 0 ? { ...firstAccordionConf } : null)}
-                        >
-                            <AccordionTrigger>{group.name}</AccordionTrigger>
-                            <AccordionContent>
-                                {jornadas.map((i) => (
-                                    <div className="jornada-container" key={`week-${i}`}>
-                                        <h4>{`Jornada ${i}`}</h4>
-                                        {group.matchs
-                                            .filter((x) => x.week === i)
-                                            .map((x, index) => (
-                                                <MatchCard
-                                                    match={x}
-                                                    getScore={getScore}
-                                                    goToMatchDetails={goToMatchDetails}
-                                                    key={`match-card-${index}`}
-                                                />
-                                            ))}
-                                    </div>
-                                ))}
-                            </AccordionContent>
-                        </Accordion>
-                    );
-                })
+                <>
+                    {tourney.groups
+                        .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
+                        .map((group, index) => {
+                            const jornadas = [...new Set(group.matchs.map((x) => x.week))];
+                            return (
+                                <Accordion
+                                    className="group-config-content-calendar-accordion"
+                                    key={group.name}
+                                    alignIconRight
+                                    useChevronIcon
+                                    {...(index === 0 ? { ...firstAccordionConf } : null)}
+                                >
+                                    <AccordionTrigger>{group.name}</AccordionTrigger>
+                                    <AccordionContent>
+                                        {jornadas.map((i) => (
+                                            <div className="jornada-container" key={`week-${i}`}>
+                                                <h4>{`Jornada ${i}`}</h4>
+                                                {group.matchs
+                                                    .filter((x) => x.week === i)
+                                                    .map((x, index) => (
+                                                        <MatchCard match={x} getScore={getScore} goToMatchDetails={goToMatchDetails} key={`match-card-${index}`} group={group} />
+                                                    ))}
+                                            </div>
+                                        ))}
+                                    </AccordionContent>
+                                </Accordion>
+                            );
+                        })}
+                    <div className="group-config-content-delete-btn">
+                        <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
+                            Eliminar calendario
+                        </Button>
+                    </div>
+                </>
             ) : (
                 <div className="group-config-content-btn">
                     <Button type="button" onClick={addCalendar}>
@@ -483,6 +413,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                     </Button>
                 </div>
             )}
+            <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteCalendar} message={'¿Seguro quieres eliminar el calendario?'} />
         </>
     );
 };

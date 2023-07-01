@@ -6,13 +6,13 @@ module.exports = {
     getTeams: async (req, res) => {
         const user = req?.token;
         try {
-            const teams = await Team.find({ createdBy: user }).populate({
+            const teams = await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({
                 path: 'players',
-                select: '_id name dni age',
+                select: '_id name age dni team_id',
             });
             res.status(200).json(teams);
         } catch (err) {
-            await errorHandler(session, err, res);
+            await errorHandler(null, err, res);
         }
     },
 
@@ -69,7 +69,7 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: team,
-                            newData: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newData: await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({ path: 'players', select: '_id name age dni team_id' }),
                             newPlayers: await Player.find({ createdBy: user }),
                         });
                     }
@@ -141,7 +141,7 @@ module.exports = {
                         session.endSession();
                         res.status(200).json({
                             result: team,
-                            newData: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newData: await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({ path: 'players', select: '_id name age dni team_id' }),
                             newPlayers: await Player.find({ createdBy: user }),
                         });
                     }
@@ -182,7 +182,7 @@ module.exports = {
                         session.endSession();
                         res.status(200).json({
                             result: response,
-                            newData: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name dni age' }),
+                            newData: await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({ path: 'players', select: '_id name age dni team_id' }),
                             newPlayers: await Player.find({ createdBy: user }),
                         });
                     })

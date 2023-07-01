@@ -1,29 +1,46 @@
-import { useState } from 'react';
+import { cloneDeep, isEmpty, isEqual } from 'lodash';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // Components
 import { contentIcSave } from '../../assets/icons';
 import Button from '../../commonComponents/Button';
 import Icon from '../../commonComponents/Icon/Icon.js';
+import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 import GroupConfig from './GroupConfig/GroupConfig.js';
 // Middleware
+import { navbarBack } from '../../middleware/actions/navbarActions';
+import { getTourneyDetailsRequest, putTourneyDetailsRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyDetails.scss';
 
 const TourneyDetails = (props) => {
-    const { tourney, option, onClose, setOption } = props;
+    const { tourney, option } = props;
 
-    const [tourneyData, setTourneyData] = useState(tourney);
+    const [tourneyData, setTourneyData] = useState(null);
+    const tourneyDetails = useSelector((state) => state.tourney.tourneyDetails);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (!tourney.fullData) dispatch(getTourneyDetailsRequest(tourney._id));
+    }, []);
+
+    useEffect(() => {
+        if (!isEmpty(tourneyDetails.data)) setTourneyData(cloneDeep(tourneyDetails.data));
+    }, [tourneyDetails.data]);
 
     const enableSave = () => {
-        return JSON.stringify(tourney) === JSON.stringify(tourneyData);
+        return isEqual(tourneyDetails.data, tourneyData);
+    };
+
+    const handleSave = () => {
+        dispatch(putTourneyDetailsRequest(tourneyData));
     };
 
     const renderTab = () => {
         switch (option) {
             case 'grupo':
                 return <GroupConfig tourney={tourneyData} setTourneyData={setTourneyData} />;
-            case 'grupo':
-                return <></>;
-            case 'grupo':
+            case 'eliminatorias':
                 return <></>;
             default:
                 return null;
@@ -32,16 +49,22 @@ const TourneyDetails = (props) => {
 
     return (
         <section className="tourney-details">
-            <article className="tourney-details-container">{renderTab()}</article>
-            <footer className="tourney-details-footer">
-                <Button type="button" variant="secondary">
-                    Cancelar
-                </Button>
-                <Button type="button" variant="primary" disabled={enableSave()}>
-                    Guardar
-                    <Icon src={contentIcSave} />
-                </Button>
-            </footer>
+            {!tourneyData || tourneyDetails.loading ? (
+                <LoadingSpinner />
+            ) : (
+                <>
+                    <article className="tourney-details-container">{renderTab()}</article>
+                    <footer className="tourney-details-footer">
+                        <Button type="button" variant="secondary" onClick={() => dispatch(navbarBack())}>
+                            Cancelar
+                        </Button>
+                        <Button type="button" variant="primary" disabled={enableSave()} onClick={handleSave}>
+                            Guardar
+                            <Icon src={contentIcSave} />
+                        </Button>
+                    </footer>
+                </>
+            )}
         </section>
     );
 };
