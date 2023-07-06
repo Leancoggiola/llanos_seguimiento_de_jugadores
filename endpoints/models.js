@@ -21,6 +21,8 @@ const playerSchema = Schema({
         maxLength: 8,
         match: [/^\d{7,8}$/, 'Ingresa un DNI valido'],
     },
+    sanction: { type: Number, required: false, min: 0, max: 99, default: 0 },
+    sanction_date: { type: Date, required: false },
     age: { type: Number, required: false, min: 1, max: 99 },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     team_id: { type: Schema.Types.ObjectId, ref: 'teams', default: null },
@@ -135,6 +137,11 @@ const tournamentsSchema = Schema({
         required: [true, 'Se requiere tipo'],
         enum: ['Liga', 'Eliminatoria', 'Liga+Eliminatoria', 'Grupos+Eliminatoria'],
     },
+    category: {
+        type: String,
+        required: [true, 'Se requiere categoria'],
+        enum: ['Veterano', 'Libre'],
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'users',
@@ -206,6 +213,7 @@ const logsSchema = Schema({
         type: Boolean,
         required: [true, 'Se requiere estatus'],
     },
+    date: Date,
 });
 
 const Logs = mongoose.model('logs', logsSchema);

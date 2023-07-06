@@ -10,46 +10,74 @@ module.exports = {
             const session = await mongoose.startSession();
             session.startTransaction();
             try {
-                const tournaments = await Tournament.find();
-                const groups = await Group.find();
-                const matchs = await Match.find();
+                const tournaments = await Tournament.find()
+                    .populate({
+                        path: 'groups',
+                        select: '_id matchs',
+                        populate: [
+                            {
+                                path: 'matchs',
+                                select: '_id details',
+                                populate: [
+                                    {
+                                        path: 'details',
+                                        select: '_id',
+                                    },
+                                ],
+                            },
+                        ],
+                    })
+                    .lean();
 
-                // Grupos sin torneo a eliminar
-                const assignedGroups = tournaments.flatMap((x) => x.groups).filter((x) => x._id);
-                const groupsNA = await Group.find({ _id: { $nin: assignedGroups } });
-                await Group.deleteMany({ _id: { $in: groupsNA.map((x) => x._id) } }, { session });
+                const groups = tournaments.flatMap((x) => x.groups);
+                const matchs = groups.flatMap((x) => x.matchs);
+                const details = matchs.flatMap((x) => x.details);
 
-                // Matchs sin grupo
-                const matchsInGroups = groups.flatMap((x) => x.matchs).map((x) => x._id);
-                const matchsNA = await Match.find({ _id: { $nin: matchsInGroups } });
-                await Match.deleteMany({ _id: { $in: matchsNA.map((x) => x._id) } }, { session });
-                // Details en matchs de grupos sin torneo
-                const detailsInMatch = matchs.flatMap((x) => x.details).map((x) => x._id);
-                const detailsNA = await MatchDetails.find({ _id: { $nin: detailsInMatch } });
-                await MatchDetails.deleteMany({ _id: { $in: detailsNA.map((x) => x._id) } }, { session });
+                const records = { groups: 0, matchs: 0, details: 0 };
+                let result;
 
-                await session.commitTransaction();
+                // Grupos
+                result = await Group.deleteMany({ _id: { $nin: groups.map((x) => x._id) } }, { session });
+                if (result.acknowledged) {
+                    records.groups = result.deletedCount;
+                } else throw new Error('Hubo un error al eliminar registros en Groups');
+
+                // Matchs
+                result = await Match.deleteMany({ _id: { $nin: matchs.map((x) => x._id) } }, { session });
+                if (result.acknowledged) {
+                    records.matchs = result.deletedCount;
+                } else throw new Error('Hubo un error al eliminar registros en Matchs');
+
+                // Details
+                result = await MatchDetails.deleteMany({ _id: { $nin: details.map((x) => x._id) } }, { session });
+                if (result.acknowledged) {
+                    records.details = result.deletedCount;
+                } else throw new Error('Hubo un error al eliminar registros en Details');
+
                 await Logs.updateOne(
                     { _id: new mongoose.Types.ObjectId() },
                     {
                         message: 'Registros eliminados',
-                        recordsDeleted: groupsNA.length + matchsNA.length + detailsNA.length,
+                        recordsDeleted: records.groups + records.matchs + records.details,
                         isSuccessful: true,
+                        date: new Date(),
                     },
                     { upsert: true }
                 )
                     .then(async (_, err) => {
-                        if (err) await session.abortTransaction();
-                        else {
+                        if (err) {
+                            throw new Error(err);
+                        } else {
                             console.log('Registros eliminados');
                             await session.commitTransaction();
                         }
                     })
-                    .catch(async (err) => session.abortTransaction());
+                    .catch(async (err) => {
+                        throw new Error(err);
+                    });
                 session.endSession();
             } catch (err) {
                 await session.abortTransaction();
-                console.error(err);
                 await Logs.updateOne(
                     { _id: new mongoose.Types.ObjectId() },
                     {

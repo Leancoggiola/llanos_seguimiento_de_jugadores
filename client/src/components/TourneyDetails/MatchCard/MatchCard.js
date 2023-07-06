@@ -8,7 +8,7 @@ import IconButton from '../../../commonComponents/IconButton';
 import './MatchCard.scss';
 
 const MatchCard = (props) => {
-    const { group, match, goToMatchDetails, getScore } = props;
+    const { group, match, goToMatchDetails, getScore, category } = props;
 
     return (
         <div className="match-card">
@@ -18,7 +18,7 @@ const MatchCard = (props) => {
                 </IconButton>
             </div>
             <div className="print-logo">
-                <IconButton onClick={() => generateMatchPdf(match, group)}>
+                <IconButton onClick={() => generateMatchPdf(match, group, category)}>
                     <Icon src={actionIcPrint} />
                 </IconButton>
             </div>

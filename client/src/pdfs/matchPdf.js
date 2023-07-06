@@ -12,7 +12,7 @@ const headers = [
         colSpan: 1,
     },
     {
-        content: 'A',
+        content: 'AT',
         colSpan: 1,
         styles: {
             fillColor: [255, 218, 106],
@@ -26,48 +26,83 @@ const headers = [
         },
     },
     {
-        content: 'R',
+        content: 'A',
+        colSpan: 1,
+        styles: {
+            fillColor: [255, 218, 106],
+        },
+    },
+    {
+        content: 'S',
         colSpan: 1,
         styles: {
             fillColor: [241, 174, 181],
         },
     },
     {
+        content: 'GT',
+        colSpan: 1,
+    },
+    {
         content: 'GOLES',
-        colSpan: 6,
+        colSpan: 4,
     },
 ];
 
-const getHeaders = (doc) => {
+const getHeaders = (doc, category) => {
     const width = Math.floor(doc.internal.pageSize.getWidth()) - 40;
-    headers[0].styles = { cellWidth: width * 0.45 };
-    headers[1].styles = { cellWidth: width * 0.25 };
-    for (let i = 2; i < headers.length; i++) {
-        headers[i].styles = { ...headers[i].styles, cellWidth: 7 };
+    const head = [...headers];
+    head[0].styles = { cellWidth: width * 0.33 };
+    head[1].styles = { cellWidth: width * 0.2 };
+    if (category === 'Veterano') {
+        head.splice(2, 0, {
+            content: 'DNI',
+            colSpan: 1,
+            styles: { cellWidth: width * 0.1 },
+        });
+        head.splice(3, 0, {
+            content: 'EDAD',
+            colSpan: 1,
+            styles: { cellWidth: width * 0.07 },
+        });
     }
-    return headers;
+    for (let i = category === 'Veterano' ? 4 : 2; i < head.length; i++) {
+        head[i].styles = { ...head[i].styles, cellWidth: 7 };
+    }
+    return head;
 };
 
-const getBody = (team, details) => {
+const getBody = (team, details, group, totalHeaders) => {
     const players = [];
     if (team.players.length) {
         team.players.forEach((player) => {
             const data = [{ content: capitalize(player.name), styles: { halign: 'left' } }, ''];
+            if (totalHeaders === 10) {
+                data.push(player.dni);
+                data.push(player.age);
+            }
             if (details.length) {
-                let detail = details.filter((x) => player._id === x.player._id && x.type === 'tarjeta amarilla')?.length;
+                let detail;
+                detail = group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length;
+                data.push(detail);
+                detail = details.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla')?.length;
                 data.push(detail >= 1 ? 'X' : '');
                 data.push(detail >= 2 ? 'X' : '');
-                detail = details.filter((x) => player._id === x.player._id && x.type === 'tarjeta roja')?.length;
-                data.push(detail === 1 ? 'X' : '');
-                detail = details.filter((x) => player._id === x.player._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match);
+                detail = player?.sanction;
+                data.push(detail);
+                detail = details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match);
                 detail?.forEach((x) => {
                     data.push(x.type === 'gol' ? 'X' : 'C');
                 });
                 if (!detail || detail?.length < 6) {
-                    data.push(...Array.from({ length: 6 - detail?.length }, (_) => ''));
+                    data.push(...Array.from({ length: 4 - detail?.length }, (_) => ''));
                 }
             } else {
-                data.push(...Array.from({ length: 9 }, (_) => ''));
+                data.push(group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length);
+                data.push('', '');
+                data.push(player?.sanction);
+                data.push(details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match));
+                data.push(...Array.from({ length: 4 }, (_) => ''));
             }
             players.push(data);
         });
@@ -75,7 +110,7 @@ const getBody = (team, details) => {
     return players;
 };
 
-const generateMatchPdf = (match, group) => {
+const generateMatchPdf = (match, group, category) => {
     const doc = new jsPDF();
 
     doc.setFontSize(20);
@@ -107,8 +142,8 @@ const generateMatchPdf = (match, group) => {
                 textColor: 100,
             },
             theme: 'grid',
-            head: [getHeaders(doc)],
-            body: getBody(team, match?.details),
+            head: [getHeaders(doc, category)],
+            body: getBody(team, match?.details, group, getHeaders(doc, category).length),
         });
     });
     doc.setFont(undefined, 'bold');

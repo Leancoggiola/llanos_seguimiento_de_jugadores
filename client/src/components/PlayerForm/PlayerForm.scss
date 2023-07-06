@@ -1,6 +1,7 @@
 .player-form {
     position: relative;
     height: 100%;
+    margin: 0 0.5rem;
     & > form {
         position: relative;
         padding-bottom: 6rem;
@@ -17,6 +18,13 @@
             height: 4rem;
             width: auto;
         }
+    }
+
+    &-numbers {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        .cc-form-field { margin: 0;}
     }
 
     &-new-player {

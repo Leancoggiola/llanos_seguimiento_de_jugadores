@@ -20,6 +20,7 @@ const PlayerForm = (props) => {
     const [nombre, setNombre] = useState(player?.name ? player.name : '');
     const [dni, setDNI] = useState(player?.dni ? player.dni : '');
     const [age, setAge] = useState(player?.age ? player.age : '');
+    const [sancion, setSancion] = useState(player?.sanction ? player.sanction : 0);
 
     const dispatch = useDispatch();
 
@@ -31,6 +32,9 @@ const PlayerForm = (props) => {
             name: nombre,
             dni: dni,
             age: age,
+            sanction: Number(sancion),
+            sanction_date: player?.sanction_date,
+            update_date: Number(sancion) && sancion !== player?.sanction,
         };
         if (player?._id) {
             dispatch(putPlayerRequest({ body, resolve: onClose, id: player._id }));
@@ -60,10 +64,18 @@ const PlayerForm = (props) => {
                     <Input type="text" value={dni} onChange={(e) => setDNI(e.target.value)} maxLength="8" required={true} />
                     {player?.name && dni === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
                 </FormField>
-                <FormField>
-                    <Label>Edad</Label>
-                    <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} min={1} max={99} />
-                </FormField>
+                <div className="player-form-numbers">
+                    <FormField>
+                        <Label>Edad</Label>
+                        <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} min={1} max={99} />
+                    </FormField>
+                    {player?._id && (
+                        <FormField>
+                            <Label>Sancion</Label>
+                            <Input type="number" value={sancion} onChange={(e) => setSancion(e.target.value)} min={0} max={99} disabled={player?.sanction > 0} />
+                        </FormField>
+                    )}
+                </div>
                 <div className="player-form-action-buttons">
                     <Button type="button" variant="secondary" onClick={onClose}>
                         Cancelar

@@ -8,7 +8,7 @@ module.exports = {
     getTournaments: async (req, res) => {
         const user = req?.token;
         try {
-            const tourneys = await Tournament.find({ createdBy: user });
+            const tourneys = await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' });
             res.status(200).json(tourneys);
         } catch (err) {
             await errorHandler(null, err, res);
@@ -19,7 +19,7 @@ module.exports = {
         const id = req.params.id;
         try {
             const tourney = await Tournament.findById(id).populate([
-                { path: 'teams', select: '_id name players tourney_ids', populate: { path: 'players', select: '_id name age dni team_id' } },
+                { path: 'teams', select: '_id name players tourney_ids', populate: { path: 'players', select: '_id name age dni sanction team_id' } },
                 {
                     path: 'groups',
                     populate: [
@@ -28,19 +28,19 @@ module.exports = {
                             populate: [
                                 {
                                     path: 'details',
-                                    populate: { path: 'player', select: '_id name age dni team_id' },
+                                    populate: { path: 'player', select: '_id name age dni sanction team_id' },
                                 },
                                 {
                                     path: 'teams',
                                     select: '_id name players tourney_ids',
-                                    populate: { path: 'players', select: '_id name age dni team_id' },
+                                    populate: { path: 'players', select: '_id name age dni sanction team_id' },
                                 },
                             ],
                         },
                         {
                             path: 'teams',
                             select: '_id name players tourney_ids',
-                            populate: { path: 'players', select: '_id name age dni team_id' },
+                            populate: { path: 'players', select: '_id name age dni sanction team_id' },
                         },
                     ],
                 },
@@ -104,8 +104,8 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: tourney,
-                            newData: await Tournament.find({ createdBy: user }),
-                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni team_id' }),
+                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' }),
+                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni sanction team_id' }),
                         });
                     }
                 })
@@ -139,13 +139,15 @@ module.exports = {
                     });
 
                 // Añadir teams nuevos a la DB
-                let docs;
-                await Team.insertMany(newTeams, { session })
-                    .then(async (doc, err) => {
-                        if (err) await errorHandler(session, err, res);
-                        else docs = doc.map((x) => x._id);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                let docs = [];
+                if (newTeams.length) {
+                    await Team.insertMany(newTeams, { session })
+                        .then(async (doc, err) => {
+                            if (err) await errorHandler(session, err, res);
+                            else docs = doc.map((x) => x._id);
+                        })
+                        .catch(async (err) => await errorHandler(session, err, res));
+                }
 
                 // Actualizar el team id de los jugadores existentes
                 await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: id } }, { session })
@@ -185,8 +187,8 @@ module.exports = {
                         session.endSession();
                         res.status(200).json({
                             result: tourney,
-                            newData: await Tournament.find({ createdBy: user }),
-                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni team_id' }),
+                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' }),
+                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni sanction team_id' }),
                         });
                     }
                 })
@@ -245,7 +247,7 @@ module.exports = {
                     res.status(200).json({
                         result: tourney,
                         newData: await Tournament.find({ createdBy: user }),
-                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni team_id' }),
+                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni sanction team_id' }),
                     });
                 })
                 .catch(async (err) => await errorHandler(session, err, res));

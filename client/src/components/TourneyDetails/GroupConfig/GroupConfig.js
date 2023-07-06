@@ -392,7 +392,14 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                                                 {group.matchs
                                                     .filter((x) => x.week === i)
                                                     .map((x, index) => (
-                                                        <MatchCard match={x} getScore={getScore} goToMatchDetails={goToMatchDetails} key={`match-card-${index}`} group={group} />
+                                                        <MatchCard
+                                                            match={x}
+                                                            getScore={getScore}
+                                                            goToMatchDetails={goToMatchDetails}
+                                                            key={`match-card-${index}`}
+                                                            group={group}
+                                                            category={tourney?.category}
+                                                        />
                                                     ))}
                                             </div>
                                         ))}

@@ -28,6 +28,14 @@ const TourneyDetails = (props) => {
         if (!isEmpty(tourneyDetails.data)) setTourneyData(cloneDeep(tourneyDetails.data));
     }, [tourneyDetails.data]);
 
+    useEffect(() => {
+        if (tourneyData) {
+            const newData = cloneDeep(tourneyData);
+            newData.status = newData?.groups.length ? 'Jugando' : 'Nuevo';
+            setTourneyData(newData);
+        }
+    }, [JSON.stringify(tourneyData?.groups)]);
+
     const enableSave = () => {
         return isEqual(tourneyDetails.data, tourneyData);
     };
