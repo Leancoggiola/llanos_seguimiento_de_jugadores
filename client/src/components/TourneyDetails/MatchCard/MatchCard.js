@@ -14,6 +14,7 @@ const MatchCard = (props) => {
     const { group, match, goToMatchDetails, getScore, category, updateMatchDate, tourneyDate } = props;
 
     const [date, setDate] = useState(match?.date ? new Date(match.date) : null);
+    const classificated = match.teams.some((x) => x._id === null);
 
     const handleDateChange = (e) => {
         updateMatchDate(e, match, group.name);
@@ -45,12 +46,12 @@ const MatchCard = (props) => {
                     </FormField>
                 </div>
                 <div className="print-logo">
-                    <IconButton onClick={() => generateMatchPdf(match, group, category)}>
+                    <IconButton onClick={() => generateMatchPdf(match, group, category)} disabled={classificated}>
                         <Icon src={actionIcPrint} />
                     </IconButton>
                 </div>
                 <div className="details-logo">
-                    <IconButton onClick={() => goToMatchDetails({ ...match, groupName: group.name })}>
+                    <IconButton onClick={() => goToMatchDetails({ ...match, groupName: group.name })} disabled={classificated}>
                         <Icon src={actionIcLaunch} />
                     </IconButton>
                 </div>
@@ -58,11 +59,11 @@ const MatchCard = (props) => {
                     <Icon src={actionIcHome} />
                     <span>{capitalize(match.teams[0].name)}</span>
                 </div>
-                <div className="away-team">
+                <div className="away-team" {...(classificated && { style: { color: 'var(--app-highlight)' } })}>
                     <Icon src={actionIcExitToApp} />
                     <span>{capitalize(match.teams[1].name)}</span>
                 </div>
-                <div className="results">{getScore(match)}</div>
+                {!classificated && <div className="results">{getScore(match)}</div>}
             </div>
             {date && (
                 <div className="match-card-date">

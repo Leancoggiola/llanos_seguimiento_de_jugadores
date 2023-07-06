@@ -21,6 +21,59 @@ import { navbarNewEntry, updateToastData } from '../../../middleware/actions/nav
 // Styling
 import './GroupConfig.scss';
 
+const orderGroupTable = (a, b) => {
+    if (a.pts > b.pts) {
+        return -1;
+    } else if (a.pts < b.pts) {
+        return 1;
+    } else {
+        const valuesA = a['ga/gc'].split(':');
+        const valuesB = b['ga/gc'].split(':');
+        const diferenciaA = Number(valuesA[0]) - Number(valuesA[1]);
+        const diferenciaB = Number(valuesB[0]) - Number(valuesB[1]);
+        if (diferenciaA > diferenciaB) {
+            return -1;
+        } else if (diferenciaA < diferenciaB) {
+            return 1;
+        } else {
+            return a.dif - b.dif;
+        }
+    }
+};
+
+const formatGroupTable = (group) => {
+    const getTable = (team) => {
+        const results = { pj: 0, pg: 0, pe: 0, pp: 0, 'ga/gc': '0:0', dif: 0, pts: 0 };
+        const matches = group.matchs.filter((x) => x.teams.map((x) => x._id).includes(team._id));
+        results['_id'] = team._id;
+        results.pj = matches.filter((x) => x.winner).length;
+        results.pg = matches.filter((x) => x.winner && x.winner !== 'empate' && x.winner === team._id).length;
+        results.pe = matches.filter((x) => x.winner && x.winner === 'empate').length;
+        results.pp = matches.filter((x) => x.winner && x.winner !== 'empate' && x.winner !== team._id).length;
+        results.pts = results.pg * 3 + results.pe * 1;
+        results['ga/gc'] = matches
+            .reduce(
+                (prev, curr) => {
+                    if (!isEmpty(curr.details)) {
+                        const ga = curr.details.filter((det) => det.type === 'gol' && team.players.some((play) => play._id === det.player._id)).length;
+                        const gc = curr.details.filter((det) => det.type === 'gol' && team.players.every((play) => play._id !== det.player._id)).length;
+                        prev = [prev[0] + ga, prev[1] + gc];
+                    }
+                    return prev;
+                },
+                [0, 0]
+            )
+            .join(':');
+        results.dif = Number(results['ga/gc'].split(':')[0]) - Number(results['ga/gc'].split(':')[1]);
+        return results;
+    };
+
+    return group.teams.map((team) => ({
+        name: capitalize(team.name),
+        ...getTable(team),
+    }));
+};
+
 const GroupConfig = (props) => {
     const { tourney, setTourneyData } = props;
     const [tabIndex, setTabIndex] = useState(0);
@@ -132,6 +185,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
             name: `Grupo ${String.fromCharCode(65 + i)}`,
             teams: [],
             matchs: [],
+            table: [],
         }));
         do {
             for (let i = 0; i < groups.length; i++) {
@@ -139,7 +193,12 @@ const Grupos = ({ tourney, setTourneyData }) => {
                 groups[i].teams.push(...teamsToSort.splice(Math.floor(Math.random() * teamsToSort.length), 1));
             }
         } while (teamsToSort.length > 0);
+
         tourney.groups = groups;
+        tourney.groups.forEach((group) => {
+            group.table = formatGroupTable(group).sort(orderGroupTable);
+        });
+        debugger;
         tourney.configs = tourney?.configs ? tourney.configs : {};
         tourney.configs['group'] = {
             totalGroups,
@@ -153,28 +212,8 @@ const Grupos = ({ tourney, setTourneyData }) => {
         setTourneyData(cloneDeep(tourney));
     };
 
-    const orderList = (a, b) => {
-        if (a.pts > b.pts) {
-            return -1;
-        } else if (a.pts < b.pts) {
-            return 1;
-        } else {
-            const valuesA = a['ga/gc'].split(':');
-            const valuesB = b['ga/gc'].split(':');
-            const diferenciaA = Number(valuesA[0]) - Number(valuesA[1]);
-            const diferenciaB = Number(valuesB[0]) - Number(valuesB[1]);
-            if (diferenciaA > diferenciaB) {
-                return -1;
-            } else if (diferenciaA < diferenciaB) {
-                return 1;
-            } else {
-                return a.dif - b.dif;
-            }
-        }
-    };
-
     const columnDefs = [
-        { headerName: '#', field: 'position', comparator: orderList, numered: true },
+        { headerName: '#', field: 'position', numered: true },
         { headerName: 'Nombre', field: 'name', style: { width: '100%' } },
         { headerName: 'J', field: 'pj' },
         { headerName: 'G', field: 'pg' },
@@ -185,37 +224,6 @@ const Grupos = ({ tourney, setTourneyData }) => {
         { headerName: 'Pts', field: 'pts' },
     ];
 
-    const formatData = (data) => {
-        const getTable = (team) => {
-            const results = { pj: 0, pg: 0, pe: 0, pp: 0, 'ga/gc': '0:0', dif: 0, pts: 0 };
-            const matches = data.matchs.filter((x) => x.teams.map((x) => x._id).includes(team._id));
-            results.pj = matches.filter((x) => x.winner).length;
-            results.pg = matches.filter((x) => x.winner && x.winner !== 'empate' && x.winner === team._id).length;
-            results.pe = matches.filter((x) => x.winner && x.winner === 'empate').length;
-            results.pp = matches.filter((x) => x.winner && x.winner !== 'empate' && x.winner !== team._id).length;
-            results.pts = results.pg * 3 + results.pe * 1;
-            results['ga/gc'] = matches
-                .reduce(
-                    (prev, curr) => {
-                        if (!isEmpty(curr.details)) {
-                            const ga = curr.details.filter((det) => det.type === 'gol' && team.players.some((play) => play._id === det.player._id)).length;
-                            const gc = curr.details.filter((det) => det.type === 'gol' && team.players.every((play) => play._id !== det.player._id)).length;
-                            prev = [prev[0] + ga, prev[1] + gc];
-                        }
-                        return prev;
-                    },
-                    [0, 0]
-                )
-                .join(':');
-            results.dif = Number(results['ga/gc'].split(':')[0]) - Number(results['ga/gc'].split(':')[1]);
-            return results;
-        };
-        return data.teams.map((team) => ({
-            name: capitalize(team.name),
-            ...getTable(team),
-        }));
-    };
-
     const handleDeleteGroups = () => {
         setTourneyData({
             ...tourney,
@@ -224,6 +232,8 @@ const Grupos = ({ tourney, setTourneyData }) => {
         setDeleteModal(false);
     };
 
+    console.log(tourney.groups);
+
     return (
         <>
             {tourney.groups.length > 0 ? (
@@ -231,7 +241,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
                     {tourney.groups.map((group, index) => (
                         <div key={group.name + index} className="group-config-content-groups">
                             <h3>{group.name}</h3>
-                            <Table columnDefs={columnDefs} dataSource={formatData(group)} />
+                            <Table columnDefs={columnDefs} dataSource={group.table} />
                         </div>
                     ))}
                     <div className="group-config-content-delete-btn">
@@ -245,7 +255,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
                     <form noValidate>
                         <FormField>
                             <Label>Número de grupos</Label>
-                            <Input type="number" min={0} max={32} required={true} value={totalGroups} onChange={(e) => setTotalGroups(e.target.value)} />
+                            <Input type="number" min={0} max={2} required={true} value={totalGroups} onChange={(e) => setTotalGroups(e.target.value)} />
                         </FormField>
                         <FormField>
                             <Label>Número de encuentros</Label>
@@ -356,6 +366,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                         }
                     }
                 });
+                g.table = formatGroupTable(g).sort(orderGroupTable);
             });
             setTourneyData(cloneDeep(tourney));
         }

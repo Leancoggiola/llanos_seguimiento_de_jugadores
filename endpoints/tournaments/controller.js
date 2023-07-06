@@ -33,6 +33,30 @@ const tourneyOptions = [
             },
         ],
     },
+    {
+        path: 'knockout',
+        populate: [
+            {
+                path: 'matchs',
+                populate: [
+                    {
+                        path: 'details',
+                        populate: { path: 'player', select: '_id name' },
+                    },
+                    {
+                        path: 'teams',
+                        select: '_id name players tourney_ids',
+                        populate: { path: 'players', select: '_id name age dni sanction initial_sanction sanction_date team_id' },
+                    },
+                ],
+            },
+            {
+                path: 'teams',
+                select: '_id name players tourney_ids',
+                populate: { path: 'players', select: '_id name team_id' },
+            },
+        ],
+    },
 ];
 
 module.exports = {

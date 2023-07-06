@@ -12,6 +12,7 @@ import { navbarBack } from '../../middleware/actions/navbarActions';
 import { getTourneyDetailsRequest, putTourneyDetailsRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyDetails.scss';
+import KnockoutConfig from './KnockoutConfig/KnockoutConfig';
 
 const TourneyDetails = (props) => {
     const { tourney, option } = props;
@@ -48,8 +49,8 @@ const TourneyDetails = (props) => {
         switch (option) {
             case 'grupo':
                 return <GroupConfig tourney={tourneyData} setTourneyData={setTourneyData} />;
-            case 'eliminatorias':
-                return <></>;
+            case 'eliminatoria':
+                return <KnockoutConfig tourney={tourneyData} setTourneyData={setTourneyData} />;
             default:
                 return null;
         }

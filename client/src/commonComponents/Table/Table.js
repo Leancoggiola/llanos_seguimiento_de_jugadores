@@ -38,9 +38,7 @@ const Table = (props) => {
                 {data.map((data, indexRow) => (
                     <tr key={`row-${indexRow}`}>
                         {columnDefs.map((x, indexCell) => (
-                            <td key={`cell-${indexRow}-${indexCell}`}>
-                                {x?.numered ? indexRow + 1 : data[x.field]}
-                            </td>
+                            <td key={`cell-${indexRow}-${indexCell}`}>{x?.numered ? indexRow + 1 : data[x.field]}</td>
                         ))}
                     </tr>
                 ))}

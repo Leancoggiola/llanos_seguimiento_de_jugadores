@@ -103,6 +103,30 @@ const groupSchema = Schema({
         required: false,
         default: [],
     },
+    table: {
+        type: Array,
+        required: false,
+        default: [],
+    },
+});
+
+const knockoutSchema = Schema({
+    stage: {
+        type: String,
+        required: [true, 'Se requiere etapa'],
+    },
+    teams: {
+        type: [Schema.Types.ObjectId],
+        ref: 'teams',
+        required: false,
+        default: [],
+    },
+    matchs: {
+        type: [Schema.Types.ObjectId],
+        ref: 'matches',
+        required: false,
+        default: [],
+    },
 });
 
 const tournamentsSchema = Schema({
@@ -120,6 +144,12 @@ const tournamentsSchema = Schema({
     groups: {
         type: [Schema.Types.ObjectId],
         ref: 'groups',
+        required: false,
+        default: [],
+    },
+    knockout: {
+        type: [Schema.Types.ObjectId],
+        ref: 'knockout',
         required: false,
         default: [],
     },
@@ -218,13 +248,14 @@ const logsSchema = Schema({
     date: Date,
 });
 
-const Logs = mongoose.model('logs', logsSchema);
 const Group = mongoose.model('groups', groupSchema);
-const MatchDetails = mongoose.model('matchDetails', matchDetailsSchema);
+const Knockout = mongoose.model('knockout', knockoutSchema);
+const Logs = mongoose.model('logs', logsSchema);
 const Match = mongoose.model('matches', matchSchema);
+const MatchDetails = mongoose.model('matchDetails', matchDetailsSchema);
 const Player = mongoose.model('players', playerSchema);
 const Team = mongoose.model('teams', teamsSchema);
 const Tournament = mongoose.model('tournaments', tournamentsSchema);
 const User = mongoose.model('users', userSchema);
 
-module.exports = { User, Tournament, Team, Player, Group, Match, MatchDetails, Logs };
+module.exports = { User, Tournament, Team, Player, Group, Match, MatchDetails, Logs, Knockout };
