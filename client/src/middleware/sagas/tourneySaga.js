@@ -17,11 +17,19 @@ import {
     putTourneyFailure,
     putTourneySuccess,
 } from '../actions/tourneyActions';
+import { getPlayersRequest } from '../actions/playerActions.js';
 
 import { getRequest } from '../index.js';
 
 import { updateToastData } from '../actions/navbarActions.js';
-import { TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_GET_TOURNEY_DETAILS, TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_PUT_TOURNEY, TOURNEY_PUT_TOURNEY_DETAILS } from '../constants/tourney';
+import {
+    TOURNEY_DELETE_NEW_TOURNEY,
+    TOURNEY_GET_TOURNEY_DETAILS,
+    TOURNEY_GET_TOURNEY_LIST,
+    TOURNEY_POST_NEW_TOURNEY,
+    TOURNEY_PUT_TOURNEY,
+    TOURNEY_PUT_TOURNEY_DETAILS,
+} from '../constants/tourney';
 
 // Workers
 function* getTourneysWork() {
@@ -121,6 +129,7 @@ function* putTourneyDetailsWork(action) {
         const response = yield call(serviceCall, options);
         yield put(putTourneyDetailsSuccess(response));
         yield put(getTourneyDetailsRequest(response.result._id));
+        yield put(getPlayersRequest());
         yield put(
             updateToastData({
                 show: true,

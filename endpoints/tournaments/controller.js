@@ -1,7 +1,39 @@
 const { pick, omit } = require('lodash');
 const { errorHandler } = require('../helpers.js');
-const { Tournament, Team, User, Group, Match, MatchDetails } = require('../models.js');
+const { Tournament, Team, User, Group, Match, MatchDetails, Player } = require('../models.js');
 const mongoose = require('mongoose');
+
+const tourneyOptions = [
+    {
+        path: 'teams',
+        select: '_id name players tourney_ids',
+        populate: { path: 'players', select: '_id name team_id' },
+    },
+    {
+        path: 'groups',
+        populate: [
+            {
+                path: 'matchs',
+                populate: [
+                    {
+                        path: 'details',
+                        populate: { path: 'player', select: '_id name' },
+                    },
+                    {
+                        path: 'teams',
+                        select: '_id name players tourney_ids',
+                        populate: { path: 'players', select: '_id name age dni sanction initial_sanction sanction_date team_id' },
+                    },
+                ],
+            },
+            {
+                path: 'teams',
+                select: '_id name players tourney_ids',
+                populate: { path: 'players', select: '_id name team_id' },
+            },
+        ],
+    },
+];
 
 module.exports = {
     // Tournaments
@@ -18,33 +50,13 @@ module.exports = {
     getTournamentDetails: async (req, res) => {
         const id = req.params.id;
         try {
-            const tourney = await Tournament.findById(id).populate([
-                { path: 'teams', select: '_id name players tourney_ids', populate: { path: 'players', select: '_id name age dni sanction team_id' } },
-                {
-                    path: 'groups',
-                    populate: [
-                        {
-                            path: 'matchs',
-                            populate: [
-                                {
-                                    path: 'details',
-                                    populate: { path: 'player', select: '_id name age dni sanction team_id' },
-                                },
-                                {
-                                    path: 'teams',
-                                    select: '_id name players tourney_ids',
-                                    populate: { path: 'players', select: '_id name age dni sanction team_id' },
-                                },
-                            ],
-                        },
-                        {
-                            path: 'teams',
-                            select: '_id name players tourney_ids',
-                            populate: { path: 'players', select: '_id name age dni sanction team_id' },
-                        },
-                    ],
-                },
-            ]);
+            let tourney = await Tournament.findById(id).populate(tourneyOptions).lean();
+            tourney.groups = tourney.groups
+                .map((x) => ({
+                    ...x,
+                    matchs: x.matchs.sort((a, b) => a.matchOrder - b.matchOrder).sort((a, b) => a.week - b.week),
+                }))
+                .sort((a, b) => a.name.localeCompare(b.name));
             res.status(200).json(tourney);
         } catch (err) {
             await errorHandler(null, err, res);
@@ -60,6 +72,7 @@ module.exports = {
             const newTeamId = new mongoose.Types.ObjectId();
             body['createdBy'] = user;
             body['_id'] = newTeamId;
+            body['createdOn'] = new Date();
 
             if (body.teams.length > 0) {
                 const existing = body.teams.filter((x) => x._id).map((x) => x._id);
@@ -105,7 +118,10 @@ module.exports = {
                         res.status(201).json({
                             result: tourney,
                             newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' }),
-                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni sanction team_id' }),
+                            newTeams: await Team.find({ createdBy: user }).populate({
+                                path: 'players',
+                                select: '_id name team_id',
+                            }),
                         });
                     }
                 })
@@ -188,7 +204,10 @@ module.exports = {
                         res.status(200).json({
                             result: tourney,
                             newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' }),
-                            newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni sanction team_id' }),
+                            newTeams: await Team.find({ createdBy: user }).populate({
+                                path: 'players',
+                                select: '_id name team_id',
+                            }),
                         });
                     }
                 })
@@ -208,6 +227,7 @@ module.exports = {
             const id = req.params.id;
 
             await saveConfig(body.configs.group, user, session, res);
+            await updatePlayersSanctions(body.groups, session);
             body.groups = await saveGroups(body.groups, session);
 
             await Team.updateMany({ _id: { $in: body.teams.map((x) => x._id) } }, { $addToSet: { tourney_ids: body._id } }, { session });
@@ -247,7 +267,7 @@ module.exports = {
                     res.status(200).json({
                         result: tourney,
                         newData: await Tournament.find({ createdBy: user }),
-                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name age dni sanction team_id' }),
+                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name team_id' }),
                     });
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -308,4 +328,29 @@ const saveMatchDetails = async (details, session) => {
         })
     );
     return ids;
+};
+
+const updatePlayersSanctions = async (groups, session) => {
+    await Promise.all(
+        groups.map(async (group) => {
+            const matchsDates = group.matchs.filter((x) => x?.date).map((x) => x.date);
+            if (matchsDates.length) {
+                group.teams.forEach(async (team) => {
+                    await Promise.all(
+                        team.players.map(async (player) => {
+                            if (player?.initial_sanction) {
+                                const newSanction = await matchsDates.reduce((prev, matchDate) => {
+                                    if (prev !== 0) {
+                                        prev = new Date(matchDate) > new Date(player.sanction_date) ? prev - 1 : prev;
+                                    }
+                                    return prev;
+                                }, player.initial_sanction);
+                                await Player.findOneAndUpdate({ _id: player._id }, { sanction: newSanction }, { session, new: true, upsert: true });
+                            }
+                        })
+                    );
+                });
+            }
+        })
+    );
 };

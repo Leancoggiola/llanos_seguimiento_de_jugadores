@@ -54,7 +54,9 @@ const FormField = (props) => {
     };
     return (
         <FormFieldProvider value={contextSettings}>
-            <div className={classes}>{children}</div>
+            <div className={classes} id={contextSettings.id}>
+                {children}
+            </div>
         </FormFieldProvider>
     );
 };

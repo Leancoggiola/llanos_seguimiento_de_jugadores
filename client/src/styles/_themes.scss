@@ -96,6 +96,21 @@
     --chip-error-bg: #{$error-bg};
     --chip-error-color: #{$error};
 
+    --date-picker-navigation-bg-color: #{$grey-550};
+    --date-picker-navigation-arrow-color: #{$white};
+    --date-picker-tile-color: #{$white};
+    --date-picker-tile-active-color: #{$grey-500};
+    --date-picker-tile-active-bg-color: #{$branding};
+    --date-picker-tile-active-hover-bg-color: #{$black};
+    --date-picker-neighboring-month-color: #{$grey-400};
+    --date-picker-weekend-color: #{$grey-400};
+    --date-picker-disabled-color: #{$grey-400};
+    --date-picker-calendar-bg-color: #{$grey-550};
+    --date-picker-weekday-color: #{$white};
+    --date-picker-today-mark: #{$grey-200};
+    --date-picker-view-container-color: #{$grey-600};
+    --date-picker-view-container-border-color: transparent;
+
     --form-element-bg: #{$grey-600};
     --form-element-hover: #{$grey-550};
     --form-element-border: #{$grey-200};

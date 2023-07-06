@@ -1,63 +1,71 @@
-.match-card {  
-    display: grid;
-    grid-template-columns: 1fr max-content 1fr;
-    grid-template-rows: 1fr max-content 1fr;
-    grid-auto-columns: 1fr;
-    gap: 1rem 1.5rem;
-    grid-auto-flow: row;
-    grid-template-areas:
-        "date-logo print-logo details-logo"
-        "home-team . results"
-        "away-team . results";
-
-    padding: 1rem 0;
+.match-card {
     border-top: 1px solid var(--table-border-color);
-    border-bottom: 1px solid var(--table-border-color);;
-
-    .date-logo { 
-        grid-area: date-logo;
-        justify-content: flex-end; 
-        padding-right: 1rem;
-    }
-    .print-logo { 
-        grid-area: print-logo;
-        justify-content: center;
-    }
-    .details-logo { 
-        grid-area: details-logo;
-        justify-content: flex-start;
-        padding-left: 1rem;
-    }
-    .date-logo,
-    .print-logo,
-    .details-logo {
+    border-bottom: 1px solid var(--table-border-color);
+    padding: 1rem 0;
+    &-date {
         display: flex;
-        align-items: flex-end;
+        justify-content: space-around;
+        margin: 0;
+        margin-top: 1.5rem;
     }
-    .home-team { grid-area: home-team }
-    .away-team { grid-area: away-team }
+    &-grid {  
+        display: grid;
+        grid-template-columns: 1fr max-content 1fr;
+        grid-template-rows: 1fr max-content 1fr;
+        grid-auto-columns: 1fr;
+        gap: 1rem 1.5rem;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "date-logo print-logo details-logo"
+            "home-team . results"
+            "away-team . results";
 
-    .home-team,
-    .away-team {
-        display: flex;
-        gap: 0 0.5rem;
-        justify-content: flex-start;
-        align-items: center;
-        svg {
-            height: 1rem;
-            width: auto;
+        .date-logo { 
+            grid-area: date-logo;
+            justify-content: flex-end; 
+            padding-right: 1rem;
+            .cc-form-field { margin: 0;}
         }
-    }
-    span {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .results { 
-        grid-area: results; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        .print-logo { 
+            grid-area: print-logo;
+            justify-content: center;
+        }
+        .details-logo { 
+            grid-area: details-logo;
+            justify-content: flex-start;
+            padding-left: 1rem;
+        }
+        .date-logo,
+        .print-logo,
+        .details-logo {
+            display: flex;
+            align-items: flex-end;
+        }
+        .home-team { grid-area: home-team }
+        .away-team { grid-area: away-team }
+
+        .home-team,
+        .away-team {
+            display: flex;
+            gap: 0 0.5rem;
+            justify-content: flex-start;
+            align-items: center;
+            svg {
+                height: 1rem;
+                width: auto;
+            }
+        }
+        span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .results { 
+            grid-area: results; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     }
 }
   

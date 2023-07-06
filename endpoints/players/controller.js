@@ -28,7 +28,10 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id') });
+                        res.status(201).json({
+                            result: player,
+                            newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id'),
+                        });
                     }
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -44,7 +47,10 @@ module.exports = {
         try {
             const { body } = req;
             body['createdBy'] = user;
-            body.sanction_date = body.update_date ? new Date() : body.sanction_date;
+            if (body.update_date) {
+                body.initial_sanction = body.sanction;
+                body.sanction_date = new Date();
+            }
 
             await Player.findOneAndUpdate({ _id: req.params.id }, body, {
                 new: true,
@@ -58,7 +64,10 @@ module.exports = {
                     else {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: player, newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id') });
+                        res.status(201).json({
+                            result: player,
+                            newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id'),
+                        });
                     }
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -80,7 +89,10 @@ module.exports = {
                     .then(async (response) => {
                         await session.commitTransaction();
                         session.endSession();
-                        res.status(201).json({ result: response, newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id') });
+                        res.status(201).json({
+                            result: response,
+                            newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id'),
+                        });
                     })
                     .catch(async (err) => await errorHandler(session, err, res));
             };

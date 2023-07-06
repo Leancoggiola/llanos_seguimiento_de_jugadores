@@ -350,13 +350,23 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                         if (!isEmpty(m.details)) {
                             const results = getScore(m).split(':');
                             m.winner = results[0] === results[1] ? 'empate' : results[0] > results[1] ? m.teams[0]._id : m.teams[1]._id;
-                        } else m.winner = null;
+                        } else {
+                            m.winner = null;
+                            m.date = null;
+                        }
                     }
                 });
             });
             setTourneyData(cloneDeep(tourney));
         }
     }, [matchDetails]);
+
+    const updateMatchDate = (date, match, groupName) => {
+        const groupIndex = tourney.groups.findIndex((x) => x.name === groupName);
+        const matchIndex = tourney.groups[groupIndex].matchs.findIndex((x) => x.matchOrder === match.matchOrder && x.week === match.week);
+        tourney.groups[groupIndex].matchs[matchIndex].date = date;
+        setTourneyData({ ...tourney });
+    };
 
     const handleDeleteCalendar = () => {
         setTourneyData({
@@ -372,41 +382,41 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 <MatchDetails match={matchDetails} setMatchDetails={setMatchDetails} getScore={getScore} />
             ) : tourney.groups.every((x) => x.matchs.length > 0) ? (
                 <>
-                    {tourney.groups
-                        .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
-                        .map((group, index) => {
-                            const jornadas = [...new Set(group.matchs.map((x) => x.week))];
-                            return (
-                                <Accordion
-                                    className="group-config-content-calendar-accordion"
-                                    key={group.name}
-                                    alignIconRight
-                                    useChevronIcon
-                                    {...(index === 0 ? { ...firstAccordionConf } : null)}
-                                >
-                                    <AccordionTrigger>{group.name}</AccordionTrigger>
-                                    <AccordionContent>
-                                        {jornadas.map((i) => (
-                                            <div className="jornada-container" key={`week-${i}`}>
-                                                <h4>{`Jornada ${i}`}</h4>
-                                                {group.matchs
-                                                    .filter((x) => x.week === i)
-                                                    .map((x, index) => (
-                                                        <MatchCard
-                                                            match={x}
-                                                            getScore={getScore}
-                                                            goToMatchDetails={goToMatchDetails}
-                                                            key={`match-card-${index}`}
-                                                            group={group}
-                                                            category={tourney?.category}
-                                                        />
-                                                    ))}
-                                            </div>
-                                        ))}
-                                    </AccordionContent>
-                                </Accordion>
-                            );
-                        })}
+                    {tourney.groups.map((group, index) => {
+                        const jornadas = [...new Set(group.matchs.map((x) => x.week))];
+                        return (
+                            <Accordion
+                                className="group-config-content-calendar-accordion"
+                                key={group.name}
+                                alignIconRight
+                                useChevronIcon
+                                {...(index === 0 ? { ...firstAccordionConf } : null)}
+                            >
+                                <AccordionTrigger>{group.name}</AccordionTrigger>
+                                <AccordionContent>
+                                    {jornadas.map((i) => (
+                                        <div className="jornada-container" key={`week-${i}`}>
+                                            <h4>{`Jornada ${i}`}</h4>
+                                            {group.matchs
+                                                .filter((x) => x.week === i)
+                                                .map((x, index) => (
+                                                    <MatchCard
+                                                        match={x}
+                                                        getScore={getScore}
+                                                        goToMatchDetails={goToMatchDetails}
+                                                        key={`match-card-${index}`}
+                                                        group={group}
+                                                        category={tourney?.category}
+                                                        updateMatchDate={updateMatchDate}
+                                                        tourneyDate={tourney.createdOn}
+                                                    />
+                                                ))}
+                                        </div>
+                                    ))}
+                                </AccordionContent>
+                            </Accordion>
+                        );
+                    })}
                     <div className="group-config-content-delete-btn">
                         <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
                             Eliminar calendario

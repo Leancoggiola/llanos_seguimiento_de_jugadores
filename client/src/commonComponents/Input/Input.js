@@ -8,6 +8,8 @@ import Icon from '../Icon';
 // Styling
 import './Input.scss';
 
+let nextUniqueId = 0;
+
 const Input = (props) => {
     const {
         disabled = false,
@@ -22,21 +24,8 @@ const Input = (props) => {
         value = '',
         hideClearButton = true,
     } = props;
-    let nextUniqueId = 0;
 
-    const others = omit(props, [
-        'disabled',
-        'id',
-        'className',
-        'required',
-        'onBlur',
-        'onChange',
-        'onFocus',
-        'placeholder',
-        'type',
-        'value',
-        'hideClearButton',
-    ]);
+    const others = omit(props, ['disabled', 'id', 'className', 'required', 'onBlur', 'onChange', 'onFocus', 'placeholder', 'type', 'value', 'hideClearButton']);
 
     const formFieldContext = useContext(FormFieldContext);
     const inputValue = value.toString();
@@ -61,10 +50,7 @@ const Input = (props) => {
 
     const handleChange = (event) => {
         if ((type === 'number' && others.max) || others.min) {
-            if (
-                Number(event.target.value) >= Number(others.min) &&
-                Number(event.target.value) <= Number(others.max)
-            ) {
+            if (Number(event.target.value) >= Number(others.min) && Number(event.target.value) <= Number(others.max)) {
                 formFieldContext.setValue(event.target.value);
                 onChange(event);
             }
@@ -84,9 +70,7 @@ const Input = (props) => {
         inputRef.current.focus();
     };
 
-    const classes = `cc-input ${formFieldContext.invalid ? 'cc-input-invalid ' : ''}${
-        className ? className : ''
-    }`;
+    const classes = `cc-input ${formFieldContext.invalid ? 'cc-input-invalid ' : ''}${className ? className : ''}`;
 
     return (
         <div className="cc-input-component">
@@ -105,11 +89,7 @@ const Input = (props) => {
                 {...others}
             />
             {inputValue.length > 0 && !hideClearButton && (
-                <IconButton
-                    className="cc-input-clear-button"
-                    onClick={handleClear}
-                    disabled={disabled}
-                >
+                <IconButton className="cc-input-clear-button" onClick={handleClear} disabled={disabled}>
                     <Icon src={navigationIcClose} />
                 </IconButton>
             )}

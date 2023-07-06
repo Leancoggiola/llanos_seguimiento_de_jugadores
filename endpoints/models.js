@@ -22,7 +22,8 @@ const playerSchema = Schema({
         match: [/^\d{7,8}$/, 'Ingresa un DNI valido'],
     },
     sanction: { type: Number, required: false, min: 0, max: 99, default: 0 },
-    sanction_date: { type: Date, required: false },
+    initial_sanction: { type: Number, required: false, min: 0, max: 99, default: 0 },
+    sanction_date: { type: Date, required: false, default: null },
     age: { type: Number, required: false, min: 1, max: 99 },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     team_id: { type: Schema.Types.ObjectId, ref: 'teams', default: null },
@@ -56,7 +57,7 @@ const matchDetailsSchema = Schema({
 });
 
 const matchSchema = Schema({
-    date: { type: Date, required: false },
+    date: { type: Date, required: false, default: null },
     teams: {
         type: [Schema.Types.ObjectId],
         ref: 'teams',
@@ -147,6 +148,7 @@ const tournamentsSchema = Schema({
         ref: 'users',
         required: true,
     },
+    createdOn: { type: Date, required: [true, 'Se requiere fecha de creacion'] },
 });
 
 const userSchema = Schema({

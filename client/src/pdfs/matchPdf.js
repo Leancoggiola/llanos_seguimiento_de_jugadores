@@ -83,24 +83,28 @@ const getBody = (team, details, group, totalHeaders) => {
             }
             if (details.length) {
                 let detail;
+                // AMARILLAS TOTALES
                 detail = group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length;
                 data.push(detail);
+                // AMARILLAS EN PARTIDO
                 detail = details.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla')?.length;
                 data.push(detail >= 1 ? 'X' : '');
                 data.push(detail >= 2 ? 'X' : '');
-                detail = player?.sanction;
-                data.push(detail);
+                // SANCIONES TOTALES
+                data.push(getSanciones(group.matchs, player));
+                // GOLES TOTALES
                 detail = details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match);
                 detail?.forEach((x) => {
                     data.push(x.type === 'gol' ? 'X' : 'C');
                 });
+                // RESTO
                 if (!detail || detail?.length < 6) {
                     data.push(...Array.from({ length: 4 - detail?.length }, (_) => ''));
                 }
             } else {
                 data.push(group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length);
                 data.push('', '');
-                data.push(player?.sanction);
+                data.push(getSanciones());
                 data.push(details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match));
                 data.push(...Array.from({ length: 4 }, (_) => ''));
             }
@@ -149,6 +153,20 @@ const generateMatchPdf = (match, group, category) => {
     doc.setFont(undefined, 'bold');
     doc.text('Observaciones', 10, doc.lastAutoTable.finalY + 10);
     doc.save(`Partido ${match.teams[0].name}-${match.teams[1].name}.pdf`);
+};
+
+const getSanciones = (matchs, player) => {
+    let sanction = 0;
+    const matchsDates = matchs.filter((x) => x?.date).map((x) => x.date);
+    if (player?.initial_sanction) {
+        sanction = matchsDates.reduce((prev, matchDate) => {
+            if (prev !== 0) {
+                prev = new Date(matchDate) > new Date(player.sanction_date) ? prev - 1 : prev;
+            }
+            return prev;
+        }, player.initial_sanction);
+    }
+    return sanction;
 };
 
 export { generateMatchPdf };
