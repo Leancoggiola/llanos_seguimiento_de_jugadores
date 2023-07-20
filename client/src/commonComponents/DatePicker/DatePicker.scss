@@ -196,9 +196,14 @@
         line-height: 2.5rem;
     }
 
-    .react-datepicker__day:hover { 
-        border-radius: 0;
-        background-color: var(--date-picker-tile-active-hover-bg-color);
+    .react-datepicker__day {
+        &:hover { 
+            border-radius: 0;
+            background-color: var(--date-picker-tile-active-hover-bg-color);
+        }
+        &--disabled {
+            color: var(--date-picker-disabled-color);
+        }
     }
 
     //.react-datepicker__day--keyboard-selected,

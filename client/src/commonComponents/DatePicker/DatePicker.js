@@ -149,6 +149,7 @@ const DatePicker = (props) => {
     const datePickerProps = {
         name: formField.id,
         dateFormat: format,
+        disabled: disabled,
         calendarClassName: 'cc-date-picker-calendar',
         className: classes,
         formatWeekDay: (day) => convertToSpanish(day),
