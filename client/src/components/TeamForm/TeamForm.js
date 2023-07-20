@@ -62,7 +62,7 @@ const TeamForm = (props) => {
     };
 
     const isRemovable = (item) => {
-        return !playerList.data.some((x) => x.dni === item.dni);
+        return !playerList.data.some((x) => item.dni !== null && x.dni === item.dni);
     };
 
     if (teamCrud.loading) {
@@ -124,7 +124,13 @@ const TeamForm = (props) => {
                     </Button>
                 </div>
             </form>
-            <MultiAddModal show={showMultiAdd} onClose={() => setMultiAdd(false)} type={'jugador'} handleClose={handleNewPlayers} existingElements={[...playerList.data, ...jugadores]} />
+            <MultiAddModal
+                show={showMultiAdd}
+                onClose={() => setMultiAdd(false)}
+                type={'jugador'}
+                handleClose={handleNewPlayers}
+                existingElements={[...playerList.data, ...jugadores]}
+            />
         </section>
     );
 };

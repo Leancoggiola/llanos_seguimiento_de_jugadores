@@ -127,6 +127,10 @@ const knockoutSchema = Schema({
         required: false,
         default: [],
     },
+    order: {
+        type: Number,
+        required: [true, 'Se requiere order'],
+    },
 });
 
 const tournamentsSchema = Schema({

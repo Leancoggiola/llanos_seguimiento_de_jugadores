@@ -20,6 +20,7 @@ import { getTourneysRequest } from './middleware/actions/tourneyActions';
 import { getPlayersRequest } from './middleware/actions/playerActions';
 // Styles
 import './App.scss';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default () => {
     const [, , removeCookie] = useCookies(['jwt']);
@@ -73,13 +74,7 @@ export default () => {
                 ) : (
                     <BaseRoute />
                 )}
-                <Toast
-                    show={toastData.show}
-                    variant={toastData.variant}
-                    closeBtn={toastData.closeBtn}
-                    position="top"
-                    onClose={() => dispatch(updateToastData({}))}
-                >
+                <Toast show={toastData.show} variant={toastData.variant} closeBtn={toastData.closeBtn} position="top" onClose={() => dispatch(updateToastData({}))}>
                     {toastData.message}
                 </Toast>
             </Suspense>

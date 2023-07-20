@@ -21,16 +21,16 @@
             font-weight: bold;
         }}
 
-        &-delete-btn {
-            position: fixed;
-            bottom: 1rem;
-            left: 50%;
-            transform: translate(-50%, 0);
-            z-index: 101;
-        }
-
         &-calendar-accordion {
             margin-bottom: 1rem;
+            &-trigger {
+                .cc-accordion-title-content {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+            }
         }
     }
 }

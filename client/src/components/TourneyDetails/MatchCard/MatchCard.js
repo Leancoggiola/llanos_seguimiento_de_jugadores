@@ -11,7 +11,7 @@ import IconButton from '../../../commonComponents/IconButton';
 import './MatchCard.scss';
 
 const MatchCard = (props) => {
-    const { group, match, goToMatchDetails, getScore, category, updateMatchDate, tourneyDate } = props;
+    const { group, match, goToMatchDetails, getScore, category, updateMatchDate, tourneyDate, disableBtn } = props;
 
     const [date, setDate] = useState(match?.date ? new Date(match.date) : null);
     const classificated = match.teams.some((x) => x._id === null);
@@ -35,7 +35,7 @@ const MatchCard = (props) => {
                 <div className="date-logo">
                     <FormField>
                         <DatePicker
-                            disabled={getScore(match) === 'Sin resultados'}
+                            disabled={disableBtn || getScore(match) === 'Sin resultados'}
                             value={date}
                             onChange={(e) => handleDateChange(e)}
                             showLeadingZeros={false}
@@ -51,7 +51,7 @@ const MatchCard = (props) => {
                     </IconButton>
                 </div>
                 <div className="details-logo">
-                    <IconButton onClick={() => goToMatchDetails({ ...match, groupName: group.name })} disabled={classificated}>
+                    <IconButton onClick={() => goToMatchDetails({ ...match, groupName: group.name })} disabled={disableBtn || classificated}>
                         <Icon src={actionIcLaunch} />
                     </IconButton>
                 </div>

@@ -96,6 +96,7 @@
     --chip-error-bg: #{$error-bg};
     --chip-error-color: #{$error};
 
+    --date-picker-font-color: #{$white};
     --date-picker-navigation-bg-color: #{$grey-550};
     --date-picker-navigation-arrow-color: #{$white};
     --date-picker-tile-color: #{$white};
@@ -105,7 +106,7 @@
     --date-picker-neighboring-month-color: #{$grey-400};
     --date-picker-weekend-color: #{$grey-400};
     --date-picker-disabled-color: #{$grey-400};
-    --date-picker-calendar-bg-color: #{$grey-550};
+    --date-picker-calendar-bg-color: #{$grey-600};
     --date-picker-weekday-color: #{$white};
     --date-picker-today-mark: #{$grey-200};
     --date-picker-view-container-color: #{$grey-600};

@@ -1,17 +1,30 @@
 import { omit } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
-import ReactDatePicker from 'react-date-picker';
+import { forwardRef, useContext, useEffect } from 'react';
+import ReactDatePicker, { CalendarContainer } from 'react-datepicker';
 import { FormFieldContext } from '../contexts';
 // Components
 import Icon from '../Icon';
+import IconButton from '../IconButton';
 // Assets
-import { actionIcDateRange } from '../../assets/icons';
+import { actionIcDateRange, navigationIcChevronLeft, navigationIcChevronRight } from '../../assets/icons';
 // Styling
-import 'react-calendar/dist/Calendar.css';
-import 'react-date-picker/dist/DatePicker.css';
 import './DatePicker.scss';
 
 let nextUniqueId = 0;
+
+const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+function convertToSpanish(day) {
+    const days = {
+        Monday: 'L',
+        Tuesday: 'M',
+        Wednesday: 'X',
+        Thursday: 'J',
+        Friday: 'V',
+        Saturday: 'S',
+        Sunday: 'D',
+    };
+    return days[day];
+}
 
 const DatePicker = (props) => {
     const {
@@ -48,7 +61,6 @@ const DatePicker = (props) => {
     ]);
 
     const formField = useContext(FormFieldContext);
-    const [isOpen, setIsOpen] = useState(false);
 
     // act as controlled component through valueProp or
     // act as uncontrolled component through formField.value
@@ -63,12 +75,6 @@ const DatePicker = (props) => {
         formField.setHasContent(value && typeof value === 'object');
     }, [value]);
 
-    useEffect(() => {
-        if (formField.id && onlyIcon) {
-            document.querySelector(`#${formField.id}`).querySelector('.react-date-picker__inputGroup').style.display = 'none';
-        }
-    }, [formField.id, onlyIcon]);
-
     // keep formField state in sync with controlled values
     useEffect(() => {
         formField.setValue(valueProp);
@@ -81,10 +87,6 @@ const DatePicker = (props) => {
     useEffect(() => {
         formField.setDisabled(disabled);
     }, [disabled]);
-
-    useEffect(() => {
-        setIsOpen(formField.isFocused);
-    }, [formField.isFocused]);
 
     const handleChange = (date) => {
         // if uncontrolled component, set formField value
@@ -121,33 +123,55 @@ const DatePicker = (props) => {
             !formField.isFocused ? ' cc-date-picker-not-focused' : ''
         }${todayMark ? ' cc-date-picker-today-highlight' : ''}${className ? ' ' + className : ''}`;
 
+    const CustomIconInput = forwardRef(({ onClick, disabled }, ref) => (
+        <IconButton onClick={onClick} innerRef={ref} disabled={disabled}>
+            <Icon className="cc-calendar-icon" src={actionIcDateRange} />
+        </IconButton>
+    ));
+
+    const CustomHeader = (props) => {
+        const { date, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled } = props;
+        return (
+            <div className="react-datepicker__header cc-date-picker-calendar__header">
+                <IconButton onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                    <Icon src={navigationIcChevronLeft} />
+                </IconButton>
+                <div className="react-datepicker__current-month">
+                    {MESES[date.getMonth()]} {date.getFullYear()}
+                </div>
+                <IconButton onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
+                    <Icon src={navigationIcChevronRight} />
+                </IconButton>
+            </div>
+        );
+    };
+
     const datePickerProps = {
         name: formField.id,
-        format,
-        disabled,
-        formatShortWeekday: (locale, date) => date.toLocaleString(locale, { weekday: 'narrow' }),
-        next2Label: null,
-        prev2Label: null,
-        clearIcon: null,
-        calendarClassName: 'cc-calendar',
-        calendarIcon: <Icon className="cc-calendar-icon" src={actionIcDateRange} />,
+        dateFormat: format,
+        calendarClassName: 'cc-date-picker-calendar',
         className: classes,
+        formatWeekDay: (day) => convertToSpanish(day),
         onFocus: handleFocus,
         onChange: handleChange,
         onCalendarClose: handleCalendarClose,
         onCalendarOpen: handleCalendarOpen,
-        onClick: handleClick,
-        value,
-        isOpen,
+        onInputClick: handleClick,
+        selected: value,
         minDate,
         maxDate,
+        withPortal: true,
+        portalId: formField.id,
+        renderCustomHeader: CustomHeader,
+        customInput: <CustomIconInput />,
+        disabledKeyboardNavigation: true,
         ...others,
     };
 
     return (
-        <div className={`cc-date-picker-wrapper${onlyIcon ? ' cc-date-picker-wrapper__only-icon' : ''}`}>
+        <CalendarContainer className="cc-date-picker-wrapper">
             <ReactDatePicker {...datePickerProps} />
-        </div>
+        </CalendarContainer>
     );
 };
 

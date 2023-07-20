@@ -31,8 +31,10 @@ const MultiAddModal = (props) => {
         let newList = [];
         try {
             if (tabIndex === 0) {
-                const pref = (prefijo ? prefijo : title).toLowerCasse();
-                const offset = Math.max(existingElements.filter((x) => x.name.toLowerCase().match(/equipo \d{1,3}$/)).map((x) => Number(x.name.toLowerCase().replace('equipo', ''))));
+                const pref = (prefijo ? prefijo : title).toLowerCase();
+                const offset = Math.max(
+                    existingElements.filter((x) => x.name.toLowerCase().match(/equipo \d{1,3}$/)).map((x) => Number(x.name.toLowerCase().replace('equipo', '')))
+                );
 
                 newList = Array.from({ length: total }, (_, i) => {
                     const value = `${pref} ${offset + i + 1}`;
@@ -91,7 +93,7 @@ const MultiAddModal = (props) => {
                         </FormField>
                         <FormField>
                             <Label>Prefijo</Label>
-                            <Input type="text" value={prefijo} onChange={(e) => setPrefijo(e.target.value)} maxLength="10" placeholder={title} />
+                            <Input type="text" value={prefijo} onChange={(e) => setPrefijo(e.target.value)} maxLength="20" placeholder={title} />
                         </FormField>
                         <p>
                             <i>

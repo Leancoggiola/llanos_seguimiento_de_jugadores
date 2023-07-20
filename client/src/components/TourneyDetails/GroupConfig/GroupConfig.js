@@ -198,7 +198,6 @@ const Grupos = ({ tourney, setTourneyData }) => {
         tourney.groups.forEach((group) => {
             group.table = formatGroupTable(group).sort(orderGroupTable);
         });
-        debugger;
         tourney.configs = tourney?.configs ? tourney.configs : {};
         tourney.configs['group'] = {
             totalGroups,
@@ -231,8 +230,6 @@ const Grupos = ({ tourney, setTourneyData }) => {
         });
         setDeleteModal(false);
     };
-
-    console.log(tourney.groups);
 
     return (
         <>

@@ -1,8 +1,8 @@
-import { cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep, isEmpty, last, shuffle } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
-import { contentIcTrophy, notificationIcEventNote } from '../../../assets/icons';
+import { contentIcTrophy, navigationIcClose, notificationIcEventNote } from '../../../assets/icons';
 import { Accordion, AccordionContent, AccordionTrigger } from '../../../commonComponents/Accordion';
 import Button from '../../../commonComponents/Button';
 import Icon from '../../../commonComponents/Icon';
@@ -14,6 +14,7 @@ import MatchDetails from '../MatchDetails/MatchDetails';
 import { navbarNewEntry } from '../../../middleware/actions/navbarActions';
 // Styling
 import './KnockoutConfig.scss';
+import IconButton from '../../../commonComponents/IconButton';
 
 const KnockoutConfig = (props) => {
     const { tourney, setTourneyData } = props;
@@ -50,6 +51,37 @@ const KnockoutConfig = (props) => {
 const Calendario = ({ tourney, setTourneyData, getScore }) => {
     const { data: teamList } = useSelector((state) => state.team.teamList);
     const totalGroups = Number(tourney.configs.group.totalGroups);
+
+    const dispatch = useDispatch();
+    const [matchDetails, setMatchDetails] = useState(null);
+    const [open, setOpen] = useState(true);
+    const [deleteModal, setDeleteModal] = useState(false);
+
+    const firstAccordionConf = {
+        open,
+        onOpen: () => setOpen(true),
+        onClose: () => setOpen(false),
+    };
+
+    useEffect(() => {
+        if (matchDetails) {
+            tourney.knockout.forEach((g) => {
+                g.matchs.forEach((m) => {
+                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && g.name === matchDetails.groupName) {
+                        m.details = [...matchDetails.details];
+                        if (!isEmpty(m.details)) {
+                            const results = getScore(m).split(':');
+                            m.winner = results[0] === results[1] ? 'empate' : results[0] > results[1] ? m.teams[0]._id : m.teams[1]._id;
+                        } else {
+                            m.winner = null;
+                            m.date = null;
+                        }
+                    }
+                });
+            });
+            setTourneyData(cloneDeep(tourney));
+        }
+    }, [matchDetails]);
 
     const addFirstStage = () => {
         if (totalGroups === 1) {
@@ -96,6 +128,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                     stage: `Etapa 1`,
                     teams: totalTeams.map((x) => x._id),
                     matchs,
+                    order: 1,
                 };
             });
         }
@@ -117,46 +150,10 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 });
                 teams.push(teamsToSortA[i]._id, teamsToSortB[totalCruces - i - 1]._id);
             }
-            tourney.knockout = { stage: `Etapa 1`, teams, matchs };
+            tourney.knockout = { stage: `Etapa 1`, teams, matchs, order: 1 };
         }
         setTourneyData(cloneDeep(tourney));
     };
-
-    const dispatch = useDispatch();
-    const [matchDetails, setMatchDetails] = useState(null);
-    const [open, setOpen] = useState(true);
-    const [deleteModal, setDeleteModal] = useState(false);
-
-    const firstAccordionConf = {
-        open,
-        onOpen: () => setOpen(true),
-        onClose: () => setOpen(false),
-    };
-
-    const goToMatchDetails = (match) => {
-        setMatchDetails(match);
-        dispatch(navbarNewEntry({ action: setMatchDetails, param: false }));
-    };
-
-    useEffect(() => {
-        if (matchDetails) {
-            tourney.knockout.forEach((g) => {
-                g.matchs.forEach((m) => {
-                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && g.name === matchDetails.groupName) {
-                        m.details = [...matchDetails.details];
-                        if (!isEmpty(m.details)) {
-                            const results = getScore(m).split(':');
-                            m.winner = results[0] === results[1] ? 'empate' : results[0] > results[1] ? m.teams[0]._id : m.teams[1]._id;
-                        } else {
-                            m.winner = null;
-                            m.date = null;
-                        }
-                    }
-                });
-            });
-            setTourneyData(cloneDeep(tourney));
-        }
-    }, [matchDetails]);
 
     const updateMatchDate = (date, match, groupName) => {
         const groupIndex = tourney.knockout.findIndex((x) => x.name === groupName);
@@ -165,12 +162,56 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
         setTourneyData({ ...tourney });
     };
 
-    const handleDeleteCalendar = () => {
-        setTourneyData({
-            ...tourney,
-            knockout: tourney.knockout.map((x) => ({ ...x, matchs: [] })),
-        });
+    const handleDeleteStage = () => {
+        const newData = cloneDeep(tourney);
+        newData.knockout.pop();
+        setTourneyData(newData);
         setDeleteModal(false);
+    };
+
+    const goToMatchDetails = (match) => {
+        setMatchDetails(match);
+        dispatch(navbarNewEntry({ action: setMatchDetails, param: false }));
+    };
+
+    const renderNewStageBtn = () => {
+        const lastStage = last(tourney.knockout);
+        if (lastStage.matchs.length > 1 && lastStage.matchs.every((x) => x.winner)) {
+            return <Button onClick={() => singleGroupStage()}>Siguiente etapa</Button>;
+        }
+    };
+
+    const singleGroupStage = () => {
+        const lastStage = last(tourney.knockout);
+        const matches = lastStage.matchs;
+        const winners = matches.map((x) => x.winner);
+        if (winners.length % 2) {
+            const bestOfLosers = tourney.groups[0].table.find();
+            winners.push();
+        }
+        const shuffledTeams = shuffle(winners);
+        const nextStageMatchs = [];
+        const nextOrder = lastStage.order + 1;
+        for (let i = 0; i < shuffledTeams.length; i += 2) {
+            const teamA = teamList.find((x) => x._id === shuffledTeams[i]);
+            const teamB = teamList.find((x) => x._id === shuffledTeams[i + 1]);
+            nextStageMatchs.push({
+                week: nextOrder,
+                matchOrder: i / 2 + 1,
+                teams: [teamA, teamB],
+                details: [],
+                winner: null,
+            });
+        }
+
+        const newData = cloneDeep(tourney);
+        newData.knockout.push({
+            stage: `Etapa ${nextOrder}`,
+            teams: teamList.filter((x) => winners.includes(x._id)),
+            matchs: nextStageMatchs,
+            order: nextOrder,
+        });
+        setTourneyData(newData);
     };
 
     return (
@@ -189,23 +230,31 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                                 useChevronIcon
                                 {...(index === 0 ? { ...firstAccordionConf } : null)}
                             >
-                                <AccordionTrigger>{stage.stage}</AccordionTrigger>
+                                <AccordionTrigger className="knockout-config-content-calendar-accordion-trigger">
+                                    {stage.stage}
+                                    {index + 1 === tourney.knockout.length && (
+                                        <IconButton onClick={() => setDeleteModal(true)}>
+                                            <Icon src={navigationIcClose} />
+                                        </IconButton>
+                                    )}
+                                </AccordionTrigger>
                                 <AccordionContent>
                                     {jornadas.map((i) => (
                                         <div className="jornada-container" key={`week-${i}`}>
                                             <h4>{`Jornada ${i}`}</h4>
                                             {stage.matchs
                                                 .filter((x) => x.week === i)
-                                                .map((x, index) => (
+                                                .map((x, index2) => (
                                                     <MatchCard
-                                                        match={x}
+                                                        key={`match-card-${index2}`}
                                                         getScore={getScore}
                                                         goToMatchDetails={goToMatchDetails}
-                                                        key={`match-card-${index}`}
                                                         group={stage}
+                                                        match={x}
                                                         category={tourney?.category}
                                                         updateMatchDate={updateMatchDate}
                                                         tourneyDate={tourney.createdOn}
+                                                        disableBtn={index + 1 < tourney.knockout.length}
                                                     />
                                                 ))}
                                         </div>
@@ -214,11 +263,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                             </Accordion>
                         );
                     })}
-                    <div className="knockout-config-content-delete-btn">
-                        <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
-                            Eliminar calendario
-                        </Button>
-                    </div>
+                    {renderNewStageBtn()}
                 </>
             ) : (
                 <div className="knockout-config-content-btn">
@@ -227,7 +272,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                     </Button>
                 </div>
             )}
-            <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteCalendar} message={'¿Seguro quieres eliminar el calendario?'} />
+            <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteStage} message={'¿Seguro quieres eliminar esta etapa?'} />
         </>
     );
 };

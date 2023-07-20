@@ -28,6 +28,7 @@ const FormField = (props) => {
         `${hasPlaceholder ? 'cc-form-field-has-placeholder ' : ''}` +
         `${hasContent ? 'cc-form-field-has-value ' : ''}` +
         `${formElementType === 'textInput' ? 'cc-form-field-text-input ' : ''}` +
+        `${formElementType === 'dateInput' ? 'cc-form-field-date-input ' : ''}` +
         `${formElementType === 'selectInput' ? 'cc-form-field-select-input ' : ''}`;
 
     const contextSettings = {
