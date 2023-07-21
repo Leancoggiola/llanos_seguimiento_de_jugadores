@@ -104,7 +104,7 @@ const getBody = (team, details, group, totalHeaders) => {
             } else {
                 data.push(group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length);
                 data.push('', '');
-                data.push(getSanciones());
+                data.push(getSanciones(group.matchs, player));
                 data.push(details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match));
                 data.push(...Array.from({ length: 4 }, (_) => ''));
             }

@@ -128,16 +128,16 @@ function* putTourneyDetailsWork(action) {
         };
         const response = yield call(serviceCall, options);
         yield put(putTourneyDetailsSuccess(response));
-        yield put(getTourneyDetailsRequest(response.result._id));
         yield put(getPlayersRequest());
         yield put(
             updateToastData({
                 show: true,
                 variant: 'success',
-                message: 'Info cargada con exito',
+                message: response,
                 closeBtn: true,
             })
         );
+        yield put(getTourneyDetailsRequest(payload._id));
     } catch (e) {
         yield put(putTourneyDetailsFailure(e));
         yield put(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: true }));

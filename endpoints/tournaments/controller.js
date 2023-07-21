@@ -1,6 +1,6 @@
-const { pick, omit } = require('lodash');
+const { pick } = require('lodash');
 const { errorHandler } = require('../helpers.js');
-const { Tournament, Team, User, Group, Match, MatchDetails, Player } = require('../models.js');
+const { Tournament, Team, User, Player } = require('../models.js');
 const mongoose = require('mongoose');
 
 const tourneyOptions = [
@@ -10,52 +10,32 @@ const tourneyOptions = [
         populate: { path: 'players', select: '_id name team_id' },
     },
     {
-        path: 'groups',
-        populate: [
-            {
-                path: 'matchs',
-                populate: [
-                    {
-                        path: 'details',
-                        populate: { path: 'player', select: '_id name' },
-                    },
-                    {
-                        path: 'teams',
-                        select: '_id name players tourney_ids',
-                        populate: { path: 'players', select: '_id name age dni sanction initial_sanction sanction_date team_id' },
-                    },
-                ],
-            },
-            {
-                path: 'teams',
-                select: '_id name players tourney_ids',
-                populate: { path: 'players', select: '_id name team_id' },
-            },
-        ],
+        path: 'groups.teams',
+        select: '_id name players tourney_ids',
+        populate: { path: 'players', select: '_id name team_id' },
     },
     {
-        path: 'knockout',
-        populate: [
-            {
-                path: 'matchs',
-                populate: [
-                    {
-                        path: 'details',
-                        populate: { path: 'player', select: '_id name' },
-                    },
-                    {
-                        path: 'teams',
-                        select: '_id name players tourney_ids',
-                        populate: { path: 'players', select: '_id name age dni sanction initial_sanction sanction_date team_id' },
-                    },
-                ],
-            },
-            {
-                path: 'teams',
-                select: '_id name players tourney_ids',
-                populate: { path: 'players', select: '_id name team_id' },
-            },
-        ],
+        path: 'groups.matchs.teams',
+        select: '_id name players tourney_ids',
+        populate: { path: 'players', select: '_id name team_id' },
+    },
+    {
+        path: 'groups.matchs.details.player',
+        select: '_id name',
+    },
+    {
+        path: 'knockout.teams',
+        select: '_id name players tourney_ids',
+        populate: { path: 'players', select: '_id name team_id' },
+    },
+    {
+        path: 'knockout.matchs.teams',
+        select: '_id name players tourney_ids',
+        populate: { path: 'players', select: '_id name team_id' },
+    },
+    {
+        path: 'knockout.matchs.details.player',
+        select: '_id name',
     },
 ];
 
@@ -64,7 +44,13 @@ module.exports = {
     getTournaments: async (req, res) => {
         const user = req?.token;
         try {
-            const tourneys = await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' });
+            const tourneys = await Tournament.find({ createdBy: user })
+                .populate([{ path: 'teams', select: '_id name tourney_ids' }])
+                .select('name teams groups status type category')
+                .lean();
+            tourneys.forEach((t) => {
+                t.groups = t.groups.map((g) => pick(g, ['isFinished']));
+            });
             res.status(200).json(tourneys);
         } catch (err) {
             await errorHandler(null, err, res);
@@ -81,6 +67,23 @@ module.exports = {
                     matchs: x.matchs.sort((a, b) => a.matchOrder - b.matchOrder).sort((a, b) => a.week - b.week),
                 }))
                 .sort((a, b) => a.name.localeCompare(b.name));
+            tourney.knockout = tourney.knockout
+                .map((x) => ({
+                    ...x,
+                    matchs: x.matchs
+                        .sort((a, b) => a.matchOrder - b.matchOrder)
+                        .sort((a, b) => a.week - b.week)
+                        .map((m) => {
+                            if (m.teams.length === 1) {
+                                m.teams.push({
+                                    _id: null,
+                                    name: 'Clasificado directo',
+                                });
+                            }
+                            return m;
+                        }),
+                }))
+                .sort((a, b) => a.order - b.order);
             res.status(200).json(tourney);
         } catch (err) {
             await errorHandler(null, err, res);
@@ -244,25 +247,30 @@ module.exports = {
     updateTournamentDetails: async (req, res) => {
         const user = req?.token;
         const session = await mongoose.startSession();
-        session.startTransaction();
+        session.startTransaction({
+            readPreference: 'primary',
+            readConcern: { level: 'local' },
+            writeConcern: { w: 'majority' },
+        });
         try {
             const { body } = req;
-            body['createdBy'] = user;
             const id = req.params.id;
+            const tourney = await Tournament.findOne({ _id: id }).session(session);
 
-            await saveConfig(body.configs.group, user, session, res);
-            await updatePlayersSanctions(body.groups, session);
-            body.groups = await saveGroups(body.groups, session);
+            if (body?.configs) {
+                await saveConfig(body.configs.group, user, session, res);
+            }
+            if (body?.teams) {
+            }
+            if (body?.groups) tourney.groups = body.groups;
+            if (body?.knockout) tourney.knockout = body.knockout;
 
-            await Team.updateMany({ _id: { $in: body.teams.map((x) => x._id) } }, { $addToSet: { tourney_ids: body._id } }, { session });
-
-            await Tournament.findOneAndUpdate({ _id: id }, body, { session })
-                .then(async (tourney) => {
+            tourney
+                .save()
+                .then(async () => {
                     await session.commitTransaction();
                     session.endSession();
-                    res.status(200).json({
-                        result: tourney,
-                    });
+                    res.status(200).json('Información cargada con exito');
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
         } catch (err) {
@@ -309,72 +317,22 @@ const saveConfig = async (config, user, session, res) => {
         .catch(async (err) => await errorHandler(session, err, res));
 };
 
-const saveGroups = async (groups, session) => {
-    const ids = [];
-    await Promise.all(
-        groups.map(async (group) => {
-            let doc;
-            group.teams = group.teams.map((x) => x._id);
-            // Save Matchs if are
-            if (group.matchs) group.matchs = await saveMatchs(group.matchs, session);
-
-            doc = await Group.findOneAndUpdate({ _id: group._id ?? new mongoose.Types.ObjectId() }, group, { session, new: true, upsert: true });
-            ids.push(doc._id);
-        })
-    );
-    return ids;
-};
-
-const saveMatchs = async (matchs, session) => {
-    const ids = [];
-    await Promise.all(
-        matchs.map(async (match) => {
-            let doc;
-            match.teams = match.teams.map((x) => x._id);
-            // Save details if are
-            if (match.details) match.details = await saveMatchDetails(match.details, session);
-
-            doc = await Match.findOneAndUpdate({ _id: match._id ?? new mongoose.Types.ObjectId() }, match, { session, new: true, upsert: true });
-            ids.push(doc._id);
-        })
-    );
-    return ids;
-};
-
-const saveMatchDetails = async (details, session) => {
-    const ids = [];
-    await Promise.all(
-        details.map(async (detail) => {
-            let doc;
-            detail.player = detail.player?._id ?? null;
-            doc = await MatchDetails.findOneAndUpdate({ _id: detail._id ?? new mongoose.Types.ObjectId() }, detail, { session, new: true, upsert: true });
-            ids.push(doc._id);
-        })
-    );
-    return ids;
-};
-
-const updatePlayersSanctions = async (groups, session) => {
-    await Promise.all(
-        groups.map(async (group) => {
-            const matchsDates = group.matchs.filter((x) => x?.date).map((x) => x.date);
-            if (matchsDates.length) {
-                group.teams.forEach(async (team) => {
-                    await Promise.all(
-                        team.players.map(async (player) => {
-                            if (player?.initial_sanction) {
-                                const newSanction = await matchsDates.reduce((prev, matchDate) => {
-                                    if (prev !== 0) {
-                                        prev = new Date(matchDate) > new Date(player.sanction_date) ? prev - 1 : prev;
-                                    }
-                                    return prev;
-                                }, player.initial_sanction);
-                                await Player.findOneAndUpdate({ _id: player._id }, { sanction: newSanction }, { session, new: true, upsert: true });
-                            }
-                        })
-                    );
-                });
-            }
-        })
-    );
+const updatePlayersSanctions = async (matchs, session) => {
+    const matchsAll = matchs.flatMap((x) => x);
+    const matchsWithDate = matchsAll.filter((x) => x?.date);
+    if (matchsWithDate.length) {
+        const teamsToCheck = matchsWithDate.flatMap((x) => x.teams.map((x) => x._id));
+        const playersToUpdate = await Player.find({ team_id: { $in: teamsToCheck }, initial_sanction: { $gt: 0 } }, null, { session }).lean();
+        await Promise.all(
+            playersToUpdate.map(async (player) => {
+                const newSanction = matchsWithDate.reduce((prev, match) => {
+                    if (prev !== 0) {
+                        prev = new Date(match.date) > new Date(player.sanction_date) ? prev - 1 : prev;
+                    }
+                    return prev;
+                }, player.initial_sanction);
+                await Player.findOneAndUpdate({ _id: player._id }, { sanction: newSanction }, { session });
+            })
+        );
+    }
 };

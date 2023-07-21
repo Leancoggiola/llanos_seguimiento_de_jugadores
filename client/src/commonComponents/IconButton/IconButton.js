@@ -7,7 +7,7 @@ const IconButton = (props) => {
 
     const handleClick = (e) => {
         e.preventDefault();
-        onClick();
+        onClick(e);
     };
 
     return (

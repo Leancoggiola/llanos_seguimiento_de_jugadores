@@ -37,6 +37,7 @@ const TourneyCard = (props) => {
             config.push({
                 func: () => handleDetails('eliminatoria'),
                 icon: contentIcKnockoutStage,
+                disabled: tourney.groups.some((x) => !x.isFinished),
             });
         return config;
     };
@@ -55,7 +56,7 @@ const TourneyCard = (props) => {
                     </p>
                     <div className="tourney-card-body-formats-icons">
                         {getConfig().map((x, index) => (
-                            <IconButton key={index} onClick={() => x.func(true)} tourney={tourney}>
+                            <IconButton key={index} onClick={() => x.func(true)} tourney={tourney} disabled={x.disabled}>
                                 <Icon src={x.icon} />
                             </IconButton>
                         ))}

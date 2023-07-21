@@ -197,11 +197,11 @@ const DetailModal = (props) => {
                 <div className="match-details-modal-body">
                     {tabIndex === 0 && (
                         <div className="match-details-modal-body-type">
-                            <div className={match.details.some((x) => x.type === 'sin goles') ? 'match-details-modal-body-type__disabled' : ''}>
+                            <div className={detailsList.some((x) => x.type === 'sin goles') ? 'match-details-modal-body-type__disabled' : ''}>
                                 <img src={goalIcon} alt="goal-icon" onClick={() => setType('gol')} />
                                 <figcaption>Gol</figcaption>
                             </div>
-                            <div className={match.details.some((x) => x.type === 'gol' || x.type === 'sin goles') ? 'match-details-modal-body-type__disabled' : ''}>
+                            <div className={detailsList.some((x) => x.type === 'gol' || x.type === 'sin goles') ? 'match-details-modal-body-type__disabled' : ''}>
                                 <img src={noGoalIcon} alt="sin-goles" onClick={() => setType('sin goles')} />
                                 <figcaption>Sin goles</figcaption>
                             </div>

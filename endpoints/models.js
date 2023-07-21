@@ -1,6 +1,104 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const matchDetailsObj = {
+    type: {
+        type: String,
+        required: [true, 'Se requiere tipo'],
+        enum: ['gol', 'sin goles', 'tarjeta amarilla', 'tarjeta roja'],
+    },
+    player: {
+        type: Schema.Types.ObjectId,
+        ref: 'players',
+        required: false,
+    },
+    time_in_match: { type: Number, required: true },
+};
+
+const matchObj = {
+    date: { type: Date, required: false, default: null },
+    teams: {
+        type: [Schema.Types.ObjectId],
+        ref: 'teams',
+        required: [true, 'Se requieren los equipos'],
+    },
+    details: {
+        type: [matchDetailsObj],
+        required: false,
+        default: [],
+    },
+    winner: {
+        type: String,
+        require: false,
+        default: null,
+    },
+    week: {
+        type: Number,
+        require: [true, 'Jornada requerida'],
+        default: -1,
+    },
+    matchOrder: {
+        type: Number,
+        require: [true, 'Partido orden requerida'],
+        default: -1,
+    },
+};
+
+const groupObj = {
+    name: {
+        type: String,
+        required: false,
+    },
+    teams: {
+        type: [Schema.Types.ObjectId],
+        ref: 'teams',
+        required: false,
+        default: [],
+    },
+    matchs: {
+        type: [matchObj],
+        required: false,
+        default: [],
+    },
+    table: {
+        type: Array,
+        required: false,
+        default: [],
+    },
+    isFinished: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+};
+
+const knockoutObj = {
+    stage: {
+        type: String,
+        required: [true, 'Se requiere etapa'],
+    },
+    teams: {
+        type: [Schema.Types.ObjectId],
+        ref: 'teams',
+        required: false,
+        default: [],
+    },
+    matchs: {
+        type: [matchObj],
+        required: false,
+        default: [],
+    },
+    order: {
+        type: Number,
+        required: [true, 'Se requiere order'],
+    },
+    isFinished: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+};
+
 const playerSchema = Schema({
     name: {
         type: String,
@@ -42,97 +140,6 @@ const teamsSchema = Schema({
     tourney_ids: { type: [Schema.Types.ObjectId], ref: 'tournaments', default: [] },
 });
 
-const matchDetailsSchema = Schema({
-    type: {
-        type: String,
-        required: [true, 'Se requiere tipo'],
-        enum: ['gol', 'sin goles', 'tarjeta amarilla', 'tarjeta roja'],
-    },
-    player: {
-        type: Schema.Types.ObjectId,
-        ref: 'players',
-        required: false,
-    },
-    time_in_match: { type: Number, required: true },
-});
-
-const matchSchema = Schema({
-    date: { type: Date, required: false, default: null },
-    teams: {
-        type: [Schema.Types.ObjectId],
-        ref: 'teams',
-        required: [true, 'Se requieren los equipos'],
-    },
-    details: {
-        type: [Schema.Types.ObjectId],
-        ref: 'matchDetails',
-        required: false,
-        default: [],
-    },
-    winner: {
-        type: String,
-        require: false,
-        default: null,
-    },
-    week: {
-        type: Number,
-        require: [true, 'Jornada requerida'],
-        default: -1,
-    },
-    matchOrder: {
-        type: Number,
-        require: [true, 'Partido orden requerida'],
-        default: -1,
-    },
-});
-
-const groupSchema = Schema({
-    name: {
-        type: String,
-        required: false,
-    },
-    teams: {
-        type: [Schema.Types.ObjectId],
-        ref: 'teams',
-        required: false,
-        default: [],
-    },
-    matchs: {
-        type: [Schema.Types.ObjectId],
-        ref: 'matches',
-        required: false,
-        default: [],
-    },
-    table: {
-        type: Array,
-        required: false,
-        default: [],
-    },
-});
-
-const knockoutSchema = Schema({
-    stage: {
-        type: String,
-        required: [true, 'Se requiere etapa'],
-    },
-    teams: {
-        type: [Schema.Types.ObjectId],
-        ref: 'teams',
-        required: false,
-        default: [],
-    },
-    matchs: {
-        type: [Schema.Types.ObjectId],
-        ref: 'matches',
-        required: false,
-        default: [],
-    },
-    order: {
-        type: Number,
-        required: [true, 'Se requiere order'],
-    },
-});
-
 const tournamentsSchema = Schema({
     name: {
         type: String,
@@ -146,13 +153,13 @@ const tournamentsSchema = Schema({
         default: [],
     },
     groups: {
-        type: [Schema.Types.ObjectId],
+        type: [groupObj],
         ref: 'groups',
         required: false,
         default: [],
     },
     knockout: {
-        type: [Schema.Types.ObjectId],
+        type: [knockoutObj],
         ref: 'knockout',
         required: false,
         default: [],
@@ -236,30 +243,9 @@ const userSchema = Schema({
     knockoutConfig: {},
 });
 
-const logsSchema = Schema({
-    message: {
-        type: String,
-        required: [true, 'Se requiere mensaje'],
-    },
-    recordsDeleted: {
-        type: Number,
-        required: [true, 'Se requiere cantidad'],
-    },
-    isSuccessful: {
-        type: Boolean,
-        required: [true, 'Se requiere estatus'],
-    },
-    date: Date,
-});
-
-const Group = mongoose.model('groups', groupSchema);
-const Knockout = mongoose.model('knockout', knockoutSchema);
-const Logs = mongoose.model('logs', logsSchema);
-const Match = mongoose.model('matches', matchSchema);
-const MatchDetails = mongoose.model('matchDetails', matchDetailsSchema);
 const Player = mongoose.model('players', playerSchema);
 const Team = mongoose.model('teams', teamsSchema);
 const Tournament = mongoose.model('tournaments', tournamentsSchema);
 const User = mongoose.model('users', userSchema);
 
-module.exports = { User, Tournament, Team, Player, Group, Match, MatchDetails, Logs, Knockout };
+module.exports = { User, Tournament, Team, Player };

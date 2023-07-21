@@ -8,7 +8,6 @@ const userRoutes = require('./endpoints/user/routes.js');
 const playersRoutes = require('./endpoints/players/routes.js');
 const teamsRoutes = require('./endpoints/teams/routes.js');
 const tournamentsRoutes = require('./endpoints/tournaments/routes.js');
-const { clearUnsetDocuments } = require('./schedules.js');
 
 // Constants
 const PORT = process.env.PORT || 8000;
@@ -49,5 +48,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Serve at http://localhost:${PORT}`);
 });
-
-clearUnsetDocuments();

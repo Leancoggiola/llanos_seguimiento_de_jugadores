@@ -79,7 +79,7 @@ const GroupConfig = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const getScore = (match) => {
-        if (isEmpty(match.details)) return 'Sin resultados';
+        if (isEmpty(match.details) || match.details.every((x) => x.type !== 'sin goles' && x.type !== 'gol')) return 'Sin resultados';
         if (match.details.some((x) => x.type === 'sin goles')) return '0:0';
         const goals = match.teams.reduce(
             (prev, curr, index) => {
@@ -336,6 +336,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
     const [matchDetails, setMatchDetails] = useState(null);
     const [open, setOpen] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
+    const [posToScroll, setPosToScroll] = useState();
 
     const firstAccordionConf = {
         open,
@@ -344,6 +345,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
     };
 
     const goToMatchDetails = (match) => {
+        setPosToScroll(window.scrollY);
         setMatchDetails(match);
         dispatch(navbarNewEntry({ action: setMatchDetails, param: false }));
     };
@@ -366,6 +368,8 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 g.table = formatGroupTable(g).sort(orderGroupTable);
             });
             setTourneyData(cloneDeep(tourney));
+        } else {
+            posToScroll && window.scrollTo(0, posToScroll);
         }
     }, [matchDetails]);
 

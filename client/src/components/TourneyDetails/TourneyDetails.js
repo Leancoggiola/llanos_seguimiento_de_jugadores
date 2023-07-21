@@ -1,4 +1,4 @@
-import { cloneDeep, isEmpty, isEqual } from 'lodash';
+import { cloneDeep, isEmpty, isEqual, pick } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
@@ -7,12 +7,12 @@ import Button from '../../commonComponents/Button';
 import Icon from '../../commonComponents/Icon/Icon.js';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 import GroupConfig from './GroupConfig/GroupConfig.js';
+import KnockoutConfig from './KnockoutConfig/KnockoutConfig';
 // Middleware
 import { navbarBack } from '../../middleware/actions/navbarActions';
 import { getTourneyDetailsRequest, putTourneyDetailsRequest } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyDetails.scss';
-import KnockoutConfig from './KnockoutConfig/KnockoutConfig';
 
 const TourneyDetails = (props) => {
     const { tourney, option } = props;
@@ -42,7 +42,35 @@ const TourneyDetails = (props) => {
     };
 
     const handleSave = () => {
-        dispatch(putTourneyDetailsRequest(tourneyData));
+        const data = cleanPayload();
+        dispatch(putTourneyDetailsRequest(data));
+    };
+
+    const cleanPayload = () => {
+        let newPayload = cloneDeep(tourneyData);
+        const selector = option === 'grupo' ? ['groups', 'configs', 'teams'] : ['knockout'];
+        newPayload = pick(newPayload, ['_id', 'status', ...selector]);
+        if (newPayload?.teams) {
+            newPayload.teams = newPayload.teams.map((x) => x._id);
+        }
+
+        function matchClean(arr) {
+            return arr.map((group) => ({
+                ...group,
+                isFinished: group.matchs.every((x) => x.winner),
+                teams: group.teams.map((x) => x._id),
+                matchs: group.matchs.map((match) => ({
+                    ...match,
+                    teams: match.teams.map((x) => x._id),
+                    details: match.details.map((det) => ({ ...det, player: det.player?._id ?? null })),
+                })),
+            }));
+        }
+
+        if (newPayload?.groups) newPayload.groups = matchClean(newPayload.groups);
+        if (newPayload?.knockout) newPayload.knockout = matchClean(newPayload.knockout);
+
+        return newPayload;
     };
 
     const renderTab = () => {

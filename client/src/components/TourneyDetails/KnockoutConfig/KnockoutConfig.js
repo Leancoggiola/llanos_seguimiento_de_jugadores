@@ -21,7 +21,7 @@ const KnockoutConfig = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const getScore = (match) => {
-        if (isEmpty(match.details)) return 'Sin resultados';
+        if (isEmpty(match.details) || match.details.every((x) => x.type !== 'sin goles' && x.type !== 'gol')) return 'Sin resultados';
         if (match.details.some((x) => x.type === 'sin goles')) return '0:0';
         const goals = match.teams.reduce(
             (prev, curr, index) => {
@@ -33,13 +33,18 @@ const KnockoutConfig = (props) => {
         return goals.join(':');
     };
 
+    const haveWinner = () => {
+        const lastStage = last(tourney.knockout);
+        return lastStage?.matchs.length === 1 && lastStage?.matchs.every((x) => x.winner);
+    };
+
     return (
         <div className="knockout-config">
             <TabNavigator defaultActiveKey={tabIndex} className="knockout-config-navigator">
                 <TabControl onClick={() => setTabIndex(0)}>
                     <Icon src={notificationIcEventNote} />
                 </TabControl>
-                <TabControl onClick={() => setTabIndex(1)}>
+                <TabControl onClick={() => setTabIndex(1)} disabled={!haveWinner()}>
                     <Icon src={contentIcTrophy} />
                 </TabControl>
             </TabNavigator>
@@ -56,8 +61,9 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
     const [matchDetails, setMatchDetails] = useState(null);
     const [open, setOpen] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
+    const [posToScroll, setPosToScroll] = useState();
 
-    const firstAccordionConf = {
+    const accordionConf = {
         open,
         onOpen: () => setOpen(true),
         onClose: () => setOpen(false),
@@ -80,6 +86,8 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 });
             });
             setTourneyData(cloneDeep(tourney));
+        } else {
+            posToScroll && window.scrollTo(0, posToScroll);
         }
     }, [matchDetails]);
 
@@ -169,7 +177,8 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
         setDeleteModal(false);
     };
 
-    const goToMatchDetails = (match) => {
+    const goToMatchDetails = (match, e) => {
+        setPosToScroll(e.pageY - 100);
         setMatchDetails(match);
         dispatch(navbarNewEntry({ action: setMatchDetails, param: false }));
     };
@@ -186,8 +195,9 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
         const matches = lastStage.matchs;
         const winners = matches.map((x) => x.winner);
         if (winners.length % 2) {
-            const bestOfLosers = tourney.groups[0].table.find();
-            winners.push();
+            const losers = matches.flatMap((m) => m.teams.filter((t) => t._id !== m.winner)).map((x) => x._id);
+            const bestOfLosers = tourney.groups[0].table.find((x) => losers.includes(x._id));
+            winners.push(bestOfLosers._id);
         }
         const shuffledTeams = shuffle(winners);
         const nextStageMatchs = [];
@@ -228,7 +238,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                                 key={stage.stage}
                                 alignIconRight
                                 useChevronIcon
-                                {...(index === 0 ? { ...firstAccordionConf } : null)}
+                                {...(index === tourney.knockout.length - 1 ? { ...accordionConf } : null)}
                             >
                                 <AccordionTrigger className="knockout-config-content-calendar-accordion-trigger">
                                     {stage.stage}
