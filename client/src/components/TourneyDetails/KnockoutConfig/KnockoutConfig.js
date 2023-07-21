@@ -186,7 +186,11 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
     const renderNewStageBtn = () => {
         const lastStage = last(tourney.knockout);
         if (lastStage.matchs.length > 1 && lastStage.matchs.every((x) => x.winner)) {
-            return <Button onClick={() => singleGroupStage()}>Siguiente etapa</Button>;
+            return (
+                <Button className="knockout-config-content-next-stage" onClick={() => singleGroupStage()}>
+                    Siguiente etapa
+                </Button>
+            );
         }
     };
 
