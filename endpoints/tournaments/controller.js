@@ -1,4 +1,4 @@
-const { pick } = require('lodash');
+const { pick, isEmpty } = require('lodash');
 const { errorHandler } = require('../helpers.js');
 const { Tournament, Team, User, Player } = require('../models.js');
 const mongoose = require('mongoose');
@@ -17,7 +17,7 @@ const tourneyOptions = [
     {
         path: 'groups.matchs.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name team_id' },
+        populate: { path: 'players', select: '_id name age dni team_id' },
     },
     {
         path: 'groups.matchs.details.player',
@@ -31,7 +31,7 @@ const tourneyOptions = [
     {
         path: 'knockout.matchs.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name team_id' },
+        populate: { path: 'players', select: '_id name age dni team_id' },
     },
     {
         path: 'knockout.matchs.details.player',
@@ -257,13 +257,15 @@ module.exports = {
             const id = req.params.id;
             const tourney = await Tournament.findOne({ _id: id }).session(session);
 
-            if (body?.configs) {
+            if (!isEmpty(body?.configs)) {
                 await saveConfig(body.configs.group, user, session, res);
+                tourney.configs = body.configs;
             }
             if (body?.teams) {
             }
             if (body?.groups) tourney.groups = body.groups;
             if (body?.knockout) tourney.knockout = body.knockout;
+            tourney.status = body.status;
 
             tourney
                 .save()

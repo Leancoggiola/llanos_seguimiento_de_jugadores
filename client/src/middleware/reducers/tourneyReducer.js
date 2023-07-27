@@ -1,4 +1,12 @@
-import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_PUT_TOURNEY, TOURNEY_GET_TOURNEY_DETAILS, TOURNEY_PUT_TOURNEY_DETAILS } from '../constants/tourney';
+import {
+    TOURNEY_GET_TOURNEY_LIST,
+    TOURNEY_POST_NEW_TOURNEY,
+    TOURNEY_DELETE_NEW_TOURNEY,
+    TOURNEY_PUT_TOURNEY,
+    TOURNEY_GET_TOURNEY_DETAILS,
+    TOURNEY_PUT_TOURNEY_DETAILS,
+    TOURNEY_RESET_TOURNEY_DETAILS,
+} from '../constants/tourney';
 import { getFailure, getRequest, getSuccess } from '../index.js';
 
 const initial = { loading: false, data: null, error: null };
@@ -62,6 +70,12 @@ export const tourneyReducer = (state = initialState, action) => {
             return {
                 ...state,
                 tourneyDetails: { loading: false, data: null, error: payload },
+            };
+        }
+        case TOURNEY_RESET_TOURNEY_DETAILS: {
+            return {
+                ...state,
+                tourneyDetails: { ...initial },
             };
         }
         // POST TOURNEY

@@ -103,7 +103,6 @@ const playerSchema = Schema({
     name: {
         type: String,
         required: [true, 'Se requiere nombre'],
-        lowercase: true,
         trim: true,
         maxLength: 30,
     },
@@ -114,7 +113,6 @@ const playerSchema = Schema({
             unique: true,
             partialFilterExpression: { dni: { $type: 'string' } },
         },
-        lowercase: true,
         trim: true,
         maxLength: 8,
         match: [/^\d{7,8}$/, 'Ingresa un DNI valido'],
@@ -132,7 +130,6 @@ const teamsSchema = Schema({
         type: String,
         required: [true, 'Se requiere nombre'],
         unique: true,
-        lowercase: true,
         trim: true,
     },
     players: { type: [Schema.Types.ObjectId], ref: 'players', default: [] },

@@ -1,4 +1,4 @@
-import { capitalize, cloneDeep, isEmpty, omit, shuffle } from 'lodash';
+import { capitalize, cloneDeep, isEmpty, shuffle } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
@@ -75,7 +75,7 @@ const formatGroupTable = (group) => {
 };
 
 const GroupConfig = (props) => {
-    const { tourney, setTourneyData } = props;
+    const { tourney, setTourneyData, handlePdf } = props;
     const [tabIndex, setTabIndex] = useState(0);
 
     const getScore = (match) => {
@@ -107,7 +107,7 @@ const GroupConfig = (props) => {
             <div className="group-config-content">
                 {tabIndex === 0 && <Equipos tourney={tourney} setTourneyData={setTourneyData} />}
                 {tabIndex === 1 && <Grupos tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />}
-                {tabIndex === 2 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />}
+                {tabIndex === 2 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} handlePdf={handlePdf} />}
             </div>
         </div>
     );
@@ -118,17 +118,25 @@ const Equipos = ({ tourney, setTourneyData }) => {
 
     const [equipoDrop, setDrop] = useState(tourney?.teams.map((x) => x._id));
 
-    useEffect(() => {
-        tourney.teams = teamList.data.filter((x) => equipoDrop.includes(x._id));
-        setTourneyData(cloneDeep(tourney));
-    }, [equipoDrop]);
+    const handleChange = (e) => {
+        const newData = cloneDeep(tourney);
+        const index = teamList.data.findIndex((x) => x._id === e);
+        if (index < 0) {
+            const team = teamList.data.find((x) => x._id === e);
+            newData.teams.push(team);
+        } else {
+            newData.teams.splice(index, 1);
+        }
+        setDrop(e);
+        setTourneyData(newData);
+    };
 
     return (
         <div className="group-config-content-teams">
             <h3>Equipos en el torneo</h3>
             <FormField>
                 <Label>Equipos</Label>
-                <Select value={equipoDrop} onChange={(e) => setDrop(e)} filter={true} multiple={true} disabled={tourney.groups.length}>
+                <Select value={equipoDrop} onChange={(e) => handleChange(e)} filter={true} multiple={true} disabled={tourney.groups.length}>
                     {teamList.data.map((option, index) => (
                         <Option value={option._id} key={option._id + index}>
                             {capitalize(option.name)}
@@ -241,11 +249,13 @@ const Grupos = ({ tourney, setTourneyData }) => {
                             <Table columnDefs={columnDefs} dataSource={group.table} />
                         </div>
                     ))}
-                    <div className="group-config-content-delete-btn">
-                        <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
-                            Eliminar grupos
-                        </Button>
-                    </div>
+                    {!tourney.knockout.length && (
+                        <div className="group-config-content-delete-btn">
+                            <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
+                                Eliminar grupos
+                            </Button>
+                        </div>
+                    )}
                 </>
             ) : (
                 <>
@@ -294,7 +304,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
     );
 };
 
-const Calendario = ({ tourney, setTourneyData, getScore }) => {
+const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     const addCalendar = () => {
         const enconters = tourney.configs.group.enconters;
 
@@ -418,9 +428,10 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                                                         goToMatchDetails={goToMatchDetails}
                                                         key={`match-card-${index}`}
                                                         group={group}
-                                                        category={tourney?.category}
+                                                        generateMatchPdf={handlePdf}
                                                         updateMatchDate={updateMatchDate}
                                                         tourneyDate={tourney.createdOn}
+                                                        isFinished={tourney.knockout.length > 0}
                                                     />
                                                 ))}
                                         </div>
@@ -429,11 +440,13 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                             </Accordion>
                         );
                     })}
-                    <div className="group-config-content-delete-btn">
-                        <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
-                            Eliminar calendario
-                        </Button>
-                    </div>
+                    {!tourney.knockout.length && (
+                        <div className="group-config-content-delete-btn">
+                            <Button type="button" onClick={() => setDeleteModal(true)} variant="warn">
+                                Eliminar calendario
+                            </Button>
+                        </div>
+                    )}
                 </>
             ) : (
                 <div className="group-config-content-btn">

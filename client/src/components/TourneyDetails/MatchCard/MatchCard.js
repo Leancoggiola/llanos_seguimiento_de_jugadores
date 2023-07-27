@@ -1,6 +1,5 @@
 import { capitalize } from 'lodash';
 import { useEffect, useState } from 'react';
-import { generateMatchPdf } from '../../../pdfs/matchPdf';
 // Components
 import { actionIcExitToApp, actionIcHome, actionIcLaunch, actionIcPrint, navigationIcClose } from '../../../assets/icons';
 import DatePicker from '../../../commonComponents/DatePicker';
@@ -11,7 +10,7 @@ import IconButton from '../../../commonComponents/IconButton';
 import './MatchCard.scss';
 
 const MatchCard = (props) => {
-    const { group, match, goToMatchDetails, getScore, category, updateMatchDate, tourneyDate, disableBtn } = props;
+    const { group, match, goToMatchDetails, getScore, updateMatchDate, tourneyDate, disableBtn, generateMatchPdf, isFinished } = props;
 
     const [date, setDate] = useState(match?.date ? new Date(match.date) : null);
     const classificated = match.teams.some((x) => x._id === null);
@@ -35,7 +34,7 @@ const MatchCard = (props) => {
                 <div className="date-logo">
                     <FormField>
                         <DatePicker
-                            disabled={disableBtn || getScore(match) === 'Sin resultados'}
+                            disabled={getScore(match) === 'Sin resultados'}
                             value={date}
                             onChange={(e) => handleDateChange(e)}
                             showLeadingZeros={false}
@@ -46,12 +45,12 @@ const MatchCard = (props) => {
                     </FormField>
                 </div>
                 <div className="print-logo">
-                    <IconButton onClick={() => generateMatchPdf(match, group, category)} disabled={classificated}>
+                    <IconButton onClick={() => generateMatchPdf(match, group)} disabled={classificated}>
                         <Icon src={actionIcPrint} />
                     </IconButton>
                 </div>
                 <div className="details-logo">
-                    <IconButton onClick={(e) => goToMatchDetails({ ...match, groupName: group.name }, e)} disabled={disableBtn || classificated}>
+                    <IconButton onClick={(e) => goToMatchDetails({ ...match, groupName: group.name }, e)} disabled={disableBtn || classificated || isFinished}>
                         <Icon src={actionIcLaunch} />
                     </IconButton>
                 </div>

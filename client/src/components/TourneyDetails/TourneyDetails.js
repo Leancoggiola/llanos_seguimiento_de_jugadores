@@ -1,6 +1,7 @@
-import { cloneDeep, isEmpty, isEqual, pick } from 'lodash';
+import { cloneDeep, isEmpty, isEqual, last, omit, pick } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { generateMatchPdf } from '../../pdfs/matchPdf';
 // Components
 import { contentIcSave } from '../../assets/icons';
 import Button from '../../commonComponents/Button';
@@ -10,7 +11,7 @@ import GroupConfig from './GroupConfig/GroupConfig.js';
 import KnockoutConfig from './KnockoutConfig/KnockoutConfig';
 // Middleware
 import { navbarBack } from '../../middleware/actions/navbarActions';
-import { getTourneyDetailsRequest, putTourneyDetailsRequest } from '../../middleware/actions/tourneyActions';
+import { getTourneyDetailsRequest, putTourneyDetailsRequest, resetTourneyDetailsSuccess } from '../../middleware/actions/tourneyActions';
 // Styling
 import './TourneyDetails.scss';
 
@@ -22,7 +23,15 @@ const TourneyDetails = (props) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!tourney.fullData) dispatch(getTourneyDetailsRequest(tourney._id));
+        if (!tourney.fullData) {
+            dispatch(getTourneyDetailsRequest(tourney._id));
+        } else {
+            setTourneyData(cloneDeep(omit(tourney, ['fullData'])));
+        }
+
+        return () => {
+            dispatch(resetTourneyDetailsSuccess());
+        };
     }, []);
 
     useEffect(() => {
@@ -32,13 +41,25 @@ const TourneyDetails = (props) => {
     useEffect(() => {
         if (tourneyData) {
             const newData = cloneDeep(tourneyData);
-            newData.status = newData?.groups.length ? 'Jugando' : 'Nuevo';
+            newData.status = getStatus(newData?.groups, newData?.knockout);
             setTourneyData(newData);
         }
     }, [JSON.stringify(tourneyData?.groups)]);
 
+    const getStatus = (groups = [], knockout = []) => {
+        if (groups.length) {
+            if (knockout.length) {
+                const lastItem = last(knockout);
+                if (lastItem.matchs.length === 1 && lastItem.matchs[0].winner) return 'Terminado';
+            }
+            return 'Jugando';
+        }
+        return 'Nuevo';
+    };
+
     const enableSave = () => {
-        return isEqual(tourneyDetails.data, tourneyData);
+        const comparate = tourneyDetails.data ? tourneyDetails.data : omit(tourney, ['fullData']);
+        return isEqual(comparate, tourneyData);
     };
 
     const handleSave = () => {
@@ -73,12 +94,16 @@ const TourneyDetails = (props) => {
         return newPayload;
     };
 
+    const handlePdf = (match, group) => {
+        generateMatchPdf(match, group, tourney, option);
+    };
+
     const renderTab = () => {
         switch (option) {
             case 'grupo':
-                return <GroupConfig tourney={tourneyData} setTourneyData={setTourneyData} />;
+                return <GroupConfig tourney={tourneyData} setTourneyData={setTourneyData} handlePdf={handlePdf} />;
             case 'eliminatoria':
-                return <KnockoutConfig tourney={tourneyData} setTourneyData={setTourneyData} />;
+                return <KnockoutConfig tourney={tourneyData} setTourneyData={setTourneyData} handlePdf={handlePdf} />;
             default:
                 return null;
         }

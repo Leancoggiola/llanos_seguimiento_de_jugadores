@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { capitalize } from 'lodash';
+import { capitalize, startCase } from 'lodash';
 
 const headers = [
     {
@@ -45,7 +45,6 @@ const headers = [
     },
     {
         content: 'GOLES',
-        colSpan: 4,
     },
 ];
 
@@ -66,47 +65,52 @@ const getHeaders = (doc, category) => {
             styles: { cellWidth: width * 0.07 },
         });
     }
-    for (let i = category === 'Veterano' ? 4 : 2; i < head.length; i++) {
+    for (let i = category === 'Veterano' ? 4 : 2; i < head.length - 1; i++) {
         head[i].styles = { ...head[i].styles, cellWidth: 7 };
     }
     return head;
 };
 
-const getBody = (team, details, group, totalHeaders) => {
+const getBody = (team, { week, matchOrder, details }, group, knockout, type, category) => {
+    let accDetails, validMatchs;
+    if (type === 'grupo') {
+        validMatchs = group.matchs.filter((m) => m.week <= week && m.matchOrder <= matchOrder && m.teams.map((x) => x._id).includes(team._id));
+        accDetails = validMatchs.flatMap((x) => x.details);
+    }
+
     const players = [];
     if (team.players.length) {
         team.players.forEach((player) => {
-            const data = [{ content: capitalize(player.name), styles: { halign: 'left' } }, ''];
-            if (totalHeaders === 10) {
+            const data = [{ content: startCase(player.name), styles: { halign: 'left' } }, ''];
+            if (category === 'Veterano') {
                 data.push(player.dni);
                 data.push(player.age);
             }
             if (details.length) {
                 let detail;
                 // AMARILLAS TOTALES
-                detail = group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length;
+                detail = accDetails.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length;
                 data.push(detail);
                 // AMARILLAS EN PARTIDO
                 detail = details.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla')?.length;
                 data.push(detail >= 1 ? 'X' : '');
                 data.push(detail >= 2 ? 'X' : '');
                 // SANCIONES TOTALES
-                data.push(getSanciones(group.matchs, player));
+                data.push(getSanciones(accDetails, player));
                 // GOLES TOTALES
-                detail = details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match);
-                detail?.forEach((x) => {
-                    data.push(x.type === 'gol' ? 'X' : 'C');
-                });
-                // RESTO
-                if (!detail || detail?.length < 6) {
-                    data.push(...Array.from({ length: 4 - detail?.length }, (_) => ''));
-                }
+                detail = accDetails.filter((x) => player._id === x.player?._id && x.type === 'gol').length;
+                data.push(detail);
+                data.push('');
             } else {
-                data.push(group.matchs.flatMap((x) => x.details).filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length);
+                // AMARILLAS TOTALES
+                data.push(accDetails.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla').length);
+                // AMARILLAS EN PARTIDO
                 data.push('', '');
-                data.push(getSanciones(group.matchs, player));
-                data.push(details.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match));
-                data.push(...Array.from({ length: 4 }, (_) => ''));
+                // SANCIONES TOTALES
+                data.push(getSanciones(validMatchs, player));
+                // GOLES TOTALES
+                data.push(accDetails.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match));
+                data.push('');
             }
             players.push(data);
         });
@@ -114,13 +118,14 @@ const getBody = (team, details, group, totalHeaders) => {
     return players;
 };
 
-const generateMatchPdf = (match, group, category) => {
+const generateMatchPdf = (match, group, tourney, type) => {
+    const { name, category, knockout } = tourney;
     const doc = new jsPDF();
 
     doc.setFontSize(20);
     doc.setFont(undefined, 'bold');
-    doc.text('Torneo A', 104, 10, { align: 'center' });
-    doc.line(105 - doc.getTextWidth('Torneo A') / 2, 11, 107 + doc.getTextWidth('Torneo A') / 2, 11);
+    doc.text(name, 104, 10, { align: 'center' });
+    doc.line(105 - doc.getTextWidth(name) / 2, 11, 107 + doc.getTextWidth(name) / 2, 11);
     doc.setFontSize(14);
     doc.setFont(undefined, 'normal');
     match.teams.forEach((team, index) => {
@@ -147,7 +152,7 @@ const generateMatchPdf = (match, group, category) => {
             },
             theme: 'grid',
             head: [getHeaders(doc, category)],
-            body: getBody(team, match?.details, group, getHeaders(doc, category).length),
+            body: getBody(team, match, group, knockout, type, category),
         });
     });
     doc.setFont(undefined, 'bold');

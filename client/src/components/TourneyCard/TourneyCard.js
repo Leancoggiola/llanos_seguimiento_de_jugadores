@@ -37,7 +37,7 @@ const TourneyCard = (props) => {
             config.push({
                 func: () => handleDetails('eliminatoria'),
                 icon: contentIcKnockoutStage,
-                disabled: tourney.groups.some((x) => !x.isFinished),
+                disabled: tourney.groups.some((x) => !x.isFinished) || tourney.groups.length === 0,
             });
         return config;
     };

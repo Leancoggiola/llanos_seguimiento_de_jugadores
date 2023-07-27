@@ -1,6 +1,14 @@
 import { getFailure, getSuccess, getRequest } from '../index.js';
 
-import { TOURNEY_GET_TOURNEY_LIST, TOURNEY_POST_NEW_TOURNEY, TOURNEY_DELETE_NEW_TOURNEY, TOURNEY_PUT_TOURNEY, TOURNEY_GET_TOURNEY_DETAILS, TOURNEY_PUT_TOURNEY_DETAILS } from '../constants/tourney.js';
+import {
+    TOURNEY_GET_TOURNEY_LIST,
+    TOURNEY_POST_NEW_TOURNEY,
+    TOURNEY_DELETE_NEW_TOURNEY,
+    TOURNEY_PUT_TOURNEY,
+    TOURNEY_GET_TOURNEY_DETAILS,
+    TOURNEY_PUT_TOURNEY_DETAILS,
+    TOURNEY_RESET_TOURNEY_DETAILS,
+} from '../constants/tourney.js';
 
 // GET Tourney LIST
 export const getTourneysRequest = (payload) => {
@@ -41,6 +49,13 @@ export const getTourneyDetailsSuccess = (payload) => {
 export const getTourneyDetailsFailure = (payload) => {
     return {
         type: getFailure(TOURNEY_GET_TOURNEY_DETAILS),
+        payload,
+    };
+};
+
+export const resetTourneyDetailsSuccess = (payload) => {
+    return {
+        type: TOURNEY_RESET_TOURNEY_DETAILS,
         payload,
     };
 };

@@ -10,14 +10,14 @@ import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator
 import DeleteConfirmation from '../../DeleteConfirmation';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
+import IconButton from '../../../commonComponents/IconButton';
 // Middleware
 import { navbarNewEntry } from '../../../middleware/actions/navbarActions';
 // Styling
 import './KnockoutConfig.scss';
-import IconButton from '../../../commonComponents/IconButton';
 
 const KnockoutConfig = (props) => {
-    const { tourney, setTourneyData } = props;
+    const { tourney, setTourneyData, handlePdf } = props;
     const [tabIndex, setTabIndex] = useState(0);
 
     const getScore = (match) => {
@@ -48,12 +48,14 @@ const KnockoutConfig = (props) => {
                     <Icon src={contentIcTrophy} />
                 </TabControl>
             </TabNavigator>
-            <div className="knockout-config-content">{tabIndex === 0 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />}</div>
+            <div className="knockout-config-content">
+                {tabIndex === 0 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} handlePdf={handlePdf} />}
+            </div>
         </div>
     );
 };
 
-const Calendario = ({ tourney, setTourneyData, getScore }) => {
+const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     const { data: teamList } = useSelector((state) => state.team.teamList);
     const totalGroups = Number(tourney.configs.group.totalGroups);
 
@@ -144,7 +146,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
             const teamsToSortA = tourney.groups[0].table.map((x) => teamList.find((team) => team._id === x._id));
             const teamsToSortB = tourney.groups[1].table.map((x) => teamList.find((team) => team._id === x._id));
 
-            const totalCruces = Math.ceil(Math.max(teamsToSortA.length, teamsToSortB.length) / 2);
+            const totalCruces = Math.ceil(Math.max(teamsToSortA.length, teamsToSortB.length));
             let matchs = [];
             let teams = [];
 
@@ -158,7 +160,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 });
                 teams.push(teamsToSortA[i]._id, teamsToSortB[totalCruces - i - 1]._id);
             }
-            tourney.knockout = { stage: `Etapa 1`, teams, matchs, order: 1 };
+            tourney.knockout = [{ stage: `Etapa 1`, teams, matchs, order: 1 }];
         }
         setTourneyData(cloneDeep(tourney));
     };
@@ -187,7 +189,12 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
         const lastStage = last(tourney.knockout);
         if (lastStage.matchs.length > 1 && lastStage.matchs.every((x) => x.winner)) {
             return (
-                <Button className="knockout-config-content-next-stage" onClick={() => singleGroupStage()}>
+                <Button
+                    className="knockout-config-content-next-stage"
+                    onClick={() => {
+                        totalGroups === 1 ? singleGroupStage() : doubleGroupStage();
+                    }}
+                >
                     Siguiente etapa
                 </Button>
             );
@@ -216,6 +223,64 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                 details: [],
                 winner: null,
             });
+        }
+
+        const newData = cloneDeep(tourney);
+        newData.knockout.push({
+            stage: `Etapa ${nextOrder}`,
+            teams: teamList.filter((x) => winners.includes(x._id)),
+            matchs: nextStageMatchs,
+            order: nextOrder,
+        });
+        setTourneyData(newData);
+    };
+
+    const doubleGroupStage = () => {
+        const getRandomInt = (max) => Math.floor(Math.random() * max);
+
+        const lastStage = last(tourney.knockout);
+        const matches = lastStage.matchs;
+        const winners = matches.map((x) => x.winner);
+        let random = -1;
+        if (winners.length % 2) {
+            let randomWinner;
+            const previousDirect = matches.find((m) => m.teams.length === 1);
+            do {
+                randomWinner = winners[getRandomInt(winners.length)];
+            } while (previousDirect?._id === randomWinner);
+
+            random = winners.findIndex((x) => x === randomWinner);
+        }
+
+        const nextStageMatchs = [];
+        const nextOrder = lastStage.order + 1;
+        let matchOrder = 1;
+        for (let i = 0; i < winners.length; ) {
+            const teams = [];
+            let skip = false;
+            if (i === random || i + 1 === random) {
+                teams.push(teamList.find((x) => x._id === winners[random]));
+                teams.push({
+                    _id: null,
+                    name: 'Clasificado directo',
+                });
+                skip = true;
+                winners.splice(random, 1);
+                random = -1;
+            } else {
+                teams.push(teamList.find((x) => x._id === winners[i]));
+                teams.push(teamList.find((x) => x._id === winners[i + 1]));
+            }
+
+            nextStageMatchs.push({
+                week: nextOrder,
+                matchOrder: matchOrder,
+                teams: teams,
+                details: [],
+                winner: null,
+            });
+            i += skip ? 0 : 2;
+            matchOrder++;
         }
 
         const newData = cloneDeep(tourney);
@@ -265,7 +330,7 @@ const Calendario = ({ tourney, setTourneyData, getScore }) => {
                                                         goToMatchDetails={goToMatchDetails}
                                                         group={stage}
                                                         match={x}
-                                                        category={tourney?.category}
+                                                        generateMatchPdf={handlePdf}
                                                         updateMatchDate={updateMatchDate}
                                                         tourneyDate={tourney.createdOn}
                                                         disableBtn={index + 1 < tourney.knockout.length}
