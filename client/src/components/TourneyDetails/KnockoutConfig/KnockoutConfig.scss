@@ -38,4 +38,28 @@
             transform: translateX(-50%);
         }
     }
+    .winner-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-flow: column;
+        gap: 5rem;
+        padding-top: 5rem;
+        h1 {
+            text-transform: uppercase;
+            font-size: 2rem;
+            font-weight: 700;
+            white-space: normal;
+            text-align: center;
+            letter-spacing:2px;
+        }
+        &-confetti {
+            position: absolute;
+            top: 62%;
+        }
+        img {
+            height: auto;
+            width: 60vw;
+        }
+    }
 }

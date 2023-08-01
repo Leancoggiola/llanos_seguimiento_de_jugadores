@@ -1,6 +1,7 @@
 import { cloneDeep, isEmpty, last, shuffle } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ConfettiExplosion from 'react-confetti-explosion';
 // Components
 import { contentIcTrophy, navigationIcClose, notificationIcEventNote } from '../../../assets/icons';
 import { Accordion, AccordionContent, AccordionTrigger } from '../../../commonComponents/Accordion';
@@ -13,12 +14,14 @@ import MatchDetails from '../MatchDetails/MatchDetails';
 import IconButton from '../../../commonComponents/IconButton';
 // Middleware
 import { navbarNewEntry } from '../../../middleware/actions/navbarActions';
+import trophyIcon from '../../../assets/trophy-icon.png';
 // Styling
 import './KnockoutConfig.scss';
 
 const KnockoutConfig = (props) => {
     const { tourney, setTourneyData, handlePdf } = props;
     const [tabIndex, setTabIndex] = useState(0);
+    const { data: teamList } = useSelector((state) => state.team.teamList);
 
     const getScore = (match) => {
         if (isEmpty(match.details) || match.details.every((x) => x.type !== 'sin goles' && x.type !== 'gol')) return 'Sin resultados';
@@ -38,6 +41,11 @@ const KnockoutConfig = (props) => {
         return lastStage?.matchs.length === 1 && lastStage?.matchs.every((x) => x.winner);
     };
 
+    const getWinner = () => {
+        const lastStage = last(tourney.knockout);
+        return teamList.find((x) => x._id === lastStage.matchs[0].winner).name;
+    };
+
     return (
         <div className="knockout-config">
             <TabNavigator defaultActiveKey={tabIndex} className="knockout-config-navigator">
@@ -50,6 +58,7 @@ const KnockoutConfig = (props) => {
             </TabNavigator>
             <div className="knockout-config-content">
                 {tabIndex === 0 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} handlePdf={handlePdf} />}
+                {tabIndex === 1 && <WinnerScreen winner={getWinner()} />}
             </div>
         </div>
     );
@@ -352,6 +361,35 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                 </div>
             )}
             <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteStage} message={'¿Seguro quieres eliminar esta etapa?'} />
+        </>
+    );
+};
+
+const WinnerScreen = ({ winner }) => {
+    const [isExploding, setIsExploding] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => setIsExploding(false), 2000);
+        const footer = document.querySelector('.tourney-details-footer');
+        footer.style.visibility = 'hidden';
+        return () => (footer.style.visibility = 'visible');
+    }, []);
+
+    const confettiConfig = {
+        force: 0.6,
+        duration: 2500,
+        particleCount: 100,
+        width: 750,
+        height: 1000,
+    };
+
+    return (
+        <>
+            <div className="winner-img-container">
+                <img src={trophyIcon} alt={'trophy-icon'} loading="lazy" />
+                {isExploding && <ConfettiExplosion {...confettiConfig} className="winner-img-container-confetti" />}
+                <h1>{winner}</h1>
+            </div>
         </>
     );
 };
