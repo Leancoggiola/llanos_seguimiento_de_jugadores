@@ -17,7 +17,7 @@ const tourneyOptions = [
     {
         path: 'groups.matchs.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name age dni team_id' },
+        populate: { path: 'players', select: '_id name age dni sanction team_id' },
     },
     {
         path: 'groups.matchs.details.player',
@@ -31,7 +31,7 @@ const tourneyOptions = [
     {
         path: 'knockout.matchs.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name age dni team_id' },
+        populate: { path: 'players', select: '_id name age dni sanction team_id' },
     },
     {
         path: 'knockout.matchs.details.player',

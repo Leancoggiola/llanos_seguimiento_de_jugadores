@@ -1,4 +1,4 @@
-const { Player, Tournament } = require('../models');
+const { Player, Tournament, Team } = require('../models');
 const mongoose = require('mongoose');
 const { errorHandler } = require('../helpers');
 
@@ -85,8 +85,10 @@ module.exports = {
             const player = await Player.findById(req.params.id);
 
             const deletePlayer = async () => {
+                if (player.team_id) await Team.findOneAndUpdate({ _id: player.team_id }, { $pull: { players: { _id: id } } }, { session });
                 await Player.findByIdAndDelete(id, { session })
                     .then(async (response) => {
+                        debugger;
                         await session.commitTransaction();
                         session.endSession();
                         res.status(201).json({
@@ -97,13 +99,11 @@ module.exports = {
                     .catch(async (err) => await errorHandler(session, err, res));
             };
 
-            if (!player.team_id) {
-                await deletePlayer();
-            } else {
-                const isOnTournament = await Tournament.find({ status: { $ne: 'Terminado' }, teams: { $nin: [player.team_id] } });
-                if (isOnTournament?.length) res.status(404).json({ message: 'El jugador se encuentra en un torneo activo.' });
-                else await deletePlayer();
-            }
+            debugger;
+
+            const isOnTournament = await Tournament.find({ status: { $ne: 'Terminado' }, teams: { $in: [player?.team_id] } });
+            if (isOnTournament?.length) res.status(404).json({ message: 'El jugador se encuentra en un torneo activo.' });
+            else await deletePlayer();
         } catch (err) {
             await errorHandler(session, err, res);
         }

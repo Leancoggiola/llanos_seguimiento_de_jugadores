@@ -305,7 +305,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     return (
         <>
             {matchDetails ? (
-                <MatchDetails match={matchDetails} setMatchDetails={setMatchDetails} getScore={getScore} />
+                <MatchDetails match={matchDetails} setMatchDetails={setMatchDetails} getScore={getScore} isKnockout={true} />
             ) : tourney.knockout.length ? (
                 <>
                     {tourney.knockout.map((stage, index) => {

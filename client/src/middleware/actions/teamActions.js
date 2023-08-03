@@ -1,11 +1,6 @@
 import { getFailure, getSuccess, getRequest } from '../index.js';
 
-import {
-    TEAM_GET_TEAM_LIST,
-    TEAM_POST_NEW_TEAM,
-    TEAM_DELETE_NEW_TEAM,
-    TEAM_PUT_TEAM,
-} from '../constants/team.js';
+import { TEAM_GET_TEAM_LIST, TEAM_POST_NEW_TEAM, TEAM_DELETE_NEW_TEAM, TEAM_PUT_TEAM } from '../constants/team.js';
 
 // GET Team LIST
 export const getTeamsRequest = (payload) => {

@@ -22,7 +22,7 @@ import yellowCardIcon from '../../../assets/yellow-card-icon.png';
 import './MatchDetails.scss';
 
 const MatchDetails = (props) => {
-    const { match, setMatchDetails, getScore } = props;
+    const { match, setMatchDetails, getScore, isKnockout } = props;
 
     const [detailsForm, setDetailsForm] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -128,14 +128,14 @@ const MatchDetails = (props) => {
             <IconButton className="match-details-icon-save add-new" onClick={handleSubmit}>
                 <Icon src={contentIcSave} />
             </IconButton>
-            <DetailModal show={detailsForm} match={match} onClose={() => setDetailsForm(false)} detailsList={detailsList} setDetailsList={setDetailsList} />
+            <DetailModal show={detailsForm} match={match} onClose={() => setDetailsForm(false)} detailsList={detailsList} setDetailsList={setDetailsList} isKnockout={isKnockout} />
             <DeleteConfirmation show={showModal} onClose={() => setShowModal(false)} onSubmit={handleDelete} message={'¿Seguro quieres eliminar este registro?'} />
         </div>
     );
 };
 
 const DetailModal = (props) => {
-    const { show, match, onClose, setDetailsList, detailsList } = props;
+    const { show, match, onClose, setDetailsList, detailsList, isKnockout } = props;
 
     const [tabIndex, setTabIndex] = useState(0);
     const [type, setType] = useState();
@@ -151,6 +151,7 @@ const DetailModal = (props) => {
     useEffect(() => {
         setPlayer(undefined);
         setTime();
+        console.log(team);
     }, [team]);
 
     useEffect(() => {
@@ -201,10 +202,12 @@ const DetailModal = (props) => {
                                 <img src={goalIcon} alt="goal-icon" onClick={() => setType('gol')} />
                                 <figcaption>Gol</figcaption>
                             </div>
-                            <div className={detailsList.some((x) => x.type === 'gol' || x.type === 'sin goles') ? 'match-details-modal-body-type__disabled' : ''}>
-                                <img src={noGoalIcon} alt="sin-goles" onClick={() => setType('sin goles')} />
-                                <figcaption>Sin goles</figcaption>
-                            </div>
+                            {!isKnockout && (
+                                <div className={detailsList.some((x) => x.type === 'gol' || x.type === 'sin goles') ? 'match-details-modal-body-type__disabled' : ''}>
+                                    <img src={noGoalIcon} alt="sin-goles" onClick={() => setType('sin goles')} />
+                                    <figcaption>Sin goles</figcaption>
+                                </div>
+                            )}
                             <div>
                                 <img src={yellowCardIcon} alt="tarjeta-amarilla" onClick={() => setType('tarjeta amarilla')} />
                                 <figcaption>Tarjeta Amarilla</figcaption>
@@ -233,11 +236,13 @@ const DetailModal = (props) => {
                                         <FormField>
                                             <Label>Jugador</Label>
                                             <Select value={player} onChange={(e) => setPlayer(e)}>
-                                                {team.players.map((option, index) => (
-                                                    <Option value={option._id} key={option._id + index}>
-                                                        {capitalize(option.name)}
-                                                    </Option>
-                                                ))}
+                                                {team.players
+                                                    .filter((x) => x.sanction === 0)
+                                                    .map((option, index) => (
+                                                        <Option value={option._id} key={option._id + index}>
+                                                            {capitalize(option.name)}
+                                                        </Option>
+                                                    ))}
                                             </Select>
                                         </FormField>
                                     )}
