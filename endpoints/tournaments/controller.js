@@ -256,6 +256,7 @@ module.exports = {
             const { body } = req;
             const id = req.params.id;
             const tourney = await Tournament.findOne({ _id: id }).session(session);
+            const formatedData = await Tournament.findOne({ _id: id }).populate('groups.matchs').lean().session(session);
 
             if (!isEmpty(body?.configs)) {
                 await saveConfig(body.configs.group, user, session, res);
@@ -266,6 +267,8 @@ module.exports = {
             if (body?.groups) tourney.groups = body.groups;
             if (body?.knockout) tourney.knockout = body.knockout;
             tourney.status = body.status;
+
+            await updatePlayersSanctions(body?.groups ? body.groups : formatedData.groups, body?.knockout ? body.knockout : formatedData.knockout, session);
 
             tourney
                 .save()
@@ -319,21 +322,32 @@ const saveConfig = async (config, user, session, res) => {
         .catch(async (err) => await errorHandler(session, err, res));
 };
 
-const updatePlayersSanctions = async (matchs, session) => {
-    const matchsAll = matchs.flatMap((x) => x);
-    const matchsWithDate = matchsAll.filter((x) => x?.date);
+const updatePlayersSanctions = async (groups = [], knockout = [], session) => {
+    const matches = [...groups, ...knockout].flatMap((x) => x.matchs);
+    const matchsWithDate = matches.filter((x) => x?.date);
     if (matchsWithDate.length) {
-        const teamsToCheck = matchsWithDate.flatMap((x) => x.teams.map((x) => x._id));
+        const teamsToCheck = matchsWithDate.flatMap((x) => x.teams.map((x) => (x?._id ? x._id : x)));
         const playersToUpdate = await Player.find({ team_id: { $in: teamsToCheck }, initial_sanction: { $gt: 0 } }, null, { session }).lean();
+        playersToUpdate.forEach((x) => {
+            x.team_id = x.team_id.toString();
+        });
+        matchsWithDate.forEach((x) => {
+            x.teams = x.teams.map((i) => i.toString());
+        });
         await Promise.all(
             playersToUpdate.map(async (player) => {
                 const newSanction = matchsWithDate.reduce((prev, match) => {
-                    if (prev !== 0) {
+                    if (prev !== 0 && match.teams.includes(player.team_id)) {
                         prev = new Date(match.date) > new Date(player.sanction_date) ? prev - 1 : prev;
                     }
                     return prev;
                 }, player.initial_sanction);
-                await Player.findOneAndUpdate({ _id: player._id }, { sanction: newSanction }, { session });
+                const updateData = {
+                    sanction: newSanction,
+                    initial_sanction: newSanction < 1 ? 0 : player.initial_sanction,
+                    sanction_date: newSanction < 1 ? null : player.sanction_date,
+                };
+                await Player.findOneAndUpdate({ _id: player._id }, updateData, { session });
             })
         );
     }

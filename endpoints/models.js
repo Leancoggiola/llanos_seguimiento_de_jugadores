@@ -73,7 +73,7 @@ const groupObj = {
 };
 
 const knockoutObj = {
-    stage: {
+    name: {
         type: String,
         required: [true, 'Se requiere etapa'],
     },

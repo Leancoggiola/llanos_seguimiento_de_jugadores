@@ -144,7 +144,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                 }
 
                 return {
-                    stage: `Etapa 1`,
+                    name: `Etapa 1`,
                     teams: totalTeams.map((x) => x._id),
                     matchs,
                     order: 1,
@@ -169,7 +169,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                 });
                 teams.push(teamsToSortA[i]._id, teamsToSortB[totalCruces - i - 1]._id);
             }
-            tourney.knockout = [{ stage: `Etapa 1`, teams, matchs, order: 1 }];
+            tourney.knockout = [{ name: `Etapa 1`, teams, matchs, order: 1 }];
         }
         setTourneyData(cloneDeep(tourney));
     };
@@ -236,7 +236,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
         const newData = cloneDeep(tourney);
         newData.knockout.push({
-            stage: `Etapa ${nextOrder}`,
+            name: `Etapa ${nextOrder}`,
             teams: teamList.filter((x) => winners.includes(x._id)),
             matchs: nextStageMatchs,
             order: nextOrder,
@@ -294,7 +294,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
         const newData = cloneDeep(tourney);
         newData.knockout.push({
-            stage: `Etapa ${nextOrder}`,
+            name: `Etapa ${nextOrder}`,
             teams: teamList.filter((x) => winners.includes(x._id)),
             matchs: nextStageMatchs,
             order: nextOrder,
@@ -313,13 +313,13 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                         return (
                             <Accordion
                                 className="knockout-config-content-calendar-accordion"
-                                key={stage.stage}
+                                key={stage.name}
                                 alignIconRight
                                 useChevronIcon
                                 {...(index === tourney.knockout.length - 1 ? { ...accordionConf } : null)}
                             >
                                 <AccordionTrigger className="knockout-config-content-calendar-accordion-trigger">
-                                    {stage.stage}
+                                    {stage.name}
                                     {index + 1 === tourney.knockout.length && (
                                         <IconButton onClick={() => setDeleteModal(true)}>
                                             <Icon src={navigationIcClose} />
