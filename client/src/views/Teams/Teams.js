@@ -13,7 +13,7 @@ import { navbarBack, navbarNewEntry } from '../../middleware/actions/navbarActio
 // Styling
 import './Teams.scss';
 
-const Teams = () => {
+const Teams = ({ applyFilter }) => {
     const teamList = useSelector((state) => state.team.teamList);
     const [teamForm, setTeamForm] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
@@ -40,14 +40,7 @@ const Teams = () => {
             {teamForm && <TeamForm onClose={() => dispatch(navbarBack())} team={selectedTeam} />}
             {!teamForm && (
                 <>
-                    {!isEmpty(teamList.data) &&
-                        teamList.data.map((team, index) => (
-                            <TeamCard
-                                key={team.name + index}
-                                team={team}
-                                setSelectedTeam={setSelectedTeam}
-                            />
-                        ))}
+                    {!isEmpty(teamList.data) && applyFilter(teamList.data).map((team, index) => <TeamCard key={team.name + index} team={team} setSelectedTeam={setSelectedTeam} />)}
                     <IconButton className="add-new" onClick={handleABMTeam}>
                         <Icon src={contentIcAddCircle} />
                     </IconButton>

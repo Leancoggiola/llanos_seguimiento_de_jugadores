@@ -1,11 +1,14 @@
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
 // Pages
-import Tournaments from '../Tournaments';
-import Teams from '../Teams';
 import Players from '../Players';
+import Teams from '../Teams';
+import Tournaments from '../Tournaments';
 // Components
 import ErrorMessage from '../../commonComponents/ErrorMessage';
+import FormField from '../../commonComponents/FormField';
+import Input from '../../commonComponents/Input';
+import Label from '../../commonComponents/Label';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 // Middleware
 import { navbarBack } from '../../middleware/actions/navbarActions';
@@ -13,6 +16,7 @@ import { navbarBack } from '../../middleware/actions/navbarActions';
 import './Home.scss';
 
 const Home = () => {
+    const [textFilter, setTextFilter] = useState('');
     const display = useSelector((state) => state.navbar.display);
     const { loading: tourneyLoading } = useSelector((state) => state.tourney.tourneyList);
     const { loading: teamLoading } = useSelector((state) => state.team.teamList);
@@ -28,11 +32,11 @@ const Home = () => {
     const setPage = () => {
         switch (display) {
             case 'torneos':
-                return <Tournaments />;
+                return <Tournaments applyFilter={applyFilter} />;
             case 'equipos':
-                return <Teams />;
+                return <Teams applyFilter={applyFilter} />;
             case 'jugadores':
-                return <Players />;
+                return <Players applyFilter={applyFilter} />;
             default:
                 return <ErrorMessage message={'Ups! No encontramos la página que esta buscando'} />;
         }
@@ -40,7 +44,22 @@ const Home = () => {
 
     if (teamLoading || tourneyLoading) return <LoadingSpinner fullscreen={true} />;
 
-    return <main className="home-container">{setPage()}</main>;
+    const applyFilter = (data) => {
+        if (textFilter) {
+            return data.filter((x) => x.name.toLowerCase().includes(textFilter.toLowerCase()));
+        }
+        return data;
+    };
+
+    return (
+        <main className="home-container">
+            <FormField className="home-container-filter">
+                <Label>Nombre...</Label>
+                <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
+            </FormField>
+            {setPage()}
+        </main>
+    );
 };
 
 export default Home;

@@ -10,7 +10,7 @@ import {
 import { getFailure, getRequest, getSuccess } from '../index.js';
 
 const initial = { loading: false, data: null, error: null };
-const STATUS_ENUM = ['Nuevo', 'Jugando', 'Terminado'];
+const STATUS_ENUM = ['Jugando', 'Nuevo', 'Terminado'];
 
 const initialState = {
     tourneyList: { ...initial },
@@ -34,7 +34,7 @@ export const tourneyReducer = (state = initialState, action) => {
                 ...state,
                 tourneyList: {
                     loading: false,
-                    data: payload.sort((a, b) => STATUS_ENUM.indexOf(a) - STATUS_ENUM.indexOf(b)),
+                    data: payload.sort((a, b) => STATUS_ENUM.indexOf(a.status) - STATUS_ENUM.indexOf(b.status)),
                     error: null,
                 },
             };
@@ -55,12 +55,12 @@ export const tourneyReducer = (state = initialState, action) => {
         case getSuccess(TOURNEY_GET_TOURNEY_DETAILS): {
             const index = state.tourneyList.data.findIndex((x) => x._id === payload._id);
             const newData = [...state.tourneyList.data];
-            newData[index] = { ...payload, fullData: true };
+            newData[index] = { ...payload };
             return {
                 ...state,
                 tourneyList: {
                     loading: false,
-                    data: newData.sort((a, b) => STATUS_ENUM.indexOf(a) - STATUS_ENUM.indexOf(b)),
+                    data: newData.sort((a, b) => STATUS_ENUM.indexOf(a.status) - STATUS_ENUM.indexOf(b.status)),
                     error: null,
                 },
                 tourneyDetails: { loading: false, data: payload, error: null },

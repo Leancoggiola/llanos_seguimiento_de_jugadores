@@ -23,13 +23,13 @@ const FormField = (props) => {
 
     const classes =
         `cc-form-field ` +
-        `${className ? className : ''}` +
         `${isFocused ? 'cc-form-field-focused ' : ''}` +
         `${hasPlaceholder ? 'cc-form-field-has-placeholder ' : ''}` +
         `${hasContent ? 'cc-form-field-has-value ' : ''}` +
         `${formElementType === 'textInput' ? 'cc-form-field-text-input ' : ''}` +
         `${formElementType === 'dateInput' ? 'cc-form-field-date-input ' : ''}` +
-        `${formElementType === 'selectInput' ? 'cc-form-field-select-input ' : ''}`;
+        `${formElementType === 'selectInput' ? 'cc-form-field-select-input ' : ''}` +
+        `${className ? className : ''}`;
 
     const contextSettings = {
         disabled,

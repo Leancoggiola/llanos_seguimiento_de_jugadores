@@ -39,7 +39,7 @@ function* getTourneysWork() {
             method: 'GET',
         };
         const response = yield call(serviceCall, options);
-        yield put(getTourneysSuccess(response.map((x) => ({ ...x, fullData: false }))));
+        yield put(getTourneysSuccess(response.map((x) => ({ ...x }))));
     } catch (e) {
         yield put(getTourneysFailure(e.status));
     }

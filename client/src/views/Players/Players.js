@@ -13,7 +13,7 @@ import { navbarBack, navbarNewEntry } from '../../middleware/actions/navbarActio
 // Styling
 import './Players.scss';
 
-const Players = () => {
+const Players = ({ applyFilter }) => {
     const playerList = useSelector((state) => state.player.playerList);
     const [playerForm, setPlayerForm] = useState(false);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -37,19 +37,11 @@ const Players = () => {
 
     return (
         <section className="player-page-container">
-            {playerForm && (
-                <PlayerForm onClose={() => dispatch(navbarBack())} player={selectedPlayer} />
-            )}
+            {playerForm && <PlayerForm onClose={() => dispatch(navbarBack())} player={selectedPlayer} />}
             {!playerForm && (
                 <>
                     {!isEmpty(playerList.data) &&
-                        playerList.data.map((player, index) => (
-                            <PlayerCard
-                                key={player.name + index}
-                                player={player}
-                                setSelectedPlayer={setSelectedPlayer}
-                            />
-                        ))}
+                        applyFilter(playerList.data).map((player, index) => <PlayerCard key={player.name + index} player={player} setSelectedPlayer={setSelectedPlayer} />)}
                     <IconButton className="add-new" onClick={handleABMPlayer}>
                         <Icon src={contentIcAddCircle} />
                     </IconButton>

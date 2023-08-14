@@ -23,12 +23,7 @@ const TourneyDetails = (props) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!tourney.fullData) {
-            dispatch(getTourneyDetailsRequest(tourney._id));
-        } else {
-            setTourneyData(cloneDeep(omit(tourney, ['fullData'])));
-        }
-
+        dispatch(getTourneyDetailsRequest(tourney._id));
         return () => {
             dispatch(resetTourneyDetailsSuccess());
         };
@@ -58,7 +53,7 @@ const TourneyDetails = (props) => {
     };
 
     const enableSave = () => {
-        const comparate = tourneyDetails.data ? tourneyDetails.data : omit(tourney, ['fullData']);
+        const comparate = tourneyDetails.data ? tourneyDetails.data : tourney;
         return isEqual(comparate, tourneyData);
     };
 

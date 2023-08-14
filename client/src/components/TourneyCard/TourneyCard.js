@@ -24,8 +24,8 @@ const TourneyCard = (props) => {
     };
 
     const getStatusVariant = () => {
-        if ('Nuevo') return 'info';
-        if ('Jugando') return 'success';
+        if (tourney.status === 'Nuevo') return 'info';
+        if (tourney.status === 'Jugando') return 'success';
         return 'warning';
     };
 

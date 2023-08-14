@@ -1,13 +1,22 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import { serviceCall } from '../../config/serviceCall.js';
-import { getPlayersFailure, getPlayersSuccess, postPlayerFailure, postPlayerSuccess, deletePlayerFailure, deletePlayerSuccess, putPlayerSuccess, putPlayerFailure } from '../actions/playerActions.js';
-import { getPlayersRequest } from '../actions/playerActions.js';
+import {
+    deletePlayerFailure,
+    deletePlayerSuccess,
+    getPlayersFailure,
+    getPlayersSuccess,
+    postPlayerFailure,
+    postPlayerSuccess,
+    putPlayerFailure,
+    putPlayerSuccess,
+} from '../actions/playerActions.js';
+import { getTeamsRequest } from '../actions/teamActions.js';
 
 import { getRequest } from '../index.js';
 
-import { PLAYER_DELETE_NEW_PLAYER, PLAYER_GET_PLAYER_LIST, PLAYER_POST_NEW_PLAYER, PLAYER_PUT_PLAYER } from '../constants/player.js';
 import { updateToastData } from '../actions/navbarActions.js';
+import { PLAYER_DELETE_NEW_PLAYER, PLAYER_GET_PLAYER_LIST, PLAYER_POST_NEW_PLAYER, PLAYER_PUT_PLAYER } from '../constants/player.js';
 
 // Workers
 function* getPlayersWork() {
@@ -64,6 +73,7 @@ function* putPlayerWork(action) {
         const response = yield call(serviceCall, options);
         yield put(putPlayerSuccess(response.result));
         yield put(getPlayersSuccess(response.newData));
+        yield put(getTeamsRequest());
         yield put(
             updateToastData({
                 show: true,
@@ -92,6 +102,7 @@ function* deletePlayerWork(action) {
         const response = yield call(serviceCall, options);
         yield put(deletePlayerSuccess(response.result));
         yield put(getPlayersSuccess(response.newData));
+        yield put(getTeamsRequest());
         yield put(
             updateToastData({
                 show: true,

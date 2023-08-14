@@ -141,7 +141,6 @@ const tournamentsSchema = Schema({
     name: {
         type: String,
         required: [true, 'Se requiere nombre'],
-        lowercase: true,
     },
     teams: {
         type: [Schema.Types.ObjectId],

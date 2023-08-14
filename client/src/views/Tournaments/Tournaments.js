@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
+import { contentIcAddCircle } from '../../assets/icons';
 import ErrorMessage from '../../commonComponents/ErrorMessage';
 import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
@@ -9,13 +10,12 @@ import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 import TourneyCard from '../../components/TourneyCard';
 import TourneyDetails from '../../components/TourneyDetails';
 import TourneyForm from '../../components/TourneyForm';
-import { contentIcAddCircle } from '../../assets/icons';
 // Middleware
 import { navbarBack, navbarNewEntry } from '../../middleware/actions/navbarActions';
 // Styling
 import './Tournaments.scss';
 
-const Tournaments = () => {
+const Tournaments = ({ applyFilter }) => {
     const [tourneyForm, setTourneyForm] = useState(false);
     const [tourneyDetails, setTourneyDetails] = useState(false);
     const [optionSelected, setOption] = useState('');
@@ -61,8 +61,14 @@ const Tournaments = () => {
             {!tourneyForm && !tourneyDetails && (
                 <article>
                     {!isEmpty(tourneyList.data) &&
-                        tourneyList.data.map((tourney, index) => (
-                            <TourneyCard key={tourney.name + index} tourney={tourney} setTourneyForm={setTourneyForm} setOption={setOption} setSelectedTourney={setSelectedTourney} />
+                        applyFilter(tourneyList.data).map((tourney, index) => (
+                            <TourneyCard
+                                key={tourney.name + index}
+                                tourney={tourney}
+                                setTourneyForm={setTourneyForm}
+                                setOption={setOption}
+                                setSelectedTourney={setSelectedTourney}
+                            />
                         ))}
                     <IconButton className="add-new" onClick={() => setTourneyForm(true)}>
                         <Icon src={contentIcAddCircle} />
