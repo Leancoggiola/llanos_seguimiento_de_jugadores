@@ -4,8 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 // Components
 import { contentIcAddCircle } from '../../assets/icons';
 import ErrorMessage from '../../commonComponents/ErrorMessage';
+import FormField from '../../commonComponents/FormField';
 import Icon from '../../commonComponents/Icon';
 import IconButton from '../../commonComponents/IconButton';
+import Input from '../../commonComponents/Input';
+import Label from '../../commonComponents/Label';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 import TourneyCard from '../../components/TourneyCard';
 import TourneyDetails from '../../components/TourneyDetails';
@@ -15,10 +18,11 @@ import { navbarBack, navbarNewEntry } from '../../middleware/actions/navbarActio
 // Styling
 import './Tournaments.scss';
 
-const Tournaments = ({ applyFilter }) => {
+const Tournaments = () => {
     const [tourneyForm, setTourneyForm] = useState(false);
     const [tourneyDetails, setTourneyDetails] = useState(false);
     const [optionSelected, setOption] = useState('');
+    const [textFilter, setTextFilter] = useState('');
     const [selectedTourney, setSelectedTourney] = useState(null);
 
     const tourneyList = useSelector((state) => state.tourney.tourneyList);
@@ -54,12 +58,23 @@ const Tournaments = ({ applyFilter }) => {
         );
     }
 
+    const applyFilter = (data) => {
+        if (textFilter) {
+            return data.filter((x) => x.name.toLowerCase().includes(textFilter.toLowerCase()));
+        }
+        return data;
+    };
+
     return (
         <section className="tournament-page-container">
             {tourneyForm && <TourneyForm onClose={() => dispatch(navbarBack())} tourney={selectedTourney} />}
             {tourneyDetails && <TourneyDetails onClose={() => dispatch(navbarBack())} tourney={selectedTourney} option={optionSelected} setOption={setOption} />}
             {!tourneyForm && !tourneyDetails && (
                 <article>
+                    <FormField className="home-container-filter">
+                        <Label>Nombre...</Label>
+                        <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
+                    </FormField>
                     {!isEmpty(tourneyList.data) &&
                         applyFilter(tourneyList.data).map((tourney, index) => (
                             <TourneyCard
