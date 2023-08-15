@@ -51,7 +51,7 @@ const Players = () => {
             {playerForm && <PlayerForm onClose={() => dispatch(navbarBack())} player={selectedPlayer} />}
             {!playerForm && (
                 <>
-                    <FormField className="home-container-filter">
+                    <FormField>
                         <Label>Nombre...</Label>
                         <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
                     </FormField>

@@ -71,7 +71,7 @@ const Tournaments = () => {
             {tourneyDetails && <TourneyDetails onClose={() => dispatch(navbarBack())} tourney={selectedTourney} option={optionSelected} setOption={setOption} />}
             {!tourneyForm && !tourneyDetails && (
                 <article>
-                    <FormField className="home-container-filter">
+                    <FormField>
                         <Label>Nombre...</Label>
                         <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
                     </FormField>
