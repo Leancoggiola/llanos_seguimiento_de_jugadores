@@ -33,7 +33,7 @@ module.exports = {
                         knockoutConfig: user.knockoutConfig,
                     });
                 } else {
-                    await errorHandler(null, { message: 'Contraseña Incorrecto' }, res);
+                    await errorHandler(null, { message: 'Contraseña Incorrecta' }, res);
                 }
             } else {
                 await errorHandler(null, { message: 'Usuario Incorrecto' }, res);
