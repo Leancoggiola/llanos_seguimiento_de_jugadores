@@ -129,10 +129,10 @@ const TourneyForm = (props) => {
                     <Label>Equipos</Label>
                     <Select value={equiposDropdown} onChange={(e) => setEquiposDropdown(e)} filter={true} multiple={true} disabled={tourney?.groups.length > 0}>
                         {teamList.data
-                            .filter(
-                                (team) =>
-                                    team.tourney_ids.includes(tourney?._id) || !tourneyList.data.some((x) => team.tourney_ids.includes(x._id) && tourney?.status === 'Terminado')
-                            )
+                            .filter((team) => {
+                                if (team.tourney_ids.includes(tourney?._id)) return true;
+                                return !tourneyList.data.some((x) => team.tourney_ids.includes(x._id) && x?.status !== 'Terminado');
+                            })
                             .map((option, index) => (
                                 <Option value={option._id} key={option._id + index}>
                                     {capitalize(option.name)}

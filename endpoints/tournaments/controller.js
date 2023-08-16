@@ -144,7 +144,10 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: tourney,
-                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' }),
+                            newData: await Tournament.find({ createdBy: user }).populate({
+                                path: 'teams',
+                                select: '_id name tourney_ids',
+                            }),
                             newTeams: await Team.find({ createdBy: user }).populate({
                                 path: 'players',
                                 select: '_id name team_id',
@@ -230,7 +233,10 @@ module.exports = {
                         session.endSession();
                         res.status(200).json({
                             result: tourney,
-                            newData: await Tournament.find({ createdBy: user }).populate({ path: 'teams', select: '_id name tourney_ids' }),
+                            newData: await Tournament.find({ createdBy: user }).populate({
+                                path: 'teams',
+                                select: '_id name tourney_ids',
+                            }),
                             newTeams: await Team.find({ createdBy: user }).populate({
                                 path: 'players',
                                 select: '_id name team_id',
@@ -263,6 +269,8 @@ module.exports = {
                 tourney.configs = body.configs;
             }
             if (body?.teams) {
+                await updateTeams(body.teams, id, session);
+                tourney.teams = body.teams;
             }
             if (body?.groups) tourney.groups = body.groups;
             if (body?.knockout) tourney.knockout = body.knockout;
@@ -304,7 +312,10 @@ module.exports = {
                     res.status(200).json({
                         result: tourney,
                         newData: await Tournament.find({ createdBy: user }),
-                        newTeams: await Team.find({ createdBy: user }).populate({ path: 'players', select: '_id name team_id' }),
+                        newTeams: await Team.find({ createdBy: user }).populate({
+                            path: 'players',
+                            select: '_id name team_id',
+                        }),
                     });
                 })
                 .catch(async (err) => await errorHandler(session, err, res));
@@ -347,8 +358,35 @@ const updatePlayersSanctions = async (groups = [], knockout = [], session) => {
                     initial_sanction: newSanction < 1 ? 0 : player.initial_sanction,
                     sanction_date: newSanction < 1 ? null : player.sanction_date,
                 };
-                await Player.findOneAndUpdate({ _id: player._id }, updateData, { session });
+                await Player.findOneAndUpdate({ _id: player._id }, updateData, {
+                    session,
+                });
             })
         );
     }
+};
+
+const updateTeams = async (teams = [], tourneyId, session) => {
+    await Team.bulkWrite(
+        [
+            {
+                updateMany: {
+                    filter: { _id: { $in: teams } },
+                    update: { $addToSet: { tourney_ids: tourneyId } },
+                },
+            },
+            {
+                updateMany: {
+                    filter: { _id: { $nin: teams }, tourney_ids: { $in: tourneyId } },
+                    update: { $pull: { tourney_ids: tourneyId } },
+                },
+            },
+        ],
+        null,
+        { session }
+    )
+        .then(async (_, err) => {
+            if (err) await errorHandler(session, err, res);
+        })
+        .catch(async (err) => await errorHandler(session, err, res));
 };

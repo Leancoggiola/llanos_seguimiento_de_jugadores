@@ -128,6 +128,7 @@ function* putTourneyDetailsWork(action) {
         };
         const response = yield call(serviceCall, options);
         yield put(putTourneyDetailsSuccess(response));
+        yield put(getTeamsRequest());
         yield put(getPlayersRequest());
         yield put(
             updateToastData({

@@ -115,18 +115,13 @@ const GroupConfig = (props) => {
 
 const Equipos = ({ tourney, setTourneyData }) => {
     const teamList = useSelector((state) => state.team.teamList);
+    const tourneyList = useSelector((state) => state.tourney.tourneyList);
 
     const [equipoDrop, setDrop] = useState(tourney?.teams.map((x) => x._id));
 
     const handleChange = (e) => {
         const newData = cloneDeep(tourney);
-        const index = teamList.data.findIndex((x) => x._id === e);
-        if (index < 0) {
-            const team = teamList.data.find((x) => x._id === e);
-            newData.teams.push(team);
-        } else {
-            newData.teams.splice(index, 1);
-        }
+        newData.teams = e.map((x) => teamList.data.find((y) => y._id === x));
         setDrop(e);
         setTourneyData(newData);
     };
@@ -137,11 +132,16 @@ const Equipos = ({ tourney, setTourneyData }) => {
             <FormField>
                 <Label>Equipos</Label>
                 <Select value={equipoDrop} onChange={(e) => handleChange(e)} filter={true} multiple={true} disabled={tourney.groups.length}>
-                    {teamList.data.map((option, index) => (
-                        <Option value={option._id} key={option._id + index}>
-                            {capitalize(option.name)}
-                        </Option>
-                    ))}
+                    {teamList.data
+                        .filter((team) => {
+                            if (team.tourney_ids.includes(tourney?._id)) return true;
+                            return !tourneyList.data.some((x) => team.tourney_ids.includes(x._id) && x?.status !== 'Terminado');
+                        })
+                        .map((option, index) => (
+                            <Option value={option._id} key={option._id + index}>
+                                {capitalize(option.name)}
+                            </Option>
+                        ))}
                 </Select>
             </FormField>
             <List>
