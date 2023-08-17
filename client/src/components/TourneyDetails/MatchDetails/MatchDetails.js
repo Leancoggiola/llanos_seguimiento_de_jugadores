@@ -13,10 +13,10 @@ import { ProgressIndicator, ProgressIndicatorStep } from '../../../commonCompone
 import { Option, Select } from '../../../commonComponents/Select';
 import DeleteConfirmation from '../../DeleteConfirmation';
 // Assets
-import goalIcon from '../../../assets/goal-icon.png';
-import noGoalIcon from '../../../assets/no-goal.png';
-import redCardIcon from '../../../assets/red-card-icon.png';
-import yellowCardIcon from '../../../assets/yellow-card-icon.png';
+import goalIcon from '../../../assets/goal-icon.webp';
+import noGoalIcon from '../../../assets/no-goal.webp';
+import redCardIcon from '../../../assets/red-card-icon.webp';
+import yellowCardIcon from '../../../assets/yellow-card-icon.webp';
 // MiddleWare
 // Styling
 import './MatchDetails.scss';

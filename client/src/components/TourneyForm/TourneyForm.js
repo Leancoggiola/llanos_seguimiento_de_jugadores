@@ -15,7 +15,7 @@ import { Option, Select } from '../../commonComponents/Select';
 import DeleteConfirmation from '../DeleteConfirmation';
 import MultiAddModal from '../MultiAddModal';
 // Assets
-import trophyIcon from '../../assets/trophy-icon.png';
+import trophyIcon from '../../assets/trophy-icon.webp';
 // Middleware
 import { deleteTourneyRequest, postTourneyRequest, putTourneyRequest } from '../../middleware/actions/tourneyActions';
 // Styling
@@ -95,72 +95,74 @@ const TourneyForm = (props) => {
             <div className="tourney-form-img-container">
                 <img src={trophyIcon} alt={'trophy-icon'} />
             </div>
-            <h1 className="tourney-form-title">{tourney?._id ? 'Editar' : 'Nuevo'} Torneo</h1>
-            <form noValidate className="tourney-form-container">
-                <FormField>
-                    <Label>Nombre</Label>
-                    <Input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required={true}></Input>
-                    {error && nombre === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
-                </FormField>
-                <FormField>
-                    <Label>Modalidad</Label>
-                    <Select value={modalidad} onChange={(e) => setModalidad(e)} required={true}>
-                        {MODALIDADES.map((option) => (
-                            <Option value={option} key={option}>
-                                {option}
-                            </Option>
-                        ))}
-                    </Select>
-                    {error && modalidad === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
-                </FormField>
-                <FormField>
-                    <Label>Categoría</Label>
-                    <Select value={categoria} onChange={(e) => setCategoria(e)} required={true}>
-                        {CATEGORIAS.map((option) => (
-                            <Option value={option} key={option}>
-                                {option}
-                            </Option>
-                        ))}
-                    </Select>
-                    {error && categoria === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
-                </FormField>
-                <h1>Equipos</h1>
-                <FormField>
-                    <Label>Equipos</Label>
-                    <Select value={equiposDropdown} onChange={(e) => setEquiposDropdown(e)} filter={true} multiple={true} disabled={tourney?.groups.length > 0}>
-                        {teamList.data
-                            .filter((team) => {
-                                if (team.tourney_ids.includes(tourney?._id)) return true;
-                                return !tourneyList.data.some((x) => team.tourney_ids.includes(x._id) && x?.status !== 'Terminado');
-                            })
-                            .map((option, index) => (
-                                <Option value={option._id} key={option._id + index}>
-                                    {capitalize(option.name)}
+            <div className="tourney-form-container">
+                <h1>{tourney?._id ? 'Editar' : 'Nuevo'} Torneo</h1>
+                <form noValidate>
+                    <FormField>
+                        <Label>Nombre</Label>
+                        <Input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required={true}></Input>
+                        {error && nombre === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
+                    </FormField>
+                    <FormField>
+                        <Label>Modalidad</Label>
+                        <Select value={modalidad} onChange={(e) => setModalidad(e)} required={true}>
+                            {MODALIDADES.map((option) => (
+                                <Option value={option} key={option}>
+                                    {option}
                                 </Option>
                             ))}
-                    </Select>
-                </FormField>
-                <div className="tourney-form-new-team">
-                    <Button type="button" variant="text-alt" onClick={() => setMultiAdd(true)} disabled={tourney?.groups.length > 0}>
-                        Nuevo equipo
-                    </Button>
-                    <span></span>
-                </div>
-                {equiposList.length > 0 && (
-                    <List>
-                        {equiposList.map((equipo, index) => (
-                            <div className="tourney-form-equipo-list" key={equipo._id + index}>
-                                <p>{capitalize(equipo.name)}</p>
-                                {isRemovable(equipo) && (
-                                    <IconButton onClick={() => handleRemove(equipo)}>
-                                        <Icon src={contentIcRemove} />
-                                    </IconButton>
-                                )}
-                            </div>
-                        ))}
-                    </List>
-                )}
-            </form>
+                        </Select>
+                        {error && modalidad === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
+                    </FormField>
+                    <FormField>
+                        <Label>Categoría</Label>
+                        <Select value={categoria} onChange={(e) => setCategoria(e)} required={true}>
+                            {CATEGORIAS.map((option) => (
+                                <Option value={option} key={option}>
+                                    {option}
+                                </Option>
+                            ))}
+                        </Select>
+                        {error && categoria === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
+                    </FormField>
+                    <h1>Equipos</h1>
+                    <FormField>
+                        <Label>Equipos</Label>
+                        <Select value={equiposDropdown} onChange={(e) => setEquiposDropdown(e)} filter={true} multiple={true} disabled={tourney?.groups.length > 0}>
+                            {teamList.data
+                                .filter((team) => {
+                                    if (team.tourney_ids.includes(tourney?._id)) return true;
+                                    return !tourneyList.data.some((x) => team.tourney_ids.includes(x._id) && x?.status !== 'Terminado');
+                                })
+                                .map((option, index) => (
+                                    <Option value={option._id} key={option._id + index}>
+                                        {capitalize(option.name)}
+                                    </Option>
+                                ))}
+                        </Select>
+                    </FormField>
+                    <div className="tourney-form-new-team">
+                        <Button type="button" variant="text-alt" onClick={() => setMultiAdd(true)} disabled={tourney?.groups.length > 0}>
+                            Nuevo equipo
+                        </Button>
+                        <span></span>
+                    </div>
+                    {equiposList.length > 0 && (
+                        <List>
+                            {equiposList.map((equipo, index) => (
+                                <div className="tourney-form-equipo-list" key={equipo._id + index}>
+                                    <p>{capitalize(equipo.name)}</p>
+                                    {isRemovable(equipo) && (
+                                        <IconButton onClick={() => handleRemove(equipo)}>
+                                            <Icon src={contentIcRemove} />
+                                        </IconButton>
+                                    )}
+                                </div>
+                            ))}
+                        </List>
+                    )}
+                </form>
+            </div>
             <div className="tourney-form-action-buttons">
                 <Button type="button" variant="secondary" onClick={onClose}>
                     Cancelar

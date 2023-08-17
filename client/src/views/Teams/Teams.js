@@ -47,19 +47,25 @@ const Teams = () => {
     };
 
     return (
-        <section className="team-page-container">
+        <section className="team-page">
             {teamForm && <TeamForm onClose={() => dispatch(navbarBack())} team={selectedTeam} />}
             {!teamForm && (
-                <>
-                    <FormField className="team-page-container-filter">
+                <article className="team-page-main">
+                    <FormField>
                         <Label>Nombre...</Label>
                         <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
                     </FormField>
-                    {!isEmpty(teamList.data) && applyFilter(teamList.data).map((team, index) => <TeamCard key={team.name + index} team={team} setSelectedTeam={setSelectedTeam} />)}
+                    {!isEmpty(teamList.data) && (
+                        <div className="team-page-main-cards">
+                            {applyFilter(teamList.data).map((team, index) => (
+                                <TeamCard key={team.name + index} team={team} setSelectedTeam={setSelectedTeam} />
+                            ))}
+                        </div>
+                    )}
                     <IconButton className="add-new" onClick={handleABMTeam}>
                         <Icon src={contentIcAddCircle} />
                     </IconButton>
-                </>
+                </article>
             )}
         </section>
     );

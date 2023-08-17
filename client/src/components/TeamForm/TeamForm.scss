@@ -1,29 +1,31 @@
 .team-form {
-    position: relative;
-    height: 100%;
-    & > form {
-        position: relative;
-        padding-bottom: 6rem;
-    }
-    .cc-form-field {
-        margin: 1.5rem 0;
-    }
-    .img-container {
+    padding-top: 2rem;
+
+    &-img-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding-top: 1rem;
+        margin-block: 1rem;
         img {
             height: 4rem;
             width: auto;
         }
     }
-    & > h1 {
-        margin: 0 5%;
+
+    &-container {
+        margin: 0 5% 3rem;
+        .cc-form-field {
+            margin: 1.5rem 0;
+        }
+        @media screen and (min-width: 768px) {
+            margin: 0 2rem 0 7rem;
+        }
+        @media screen and (min-width: 1366px) {
+            margin-left: calc(7rem + var(--page-side-space));
+            margin-right: calc(2rem + var(--page-side-space));
+        }
     }
-    &-fields {
-        margin: 0 5%;
-    }
+
     &-new-player {
         text-align: right;
         cursor: pointer;
@@ -45,14 +47,17 @@
 
     &-action-buttons {
         display: flex;
-        width: calc(100%);
         justify-content: space-between;
+        align-items: center;
+        width: 100%;
         position: fixed;
-        background-color: var(--navigation-bg);
         bottom: 0;
-        padding: 1rem 0rem;
-        button {
-            margin: 0 1rem;
+        padding: 1rem 2rem;
+        background-color: var(--navigation-bg);
+
+        @media screen and (min-width: 768px) {
+            width: calc(100% - 5rem);
+            left: 5rem;
         }
     }
 }

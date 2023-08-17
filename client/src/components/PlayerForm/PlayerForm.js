@@ -8,7 +8,7 @@ import Input from '../../commonComponents/Input';
 import Label from '../../commonComponents/Label';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 // Assets
-import playerIcon from '../../assets/shirt-icon.png';
+import playerIcon from '../../assets/shirt-icon.webp';
 // Middleware
 import { postPlayerRequest, putPlayerRequest } from '../../middleware/actions/playerActions';
 // Styling

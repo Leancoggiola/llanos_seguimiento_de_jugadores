@@ -14,7 +14,7 @@ import MatchDetails from '../MatchDetails/MatchDetails';
 import IconButton from '../../../commonComponents/IconButton';
 // Middleware
 import { navbarNewEntry } from '../../../middleware/actions/navbarActions';
-import trophyIcon from '../../../assets/trophy-icon.png';
+import trophyIcon from '../../../assets/trophy-icon.webp';
 // Styling
 import './KnockoutConfig.scss';
 

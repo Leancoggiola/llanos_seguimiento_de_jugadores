@@ -1,9 +1,6 @@
 .team-card {
     width: 100%;
-    width: -moz-available;
-    width: -webkit-fill-available;
-    width: fill-available;
-    margin: 1rem 0.5rem;
+    margin-block: 1rem;
     &-header {
         display: grid;
         grid-template-columns: max-content max-content 1fr;

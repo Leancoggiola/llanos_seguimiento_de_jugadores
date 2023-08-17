@@ -1,7 +1,15 @@
 .multi-add-modal {
+    margin: 0 5%;
+    max-width: 40rem;
     &-tabs {
         justify-content: space-evenly;
     }
+    &-body {
+        @media screen and (min-width: 768px) {
+            padding: 2rem 5%;
+        }
+    }
+
     p {
         margin-bottom: 0;
     }

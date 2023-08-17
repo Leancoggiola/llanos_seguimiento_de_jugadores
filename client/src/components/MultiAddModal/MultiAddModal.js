@@ -148,7 +148,7 @@ const MultiAddModal = (props) => {
                 <TabControl onClick={() => setTabIndex(0)}>Por Defecto</TabControl>
                 <TabControl onClick={() => setTabIndex(1)}>Vía Texto</TabControl>
             </TabNavigator>
-            <ModalBody>{renderTab()}</ModalBody>
+            <ModalBody className="multi-add-modal-body">{renderTab()}</ModalBody>
             <ModalFooter className="multi-add-modal-footer">
                 <Button type="button" variant="secondary" onClick={() => onClose()}>
                     Cancelar

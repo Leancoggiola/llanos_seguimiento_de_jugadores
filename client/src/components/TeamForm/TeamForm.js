@@ -14,7 +14,7 @@ import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 import { Option, Select } from '../../commonComponents/Select';
 import MultiAddModal from '../MultiAddModal';
 // Assets
-import teamIcon from '../../assets/team-icon.png';
+import teamIcon from '../../assets/team-icon.webp';
 // Middleware
 import { postTeamRequest, putTeamRequest } from '../../middleware/actions/teamActions';
 // Styling
@@ -71,12 +71,12 @@ const TeamForm = (props) => {
 
     return (
         <section className="team-form">
-            <div className="img-container">
+            <div className="team-form-img-container">
                 <img src={teamIcon} alt={'team-icon'} />
             </div>
-            <h1>{team?.name ? 'Editar' : 'Nuevo'} Equipo</h1>
-            <form noValidate>
-                <div className="team-form-fields">
+            <div className="team-form-container">
+                <h1>{team?.name ? 'Editar' : 'Nuevo'} Equipo</h1>
+                <form noValidate>
                     <FormField>
                         <Label>Nombre</Label>
                         <Input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required={true}></Input>
@@ -114,16 +114,16 @@ const TeamForm = (props) => {
                             ))}
                         </List>
                     )}
-                </div>
-                <div className="team-form-action-buttons">
-                    <Button type="button" variant="secondary" onClick={onClose}>
-                        Cancelar
-                    </Button>
-                    <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)}>
-                        {team?.name ? 'Editar' : 'Crear'}
-                    </Button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div className="team-form-action-buttons">
+                <Button type="button" variant="secondary" onClick={onClose}>
+                    Cancelar
+                </Button>
+                <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)}>
+                    {team?.name ? 'Editar' : 'Crear'}
+                </Button>
+            </div>
             <MultiAddModal
                 show={showMultiAdd}
                 onClose={() => setMultiAdd(false)}
