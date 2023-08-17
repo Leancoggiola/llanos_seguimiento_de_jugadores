@@ -151,7 +151,6 @@ const DetailModal = (props) => {
     useEffect(() => {
         setPlayer(undefined);
         setTime();
-        console.log(team);
     }, [team]);
 
     useEffect(() => {
@@ -180,7 +179,7 @@ const DetailModal = (props) => {
     };
 
     return (
-        <Modal show={show} onClose={onClose}>
+        <Modal show={show} onClose={onClose} className="match-details-modal">
             <ModalBody>
                 <ProgressIndicator>
                     <ProgressIndicatorStep

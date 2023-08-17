@@ -1,7 +1,6 @@
 .match-card {
-    border-top: 1px solid var(--table-border-color);
-    border-bottom: 1px solid var(--table-border-color);
-    padding: 1rem 0;
+    border: 1px solid var(--table-border-color);
+    padding: 1rem;
     &-date {
         display: flex;
         justify-content: space-around;

@@ -330,21 +330,23 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                                     {jornadas.map((i) => (
                                         <div className="jornada-container" key={`week-${i}`}>
                                             <h4>{`Jornada ${i}`}</h4>
-                                            {stage.matchs
-                                                .filter((x) => x.week === i)
-                                                .map((x, index2) => (
-                                                    <MatchCard
-                                                        key={`match-card-${index2}`}
-                                                        getScore={getScore}
-                                                        goToMatchDetails={goToMatchDetails}
-                                                        group={stage}
-                                                        match={x}
-                                                        generateMatchPdf={handlePdf}
-                                                        updateMatchDate={updateMatchDate}
-                                                        tourneyDate={tourney.createdOn}
-                                                        disableBtn={index + 1 < tourney.knockout.length}
-                                                    />
-                                                ))}
+                                            <div className="jornada-container-cards">
+                                                {stage.matchs
+                                                    .filter((x) => x.week === i)
+                                                    .map((x, index2) => (
+                                                        <MatchCard
+                                                            key={`match-card-${index2}`}
+                                                            getScore={getScore}
+                                                            goToMatchDetails={goToMatchDetails}
+                                                            group={stage}
+                                                            match={x}
+                                                            generateMatchPdf={handlePdf}
+                                                            updateMatchDate={updateMatchDate}
+                                                            tourneyDate={tourney.createdOn}
+                                                            disableBtn={index + 1 < tourney.knockout.length}
+                                                        />
+                                                    ))}
+                                            </div>
                                         </div>
                                     ))}
                                 </AccordionContent>

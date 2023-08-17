@@ -5,7 +5,10 @@
     &-content {
         margin: 1rem 5%;
         @media screen and (min-width: 768px) {
-            margin: 1rem;
+            margin: 1rem 2rem;
+        }
+        @media screen and (min-width: 1366px) {
+            margin: 1rem calc(2rem + var(--page-side-space));
         }
         .cc-form-field {
             margin: 1rem 0;
@@ -19,11 +22,8 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-        &-teams-list {
-                display: grid;
-                grid-template-columns: 1fr max-content;
-                justify-content: center;
-                align-items: center;
+        &-teams .cc-list {
+            margin-block: 2rem;
         }
         &-btn {
             display: flex;
@@ -37,6 +37,14 @@
         }
         .jornada-container {
             margin: 1rem 0;
+            &-cards {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                @media screen and (min-width: 1024px) {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
             h4 {
             color: var(--app-highlight);
             font-weight: bold;

@@ -146,9 +146,7 @@ const Equipos = ({ tourney, setTourneyData }) => {
             </FormField>
             <List>
                 {tourney?.teams.map((equipo, index) => (
-                    <div className="group-config-content-teams-list" key={equipo._id + index}>
-                        <p>{capitalize(equipo.name)}</p>
-                    </div>
+                    <p key={equipo._id + index}>{capitalize(equipo.name)}</p>
                 ))}
             </List>
         </div>
@@ -406,21 +404,23 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                                     {jornadas.map((i) => (
                                         <div className="jornada-container" key={`week-${i}`}>
                                             <h4>{`Jornada ${i}`}</h4>
-                                            {group.matchs
-                                                .filter((x) => x.week === i)
-                                                .map((x, index) => (
-                                                    <MatchCard
-                                                        match={x}
-                                                        getScore={getScore}
-                                                        goToMatchDetails={goToMatchDetails}
-                                                        key={`match-card-${index}`}
-                                                        group={group}
-                                                        generateMatchPdf={handlePdf}
-                                                        updateMatchDate={updateMatchDate}
-                                                        tourneyDate={tourney.createdOn}
-                                                        isFinished={tourney.knockout.length > 0}
-                                                    />
-                                                ))}
+                                            <div className="jornada-container-cards">
+                                                {group.matchs
+                                                    .filter((x) => x.week === i)
+                                                    .map((x, index) => (
+                                                        <MatchCard
+                                                            match={x}
+                                                            getScore={getScore}
+                                                            goToMatchDetails={goToMatchDetails}
+                                                            key={`match-card-${index}`}
+                                                            group={group}
+                                                            generateMatchPdf={handlePdf}
+                                                            updateMatchDate={updateMatchDate}
+                                                            tourneyDate={tourney.createdOn}
+                                                            isFinished={tourney.knockout.length > 0}
+                                                        />
+                                                    ))}
+                                            </div>
                                         </div>
                                     ))}
                                 </AccordionContent>

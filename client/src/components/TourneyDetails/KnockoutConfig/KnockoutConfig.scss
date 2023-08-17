@@ -3,7 +3,13 @@
         width: 100%;
     }
     &-content {
-        margin: 1rem 0.5rem;
+        margin: 1rem 5%;
+        @media screen and (min-width: 768px) {
+            margin: 1rem 2rem;
+        }
+        @media screen and (min-width: 1366px) {
+            margin: 1rem calc(2rem + var(--page-side-space));
+        }
         &-btn {
             display: flex;
             justify-content: center;
@@ -16,6 +22,14 @@
         }
         .jornada-container {
             margin: 1rem 0;
+            &-cards {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                @media screen and (min-width: 1024px) {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
             h4 {
             color: var(--app-highlight);
             font-weight: bold;
@@ -59,7 +73,7 @@
         }
         img {
             height: auto;
-            width: 60vw;
+            width: 256px;
         }
     }
 }

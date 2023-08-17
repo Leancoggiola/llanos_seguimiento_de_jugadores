@@ -88,7 +88,6 @@ module.exports = {
                 if (player.team_id) await Team.findOneAndUpdate({ _id: player.team_id }, { $pull: { players: { _id: id } } }, { session });
                 await Player.findByIdAndDelete(id, { session })
                     .then(async (response) => {
-                        debugger;
                         await session.commitTransaction();
                         session.endSession();
                         res.status(201).json({
@@ -98,8 +97,6 @@ module.exports = {
                     })
                     .catch(async (err) => await errorHandler(session, err, res));
             };
-
-            debugger;
 
             const isOnTournament = await Tournament.find({ status: { $ne: 'Terminado' }, teams: { $in: [player?.team_id] } });
             if (isOnTournament?.length) res.status(404).json({ message: 'El jugador se encuentra en un torneo activo.' });
