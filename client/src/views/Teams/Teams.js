@@ -51,7 +51,7 @@ const Teams = () => {
             {teamForm && <TeamForm onClose={() => dispatch(navbarBack())} team={selectedTeam} />}
             {!teamForm && (
                 <>
-                    <FormField>
+                    <FormField className="team-page-container-filter">
                         <Label>Nombre...</Label>
                         <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
                     </FormField>
