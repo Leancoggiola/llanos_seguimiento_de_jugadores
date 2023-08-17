@@ -42,7 +42,7 @@ const Login = () => {
                 <LoadingSpinner showPosRelative={true} />
             ) : (
                 <div className="login-card">
-                    <h1>Player Tracker</h1>
+                    <h1>Torneos App</h1>
                     <form noValidate>
                         <FormField>
                             <Label>Usuario</Label>
