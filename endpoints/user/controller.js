@@ -19,8 +19,10 @@ module.exports = {
         const { username, password } = req.body;
         try {
             const user = await User.findOne({ username });
+            const dehash = atob(password);
+
             if (user) {
-                const auth = await bcrypt.compare(password, user.password);
+                const auth = await bcrypt.compare(dehash.replace(process.env.HASH_PASSWORD, ''), user.password);
                 if (auth) {
                     const jwtToken = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: 1 * 24 * 60 * 60 });
                     res.cookie('jwt', jwtToken, {
@@ -49,7 +51,10 @@ module.exports = {
             if (secret !== process.env.REGISTER_SECRET) {
                 res.status(401).json({ message: 'No puedes registrarte en esta app' });
             } else {
-                const user = await User.create({ username, password }).catch((err) => res.status(400).json({ message: err.message }));
+                const salt = await bcrypt.genSalt();
+                const hash = await bcrypt.hash(password, salt);
+
+                const user = await User.create({ username, password: hash }).catch((err) => res.status(400).json({ message: err.message }));
                 const jwtToken = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: 1 * 24 * 60 * 60 });
                 res.cookie('jwt', jwtToken, {
                     withCredentials: true,

@@ -1,4 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
+import * as CryptoJs from 'crypto-js';
 
 import { serviceCall } from '../../config/serviceCall';
 import { isUserLoggedInFailure, isUserLoggedInSuccess } from '../actions/authActions';
@@ -13,10 +14,11 @@ function* isUserLoggedInWork(action) {
     try {
         if (payload?.username && payload?.password) {
             const { username, password } = payload;
+            const hashed = btoa(password + process.env.REACT_APP_HASH);
             const options = {
                 url: '/api/user/login',
                 method: 'POST',
-                data: { username, password },
+                data: { username, password: hashed },
             };
             const response = yield call(serviceCall, options);
             yield put(isUserLoggedInSuccess(response));
