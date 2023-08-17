@@ -47,20 +47,25 @@ const Players = () => {
     };
 
     return (
-        <section className="player-page-container">
+        <section className="player-page-page">
             {playerForm && <PlayerForm onClose={() => dispatch(navbarBack())} player={selectedPlayer} />}
             {!playerForm && (
-                <>
+                <article className="player-page-main">
                     <FormField className="player-page-container-filter">
                         <Label>Nombre...</Label>
                         <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
                     </FormField>
-                    {!isEmpty(playerList.data) &&
-                        applyFilter(playerList.data).map((player, index) => <PlayerCard key={player.name + index} player={player} setSelectedPlayer={setSelectedPlayer} />)}
+                    {!isEmpty(playerList.data) && (
+                        <div className="player-page-main-cards">
+                            {applyFilter(playerList.data).map((player, index) => (
+                                <PlayerCard key={player.name + index} player={player} setSelectedPlayer={setSelectedPlayer} />
+                            ))}
+                        </div>
+                    )}
                     <IconButton className="add-new" onClick={handleABMPlayer}>
                         <Icon src={contentIcAddCircle} />
                     </IconButton>
-                </>
+                </article>
             )}
         </section>
     );
