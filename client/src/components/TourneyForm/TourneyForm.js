@@ -92,11 +92,11 @@ const TourneyForm = (props) => {
 
     return (
         <article className="tourney-form">
-            <div className="img-container">
+            <div className="tourney-form-img-container">
                 <img src={trophyIcon} alt={'trophy-icon'} />
             </div>
-            <h1>{tourney?._id ? 'Editar' : 'Nuevo'} Torneo</h1>
-            <form noValidate>
+            <h1 className="tourney-form-title">{tourney?._id ? 'Editar' : 'Nuevo'} Torneo</h1>
+            <form noValidate className="tourney-form-container">
                 <FormField>
                     <Label>Nombre</Label>
                     <Input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required={true}></Input>
@@ -160,20 +160,20 @@ const TourneyForm = (props) => {
                         ))}
                     </List>
                 )}
-                <div className="tourney-form-action-buttons">
-                    <Button type="button" variant="secondary" onClick={onClose}>
-                        Cancelar
-                    </Button>
-                    {tourney?._id && (
-                        <IconButton type="button" onClick={() => setDelete(true)} className="tourney-form-action-buttons-del">
-                            <Icon src={actionIcDelete} />
-                        </IconButton>
-                    )}
-                    <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)} disabled={isEnableSubmit()}>
-                        {tourney?._id ? 'Editar' : 'Crear'}
-                    </Button>
-                </div>
             </form>
+            <div className="tourney-form-action-buttons">
+                <Button type="button" variant="secondary" onClick={onClose}>
+                    Cancelar
+                </Button>
+                {tourney?._id && (
+                    <IconButton type="button" onClick={() => setDelete(true)} className="tourney-form-action-buttons-del">
+                        <Icon src={actionIcDelete} />
+                    </IconButton>
+                )}
+                <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)} disabled={isEnableSubmit()}>
+                    {tourney?._id ? 'Editar' : 'Crear'}
+                </Button>
+            </div>
             <MultiAddModal
                 show={showMultiAdd}
                 onClose={() => setMultiAdd(false)}

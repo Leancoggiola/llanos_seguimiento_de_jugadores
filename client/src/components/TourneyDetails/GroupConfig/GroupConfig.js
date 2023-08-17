@@ -242,9 +242,9 @@ const Grupos = ({ tourney, setTourneyData }) => {
     return (
         <>
             {tourney.groups.length > 0 ? (
-                <>
+                <div className="group-config-content-groups">
                     {tourney.groups.map((group, index) => (
-                        <div key={group.name + index} className="group-config-content-groups">
+                        <div key={group.name + index} className="group-config-content-group-card">
                             <h3>{group.name}</h3>
                             <Table columnDefs={columnDefs} dataSource={group.table} />
                         </div>
@@ -256,7 +256,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
                             </Button>
                         </div>
                     )}
-                </>
+                </div>
             ) : (
                 <>
                     <form noValidate>
@@ -344,15 +344,8 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     const dispatch = useDispatch();
 
     const [matchDetails, setMatchDetails] = useState(null);
-    const [open, setOpen] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
     const [posToScroll, setPosToScroll] = useState();
-
-    const firstAccordionConf = {
-        open,
-        onOpen: () => setOpen(true),
-        onClose: () => setOpen(false),
-    };
 
     const goToMatchDetails = (match) => {
         setPosToScroll(window.scrollY);
@@ -407,13 +400,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                     {tourney.groups.map((group, index) => {
                         const jornadas = [...new Set(group.matchs.map((x) => x.week))];
                         return (
-                            <Accordion
-                                className="group-config-content-calendar-accordion"
-                                key={group.name}
-                                alignIconRight
-                                useChevronIcon
-                                {...(index === 0 ? { ...firstAccordionConf } : null)}
-                            >
+                            <Accordion className="group-config-content-calendar-accordion" key={group.name} alignIconRight useChevronIcon>
                                 <AccordionTrigger>{group.name}</AccordionTrigger>
                                 <AccordionContent>
                                     {jornadas.map((i) => (

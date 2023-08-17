@@ -1,24 +1,31 @@
 .tourney-form {
-    position: relative;
-    height: 100%;
-
-    .cc-form-field {
-        margin: 1.5rem 0;
+    @media screen and (min-width: 768px) {
+        margin: 0 2rem 0 5rem;
     }
-
-    & > form {
-        position: relative;
-        padding-bottom: 6rem;
-    }
-    .img-container {
+    
+    &-img-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding-top: 1rem;
+        margin-block: 1rem;
         img {
             height: 4rem;
             width: auto;
         }
+    }
+
+    &-title, &-container {
+        margin: 0 5%;
+        @media screen and (min-width: 768px) {
+            margin: 0 0 0 2rem;
+        }
+    }
+
+    &-container {
+        .cc-form-field {
+            margin: 1.5rem 0;
+        }
+        margin-bottom: 3rem;
     }
 
     &-new-team {
@@ -41,17 +48,22 @@
 
     &-action-buttons {
         display: flex;
-        width: calc(100%);
         justify-content: space-between;
         align-items: center;
+        width: 100%;
         position: fixed;
-        background-color: var(--navigation-bg);
         bottom: 0;
-        padding: 1rem 0rem;
-        margin: 0 -0.5rem;
+        padding: 1rem 0.5rem;
+        background-color: var(--navigation-bg);
+
+        @media screen and (min-width: 768px) {
+            width: calc(100% - 5rem);
+        }
+
         button {
             margin: 0 1rem;
         }
+
         &-del{
             height: max-content;
             padding: 0.25rem;

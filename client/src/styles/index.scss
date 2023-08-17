@@ -3,7 +3,7 @@
 // Default variables
 body {
     --vertical-nav-collapse-width: 5rem;
-    --vertical-nav-expanded-width: 18rem;
+    --vertical-nav-expanded-width: 15rem;
     --header-width: 4rem;
     --avatar-size: 2.5rem;
     --search-suggestion-item-height: 3rem;
@@ -29,4 +29,6 @@ body {
 
     --shield-bg-disabled: #747480;
     --shield-border-disabled: #3A3A4A;
+
+    --page-side-space: calc((100vw - 320px) / 2 + 5px)
 }

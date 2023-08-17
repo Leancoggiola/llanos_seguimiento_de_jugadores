@@ -66,25 +66,27 @@ const Tournaments = () => {
     };
 
     return (
-        <section className="tournament-page-container">
+        <section className="tournament-page">
             {tourneyForm && <TourneyForm onClose={() => dispatch(navbarBack())} tourney={selectedTourney} />}
             {tourneyDetails && <TourneyDetails onClose={() => dispatch(navbarBack())} tourney={selectedTourney} option={optionSelected} setOption={setOption} />}
             {!tourneyForm && !tourneyDetails && (
-                <article>
+                <article className="tournament-page-main">
                     <FormField>
                         <Label>Nombre...</Label>
                         <Input type="text" value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
                     </FormField>
-                    {!isEmpty(tourneyList.data) &&
-                        applyFilter(tourneyList.data).map((tourney, index) => (
-                            <TourneyCard
-                                key={tourney.name + index}
-                                tourney={tourney}
-                                setTourneyForm={setTourneyForm}
-                                setOption={setOption}
-                                setSelectedTourney={setSelectedTourney}
-                            />
-                        ))}
+                    <div className="tournament-page-main-cards">
+                        {!isEmpty(tourneyList.data) &&
+                            applyFilter(tourneyList.data).map((tourney, index) => (
+                                <TourneyCard
+                                    key={tourney.name + index}
+                                    tourney={tourney}
+                                    setTourneyForm={setTourneyForm}
+                                    setOption={setOption}
+                                    setSelectedTourney={setSelectedTourney}
+                                />
+                            ))}
+                    </div>
                     <IconButton className="add-new" onClick={() => setTourneyForm(true)}>
                         <Icon src={contentIcAddCircle} />
                     </IconButton>

@@ -7,19 +7,19 @@
     height: 100%; // Modify in the future
     z-index: 100;
     background-color: var(--navigation-bg);
-    border-right: 1px solid var(--app-bg);
 
     &-collapse {
         width: var(--vertical-nav-collapse-width);
         transition: width 0.5s, height 0.5s ease;
-        @media screen and (max-width: 576px){
+        h1 {display: none;}
+        @media screen and (max-width: 767px) {
             height: 0%;
         }
     }
     &-expanded {
         width: var(--vertical-nav-expanded-width);
         transition: width 0.5s, height 0.5s ease;;
-        @media screen and (max-width: 576px){
+        @media screen and (max-width: 767px) {
             display: flex;
             height: 100%;
             width: var(--vertical-nav-collapse-width);
@@ -56,7 +56,7 @@
             white-space: nowrap;
             text-align: left;
             font-size: large;
-            @media screen and (max-width: 576px){
+            @media screen and (max-width: 767px) {
                 display: none;
             }
         }
