@@ -1,5 +1,4 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import * as CryptoJs from 'crypto-js';
 
 import { serviceCall } from '../../config/serviceCall';
 import { isUserLoggedInFailure, isUserLoggedInSuccess } from '../actions/authActions';
