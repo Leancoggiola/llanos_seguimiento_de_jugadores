@@ -62,8 +62,7 @@ const PlayerForm = (props) => {
                     </FormField>
                     <FormField>
                         <Label>DNI</Label>
-                        <Input type="text" value={dni} onChange={(e) => setDNI(e.target.value)} maxLength="8" required={true} />
-                        {player?.name && dni === '' && <FormFieldError>Este campo es requerido</FormFieldError>}
+                        <Input type="text" value={dni} onChange={(e) => setDNI(e.target.value)} maxLength="8" />
                     </FormField>
                     <div className="player-form-numbers">
                         <FormField>
@@ -83,7 +82,7 @@ const PlayerForm = (props) => {
                 <Button type="button" variant="secondary" onClick={onClose}>
                     Cancelar
                 </Button>
-                <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)} disabled={player?.name && (dni === '' || nombre === '')}>
+                <Button type="submit" variant="primary" onClick={(e) => handleSubmit(e)} disabled={player?.name && nombre === ''}>
                     {player?.name ? 'Editar' : 'Crear'}
                 </Button>
             </div>
