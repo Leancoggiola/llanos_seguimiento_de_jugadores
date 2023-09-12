@@ -1,0 +1,30 @@
+.manual-group-modal {
+    margin: 0 5%;
+    max-width: 40rem;
+    &-body {
+        @media screen and (min-width: 768px) {
+            padding: 2rem 5%;
+        }
+    }
+
+    &-team {
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: repeat(3, max-content) 1fr;
+        min-height: 10rem;
+        h2, h4, span {
+            margin-block: 0.5rem;
+        }
+        .cc-form-field  {
+            margin-block: 1.5rem;
+        }
+        &:first-child {
+            border-bottom: 2px solid var(--form-element-bg);
+        }
+    }
+
+    &-footer {
+        justify-content: space-evenly;
+        button + button { margin-top: 0;}
+    }
+}

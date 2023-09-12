@@ -73,7 +73,7 @@ const TourneyDetails = (props) => {
         function matchClean(arr) {
             return arr.map((group) => ({
                 ...group,
-                isFinished: group.matchs.every((x) => x.winner),
+                isFinished: group.matchs.length && group.matchs.every((x) => x.winner),
                 teams: group.teams.map((x) => x._id),
                 matchs: group.matchs.map((match) => ({
                     ...match,

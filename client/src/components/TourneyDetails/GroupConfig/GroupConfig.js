@@ -14,6 +14,7 @@ import { Option, Select } from '../../../commonComponents/Select';
 import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator';
 import Table from '../../../commonComponents/Table';
 import DeleteConfirmation from '../../DeleteConfirmation';
+import ManualForm from '../../ManualForm/ManualForm';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
 // Middleware
@@ -157,6 +158,7 @@ const Grupos = ({ tourney, setTourneyData }) => {
     const { groupConfig } = useSelector((state) => state.auth);
 
     const [deleteModal, setDeleteModal] = useState(false);
+    const [manualModal, setManualModal] = useState(false);
 
     const [totalGroups, setTotalGroups] = useState(groupConfig?.totalGroups ? groupConfig.totalGroups : '1');
     const [enconters, setEnconters] = useState(groupConfig?.enconters ? groupConfig.enconters : '1');
@@ -217,6 +219,14 @@ const Grupos = ({ tourney, setTourneyData }) => {
         setTourneyData(cloneDeep(tourney));
     };
 
+    const manualGroupSort = () => {
+        if (Number(totalGroups) === 1) {
+            randomGroupSort();
+        } else {
+            setManualModal(true);
+        }
+    };
+
     const columnDefs = [
         { headerName: '#', field: 'position', numered: true },
         { headerName: 'Nombre', field: 'name', style: { width: '100%' } },
@@ -228,6 +238,25 @@ const Grupos = ({ tourney, setTourneyData }) => {
         { headerName: 'Dif', field: 'dif' },
         { headerName: 'Pts', field: 'pts' },
     ];
+
+    const handleManualGroups = (groups) => {
+        setManualModal(false);
+        tourney.groups = groups;
+        tourney.groups.forEach((group) => {
+            group.table = formatGroupTable(group).sort(orderGroupTable);
+        });
+        tourney.configs = tourney?.configs ? tourney.configs : {};
+        tourney.configs['group'] = {
+            totalGroups,
+            enconters,
+            winPnts,
+            drawPnts,
+            losePnts,
+            nextStepRules,
+            draftType,
+        };
+        setTourneyData(cloneDeep(tourney));
+    };
 
     const handleDeleteGroups = () => {
         setTourneyData({
@@ -284,19 +313,26 @@ const Grupos = ({ tourney, setTourneyData }) => {
                         </FormField>
                         <FormField>
                             <Label>Sorteo de grupos</Label>
-                            <Select value={draftType} onChange={(e) => setDraftType(e)} disabled={true}>
+                            <Select value={draftType} onChange={(e) => setDraftType(e)}>
                                 <Option value={'random'}>Al azar</Option>
                                 <Option value={'manual'}>Manual</Option>
                             </Select>
                         </FormField>
                     </form>
                     <div className="group-config-content-btn">
-                        <Button type="button" disabled={isDisabled()} onClick={randomGroupSort}>
+                        <Button
+                            type="button"
+                            disabled={isDisabled()}
+                            onClick={() => {
+                                draftType === 'random' ? randomGroupSort() : manualGroupSort();
+                            }}
+                        >
                             Crear
                         </Button>
                     </div>
                 </>
             )}
+            <ManualForm show={manualModal} onClose={() => setManualModal(false)} onSubmit={handleManualGroups} groupsTotal={totalGroups} teams={tourney.teams} />
             <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteGroups} message={'¿Seguro quieres eliminar los grupos?'} />
         </>
     );
