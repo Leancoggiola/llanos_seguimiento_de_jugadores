@@ -55,6 +55,9 @@
                 width: auto;
             }
         }
+        .finished {
+            pointer-events: none;
+        }
         span {
             white-space: nowrap;
             overflow: hidden;

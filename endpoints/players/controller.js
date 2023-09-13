@@ -6,7 +6,7 @@ module.exports = {
     getPlayers: async (req, res) => {
         const user = req?.token;
         try {
-            const players = await Player.find({ createdBy: user }).select('_id name age dni sanction team_id');
+            const players = await Player.find({ createdBy: user, hidden: false }).select('_id name age dni sanction team_id');
             res.status(200).json(players);
         } catch (err) {
             await errorHandler(null, err, res);
@@ -30,7 +30,7 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: player,
-                            newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id'),
+                            newData: await Player.find({ createdBy: user, hidden: false }).select('_id name age dni sanction team_id'),
                         });
                     }
                 })
@@ -66,7 +66,7 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: player,
-                            newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id'),
+                            newData: await Player.find({ createdBy: user, hidden: false }).select('_id name age dni sanction team_id'),
                         });
                     }
                 })
@@ -86,13 +86,13 @@ module.exports = {
 
             const deletePlayer = async () => {
                 if (player.team_id) await Team.findOneAndUpdate({ _id: player.team_id }, { $pull: { players: { _id: id } } }, { session });
-                await Player.findByIdAndDelete(id, { session })
+                await Player.findByIdAndUpdate(id, { $set: { hidden: true } }, { session })
                     .then(async (response) => {
                         await session.commitTransaction();
                         session.endSession();
                         res.status(201).json({
                             result: response,
-                            newData: await Player.find({ createdBy: user }).select('_id name age dni sanction team_id'),
+                            newData: await Player.find({ createdBy: user, hidden: false }).select('_id name age dni sanction team_id'),
                         });
                     })
                     .catch(async (err) => await errorHandler(session, err, res));

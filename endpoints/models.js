@@ -123,6 +123,7 @@ const playerSchema = Schema({
     age: { type: Number, required: false, min: 1, max: 99 },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     team_id: { type: Schema.Types.ObjectId, ref: 'teams', default: null },
+    hidden: { type: Boolean, default: false },
 });
 
 const teamsSchema = Schema({
@@ -134,6 +135,8 @@ const teamsSchema = Schema({
     },
     players: { type: [Schema.Types.ObjectId], ref: 'players', default: [] },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    hidden: { type: Boolean, default: false },
+    mocked: { type: Boolean, default: false },
     tourney_ids: { type: [Schema.Types.ObjectId], ref: 'tournaments', default: [] },
 });
 

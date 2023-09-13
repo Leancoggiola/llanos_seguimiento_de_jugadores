@@ -12,7 +12,7 @@ const tourneyOptions = [
     {
         path: 'groups.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name team_id' },
+        populate: { path: 'players', select: '_id name age dni sanction team_id' },
     },
     {
         path: 'groups.matchs.teams',
@@ -26,7 +26,7 @@ const tourneyOptions = [
     {
         path: 'knockout.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name team_id' },
+        populate: { path: 'players', select: '_id name age dni sanction team_id' },
     },
     {
         path: 'knockout.matchs.teams',
@@ -64,13 +64,33 @@ module.exports = {
             tourney.groups = tourney.groups
                 .map((x) => ({
                     ...x,
-                    matchs: x.matchs.sort((a, b) => a.matchOrder - b.matchOrder).sort((a, b) => a.week - b.week),
+                    matchs: x.matchs
+                        .map((match) => {
+                            if (match.teams.length === 0) {
+                                match.teams = [
+                                    { _id: null, name: 'Desconocido', players: [], mocked: true },
+                                    { _id: null, name: 'Desconocido', players: [], mocked: true },
+                                ];
+                            }
+                            return match;
+                        })
+                        .sort((a, b) => a.matchOrder - b.matchOrder)
+                        .sort((a, b) => a.week - b.week),
                 }))
                 .sort((a, b) => a.name.localeCompare(b.name));
             tourney.knockout = tourney.knockout
                 .map((x) => ({
                     ...x,
                     matchs: x.matchs
+                        .map((match) => {
+                            if (match.teams.length === 0) {
+                                match.teams = [
+                                    { _id: null, name: 'Desconocido', players: [], mocked: true },
+                                    { _id: null, name: 'Desconocido', players: [], mocked: true },
+                                ];
+                            }
+                            return match;
+                        })
                         .sort((a, b) => a.matchOrder - b.matchOrder)
                         .sort((a, b) => a.week - b.week)
                         .map((m) => {
@@ -148,7 +168,7 @@ module.exports = {
                                 path: 'teams',
                                 select: '_id name tourney_ids',
                             }),
-                            newTeams: await Team.find({ createdBy: user }).populate({
+                            newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
                                 path: 'players',
                                 select: '_id name team_id',
                             }),
@@ -237,7 +257,7 @@ module.exports = {
                                 path: 'teams',
                                 select: '_id name tourney_ids',
                             }),
-                            newTeams: await Team.find({ createdBy: user }).populate({
+                            newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
                                 path: 'players',
                                 select: '_id name team_id',
                             }),
@@ -312,7 +332,7 @@ module.exports = {
                     res.status(200).json({
                         result: tourney,
                         newData: await Tournament.find({ createdBy: user }),
-                        newTeams: await Team.find({ createdBy: user }).populate({
+                        newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
                             path: 'players',
                             select: '_id name team_id',
                         }),

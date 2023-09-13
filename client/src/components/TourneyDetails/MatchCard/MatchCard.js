@@ -10,14 +10,19 @@ import IconButton from '../../../commonComponents/IconButton';
 import './MatchCard.scss';
 
 const MatchCard = (props) => {
-    const { group, match, goToMatchDetails, getScore, updateMatchDate, tourneyDate, disableBtn, generateMatchPdf, isFinished } = props;
+    const { group, match, goToMatchDetails, getScore, updateMatchDate, tourneyDate, disableBtn, generateMatchPdf, isFinished, configMocked } = props;
 
     const [date, setDate] = useState(match?.date ? new Date(match.date) : null);
-    const classificated = match.teams.some((x) => x._id === null);
+    const classificated = match.teams.some((x) => x._id === null && x.name !== 'Desconocido');
+    const mocked = match.teams.some((x) => x.mocked === true);
 
     const handleDateChange = (e) => {
         updateMatchDate(e, match, group.name);
         setDate(e);
+    };
+
+    const handleMocked = () => {
+        configMocked(match, group, mocked);
     };
 
     useEffect(() => {
@@ -45,20 +50,20 @@ const MatchCard = (props) => {
                     </FormField>
                 </div>
                 <div className="print-logo">
-                    <IconButton onClick={() => generateMatchPdf(match, group)} disabled={classificated}>
+                    <IconButton onClick={() => generateMatchPdf(match, group)} disabled={classificated || mocked}>
                         <Icon src={actionIcPrint} />
                     </IconButton>
                 </div>
                 <div className="details-logo">
-                    <IconButton onClick={(e) => goToMatchDetails({ ...match, groupName: group.name }, e)} disabled={disableBtn || classificated || isFinished}>
+                    <IconButton onClick={(e) => goToMatchDetails({ ...match, groupName: group.name }, e)} disabled={disableBtn || classificated || isFinished || mocked}>
                         <Icon src={actionIcLaunch} />
                     </IconButton>
                 </div>
-                <div className="home-team">
+                <div className={`home-team${isFinished ? ' finished' : ''}`} onClick={() => handleMocked()}>
                     <Icon src={actionIcHome} />
                     <span>{capitalize(match.teams[0].name)}</span>
                 </div>
-                <div className="away-team" {...(classificated && { style: { color: 'var(--app-highlight)' } })}>
+                <div className={`away-team${isFinished ? ' finished' : ''}`} {...(classificated && { style: { color: 'var(--app-highlight)' } })}>
                     <Icon src={actionIcExitToApp} />
                     <span>{capitalize(match.teams[1].name)}</span>
                 </div>

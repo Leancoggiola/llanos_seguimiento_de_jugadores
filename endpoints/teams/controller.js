@@ -6,7 +6,7 @@ module.exports = {
     getTeams: async (req, res) => {
         const user = req?.token;
         try {
-            const teams = await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({
+            const teams = await Team.find({ createdBy: user, hidden: false }).select('_id name players tourney_ids mocked').populate({
                 path: 'players',
                 select: '_id name team_id',
             });
@@ -69,8 +69,10 @@ module.exports = {
                         session.endSession();
                         res.status(201).json({
                             result: team,
-                            newData: await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({ path: 'players', select: '_id name team_id' }),
-                            newPlayers: await Player.find({ createdBy: user }),
+                            newData: await Team.find({ createdBy: user, hidden: false })
+                                .select('_id name players tourney_ids mocked')
+                                .populate({ path: 'players', select: '_id name team_id' }),
+                            newPlayers: await Player.find({ createdBy: user, hidden: false }),
                         });
                     }
                 })
@@ -141,8 +143,10 @@ module.exports = {
                         session.endSession();
                         res.status(200).json({
                             result: team,
-                            newData: await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({ path: 'players', select: '_id name team_id' }),
-                            newPlayers: await Player.find({ createdBy: user }),
+                            newData: await Team.find({ createdBy: user, hidden: false })
+                                .select('_id name players tourney_ids mocked')
+                                .populate({ path: 'players', select: '_id name team_id' }),
+                            newPlayers: await Player.find({ createdBy: user, hidden: false }),
                         });
                     }
                 })
@@ -176,14 +180,16 @@ module.exports = {
                     })
                     .catch(async (err) => await errorHandler(session, err, res));
 
-                await Team.findByIdAndDelete(id, { session, runValidators: true })
+                await Team.findByIdAndUpdate(id, { $set: { hidden: true } }, { session, runValidators: true })
                     .then(async (response) => {
                         await session.commitTransaction();
                         session.endSession();
                         res.status(200).json({
                             result: response,
-                            newData: await Team.find({ createdBy: user }).select('_id name players tourney_ids').populate({ path: 'players', select: '_id name team_id' }),
-                            newPlayers: await Player.find({ createdBy: user }),
+                            newData: await Team.find({ createdBy: user, hidden: false })
+                                .select('_id name players tourney_ids mocked')
+                                .populate({ path: 'players', select: '_id name team_id' }),
+                            newPlayers: await Player.find({ createdBy: user, hidden: false }),
                         });
                     })
                     .catch(async (err) => await errorHandler(session, err, res));

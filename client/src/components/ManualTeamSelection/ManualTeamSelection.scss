@@ -1,0 +1,24 @@
+.manual-teams-modal {
+    margin: 0 5%;
+    max-width: 40rem;
+    &-body {
+        @media screen and (min-width: 768px) {
+            padding: 2rem 5%;
+        }
+    }
+
+    &-team {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        min-height: 18rem;
+        h2, h4, span {
+            margin-block: 0.5rem;
+        }
+    }
+
+    &-footer {
+        justify-content: space-evenly;
+        button + button { margin-top: 0;}
+    }
+}

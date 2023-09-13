@@ -14,7 +14,8 @@ import { Option, Select } from '../../../commonComponents/Select';
 import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator';
 import Table from '../../../commonComponents/Table';
 import DeleteConfirmation from '../../DeleteConfirmation';
-import ManualForm from '../../ManualForm/ManualForm';
+import ManualForm from '../../ManualForm';
+import ManualTeamSelection from '../../ManualTeamSelection';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
 // Middleware
@@ -73,6 +74,13 @@ const formatGroupTable = (group) => {
         name: capitalize(team.name),
         ...getTable(team),
     }));
+};
+
+const MOCKED_TEAM = {
+    name: 'Desconocido',
+    players: [],
+    hidden: true,
+    mocked: true,
 };
 
 const GroupConfig = (props) => {
@@ -350,21 +358,45 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
             const half = teamsToPlay.length / 2;
             let matchs = [];
 
-            for (let enc = 0; enc < enconters; enc++) {
-                for (let i = 0; i < teamsToPlay.length - 1; i++) {
-                    const local = teamsToPlay.slice(0, half);
-                    const visitante = teamsToPlay.slice(half).reverse();
-                    teamsToPlay.splice(1, 0, teamsToPlay.pop());
+            if (draftType === 'manual') {
+                for (let enc = 0; enc < enconters; enc++) {
+                    for (let i = 0; i < teamsToPlay.length - 1; i++) {
+                        const local = teamsToPlay.slice(0, half);
+                        const visitante = teamsToPlay.slice(half).reverse();
+                        teamsToPlay.splice(1, 0, teamsToPlay.pop());
 
-                    for (let j = 0; j < half; j++) {
-                        if (local[j] && visitante[j]) {
-                            matchs.push({
-                                week: i + 1 + (teamsToPlay.length - 1) * enc,
-                                matchOrder: j + 1,
-                                teams: enc % 2 !== 0 ? [visitante[j], local[j]] : [local[j], visitante[j]],
-                                details: [],
-                                winner: null,
-                            });
+                        for (let j = 0; j < half; j++) {
+                            if (local[j] && visitante[j]) {
+                                const a = local[j] === 'ODD' ? local[j] : MOCKED_TEAM;
+                                const b = visitante[j] === 'ODD' ? visitante[j] : MOCKED_TEAM;
+                                matchs.push({
+                                    week: i + 1 + (teamsToPlay.length - 1) * enc,
+                                    matchOrder: j + 1,
+                                    teams: enc % 2 !== 0 ? [b, a] : [a, b],
+                                    details: [],
+                                    winner: null,
+                                });
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (let enc = 0; enc < enconters; enc++) {
+                    for (let i = 0; i < teamsToPlay.length - 1; i++) {
+                        const local = teamsToPlay.slice(0, half);
+                        const visitante = teamsToPlay.slice(half).reverse();
+                        teamsToPlay.splice(1, 0, teamsToPlay.pop());
+
+                        for (let j = 0; j < half; j++) {
+                            if (local[j] && visitante[j]) {
+                                matchs.push({
+                                    week: i + 1 + (teamsToPlay.length - 1) * enc,
+                                    matchOrder: j + 1,
+                                    teams: enc % 2 !== 0 ? [visitante[j], local[j]] : [local[j], visitante[j]],
+                                    details: [],
+                                    winner: null,
+                                });
+                            }
                         }
                     }
                 }
@@ -379,7 +411,11 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
     const [matchDetails, setMatchDetails] = useState(null);
     const [deleteModal, setDeleteModal] = useState(false);
+    const [deleteModalTeams, setDeleteModalTeams] = useState(false);
+    const [teamSelectModal, setTeamSelectModal] = useState(false);
+    const [configTeamsModal, setConfigTeams] = useState({ groupId: null, week: null, matchOrder: null, teams: [] });
     const [posToScroll, setPosToScroll] = useState();
+    const [draftType, setDraftType] = useState('random');
 
     const goToMatchDetails = (match) => {
         setPosToScroll(window.scrollY);
@@ -417,12 +453,50 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
         setTourneyData({ ...tourney });
     };
 
+    const configMocked = (match, group, mocked) => {
+        setConfigTeams({
+            groupId: group._id,
+            week: match.week,
+            matchOrder: match.matchOrder,
+            teams: group.teams,
+        });
+        mocked ? setTeamSelectModal(true) : setDeleteModalTeams(true);
+    };
+
     const handleDeleteCalendar = () => {
         setTourneyData({
             ...tourney,
             groups: tourney.groups.map((x) => ({ ...x, matchs: [] })),
         });
         setDeleteModal(false);
+    };
+
+    const handleManualTeamsDelete = () => {
+        tourney.groups.forEach((g) => {
+            if (g._id === configTeamsModal.groupId) {
+                const index = g.matchs.findIndex((x) => x.week === configTeamsModal.week && x.matchOrder === configTeamsModal.matchOrder);
+                g.matchs[index].teams = [MOCKED_TEAM, MOCKED_TEAM];
+                g.matchs[index].date = null;
+                g.matchs[index].details = [];
+                g.matchs[index].winner = null;
+                g.table = formatGroupTable(g).sort(orderGroupTable);
+            }
+        });
+        setTourneyData(cloneDeep(tourney));
+        setConfigTeams({ groupId: null, week: null, matchOrder: null, teams: [] });
+        setDeleteModalTeams(false);
+    };
+
+    const handleManualTeams = (newTeams) => {
+        tourney.groups.forEach((g) => {
+            if (g._id === configTeamsModal.groupId) {
+                const index = g.matchs.findIndex((x) => x.week === configTeamsModal.week && x.matchOrder === configTeamsModal.matchOrder);
+                g.matchs[index].teams = newTeams;
+            }
+        });
+        setTourneyData(cloneDeep(tourney));
+        setConfigTeams({ groupId: null, week: null, matchOrder: null, teams: [] });
+        setTeamSelectModal(false);
     };
 
     return (
@@ -454,6 +528,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                                                             updateMatchDate={updateMatchDate}
                                                             tourneyDate={tourney.createdOn}
                                                             isFinished={tourney.knockout.length > 0}
+                                                            configMocked={configMocked}
                                                         />
                                                     ))}
                                             </div>
@@ -472,13 +547,29 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                     )}
                 </>
             ) : (
-                <div className="group-config-content-btn">
-                    <Button type="button" onClick={addCalendar}>
-                        Crear calendario
-                    </Button>
-                </div>
+                <>
+                    <FormField>
+                        <Label>Configuración de cruces</Label>
+                        <Select value={draftType} onChange={(e) => setDraftType(e)}>
+                            <Option value={'random'}>Al azar</Option>
+                            <Option value={'manual'}>Manual</Option>
+                        </Select>
+                    </FormField>
+                    <div className="group-config-content-btn">
+                        <Button type="button" onClick={addCalendar}>
+                            Crear calendario
+                        </Button>
+                    </div>
+                </>
             )}
+            <ManualTeamSelection show={teamSelectModal} onClose={() => setTeamSelectModal(false)} onSubmit={handleManualTeams} configTeamsModal={configTeamsModal} />
             <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteCalendar} message={'¿Seguro quieres eliminar el calendario?'} />
+            <DeleteConfirmation
+                show={deleteModalTeams}
+                onClose={() => setDeleteModalTeams(false)}
+                onSubmit={handleManualTeamsDelete}
+                message={'¿Seguro quieres eliminar los equipos?'}
+            />
         </>
     );
 };
