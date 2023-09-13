@@ -1,22 +1,33 @@
 import { cloneDeep, isEmpty, last, shuffle } from 'lodash';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import ConfettiExplosion from 'react-confetti-explosion';
+import { useDispatch, useSelector } from 'react-redux';
 // Components
 import { contentIcTrophy, navigationIcClose, notificationIcEventNote } from '../../../assets/icons';
 import { Accordion, AccordionContent, AccordionTrigger } from '../../../commonComponents/Accordion';
 import Button from '../../../commonComponents/Button';
+import FormField from '../../../commonComponents/FormField';
 import Icon from '../../../commonComponents/Icon';
+import IconButton from '../../../commonComponents/IconButton';
+import Label from '../../../commonComponents/Label';
+import { Option, Select } from '../../../commonComponents/Select';
 import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator';
 import DeleteConfirmation from '../../DeleteConfirmation';
+import ManualTeamSelection from '../../ManualTeamSelection';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
-import IconButton from '../../../commonComponents/IconButton';
 // Middleware
-import { navbarNewEntry } from '../../../middleware/actions/navbarActions';
 import trophyIcon from '../../../assets/trophy-icon.webp';
+import { navbarNewEntry } from '../../../middleware/actions/navbarActions';
 // Styling
 import './KnockoutConfig.scss';
+
+const MOCKED_TEAM = {
+    name: 'Desconocido',
+    players: [],
+    hidden: true,
+    mocked: true,
+};
 
 const KnockoutConfig = (props) => {
     const { tourney, setTourneyData, handlePdf } = props;
@@ -72,7 +83,11 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     const [matchDetails, setMatchDetails] = useState(null);
     const [open, setOpen] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
+    const [deleteModalTeams, setDeleteModalTeams] = useState(false);
+    const [teamSelectModal, setTeamSelectModal] = useState(false);
+    const [configTeamsModal, setConfigTeams] = useState({ groupId: null, week: null, matchOrder: null, teams: [] });
     const [posToScroll, setPosToScroll] = useState();
+    const [draftType, setDraftType] = useState(last(tourney.knockout)?.isManual ? 'manual' : 'random');
 
     const accordionConf = {
         open,
@@ -82,9 +97,9 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
     useEffect(() => {
         if (matchDetails) {
-            tourney.knockout.forEach((g) => {
-                g.matchs.forEach((m) => {
-                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && g.name === matchDetails.groupName) {
+            tourney.knockout.forEach((k) => {
+                k.matchs.forEach((m) => {
+                    if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && k.name === matchDetails.groupName) {
                         m.details = [...matchDetails.details];
                         if (!isEmpty(m.details)) {
                             const results = getScore(m).split(':');
@@ -103,6 +118,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     }, [matchDetails]);
 
     const addFirstStage = () => {
+        const isManual = draftType === 'manual';
         if (totalGroups === 1) {
             tourney.knockout = tourney.groups.map((group) => {
                 const teamsToSort = group.table.map((x) => teamList.find((team) => team._id === x._id));
@@ -113,14 +129,14 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                         week: 1,
                         matchOrder: 0,
                         teams: [
-                            teamsToSort[0],
+                            isManual ? MOCKED_TEAM : teamsToSort[0],
                             {
-                                _id: null,
+                                _id: '65012bf767e463f4f47fe668',
                                 name: 'Clasificado directo',
                             },
                         ],
                         details: [],
-                        winner: teamsToSort[0]._id,
+                        winner: isManual ? null : teamsToSort[0]._id,
                     },
                 ];
 
@@ -137,7 +153,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                     matchs.push({
                         week: 1,
                         matchOrder: i + 1,
-                        teams: [teamsToSort[i], teamsToSort[total - i - 1]],
+                        teams: [isManual ? MOCKED_TEAM : teamsToSort[i], isManual ? MOCKED_TEAM : teamsToSort[total - i - 1]],
                         details: [],
                         winner: null,
                     });
@@ -163,13 +179,13 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                 matchs.push({
                     week: 1,
                     matchOrder: i + 1,
-                    teams: [teamsToSortA[i], teamsToSortB[totalCruces - i - 1]],
+                    teams: [isManual ? MOCKED_TEAM : teamsToSortA[i], isManual ? MOCKED_TEAM : teamsToSortB[totalCruces - i - 1]],
                     details: [],
                     winner: null,
                 });
-                teams.push(teamsToSortA[i]._id, teamsToSortB[totalCruces - i - 1]._id);
+                teams.push(teamsToSortA[i], teamsToSortB[totalCruces - i - 1]);
             }
-            tourney.knockout = [{ name: `Etapa 1`, teams, matchs, order: 1 }];
+            tourney.knockout = [{ name: `Etapa 1`, teams, matchs, order: 1, isManual: draftType }];
         }
         setTourneyData(cloneDeep(tourney));
     };
@@ -211,6 +227,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     };
 
     const singleGroupStage = () => {
+        const isManual = draftType === 'manual';
         const lastStage = last(tourney.knockout);
         const matches = lastStage.matchs;
         const winners = matches.map((x) => x.winner);
@@ -228,7 +245,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
             nextStageMatchs.push({
                 week: nextOrder,
                 matchOrder: i / 2 + 1,
-                teams: [teamA, teamB],
+                teams: [isManual ? MOCKED_TEAM : teamA, isManual ? MOCKED_TEAM : teamB],
                 details: [],
                 winner: null,
             });
@@ -245,11 +262,13 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
     };
 
     const doubleGroupStage = () => {
+        const isManual = draftType === 'manual';
         const getRandomInt = (max) => Math.floor(Math.random() * max);
 
         const lastStage = last(tourney.knockout);
         const matches = lastStage.matchs;
-        const winners = matches.map((x) => x.winner);
+        const initialWinners = matches.map((x) => x.winner);
+        const winners = [...initialWinners];
         let random = -1;
         if (winners.length % 2) {
             let randomWinner;
@@ -268,17 +287,17 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
             const teams = [];
             let skip = false;
             if (i === random || i + 1 === random) {
-                teams.push(teamList.find((x) => x._id === winners[random]));
+                teams.push(isManual ? MOCKED_TEAM : teamList.find((x) => x._id === winners[random]));
                 teams.push({
-                    _id: null,
+                    _id: '65012bf767e463f4f47fe668',
                     name: 'Clasificado directo',
                 });
                 skip = true;
                 winners.splice(random, 1);
                 random = -1;
             } else {
-                teams.push(teamList.find((x) => x._id === winners[i]));
-                teams.push(teamList.find((x) => x._id === winners[i + 1]));
+                teams.push(isManual ? MOCKED_TEAM : teamList.find((x) => x._id === winners[i]));
+                teams.push(isManual ? MOCKED_TEAM : teamList.find((x) => x._id === winners[i + 1]));
             }
 
             nextStageMatchs.push({
@@ -295,11 +314,60 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
         const newData = cloneDeep(tourney);
         newData.knockout.push({
             name: `Etapa ${nextOrder}`,
-            teams: teamList.filter((x) => winners.includes(x._id)),
+            teams: teamList.filter((x) => initialWinners.includes(x._id)),
             matchs: nextStageMatchs,
             order: nextOrder,
         });
         setTourneyData(newData);
+    };
+
+    const configMocked = (match, stage, mocked) => {
+        setConfigTeams({
+            groupId: stage.name,
+            week: match.week,
+            matchOrder: match.matchOrder,
+            teams: stage.teams.filter((t) => !stage.matchs.flatMap((x) => x.teams.map((y) => y._id)).includes(t._id)),
+            hasDirect: match.teams.some((x) => x._id === '65012bf767e463f4f47fe668'),
+        });
+        mocked ? setTeamSelectModal(true) : setDeleteModalTeams(true);
+    };
+
+    const handleManualTeamsDelete = () => {
+        tourney.knockout.forEach((k) => {
+            if (k.name === configTeamsModal.groupId) {
+                const index = k.matchs.findIndex((x) => x.week === configTeamsModal.week && x.matchOrder === configTeamsModal.matchOrder);
+                const hasDirect = k.matchs[index].teams.some((x) => x._id === '65012bf767e463f4f47fe668');
+                k.matchs[index].teams = [
+                    MOCKED_TEAM,
+                    hasDirect
+                        ? {
+                              _id: '65012bf767e463f4f47fe668',
+                              name: 'Clasificado directo',
+                          }
+                        : MOCKED_TEAM,
+                ];
+                k.matchs[index].date = null;
+                k.matchs[index].details = [];
+                k.matchs[index].winner = null;
+            }
+        });
+        setTourneyData(cloneDeep(tourney));
+        setConfigTeams({ groupId: null, week: null, matchOrder: null, teams: [] });
+        setDeleteModalTeams(false);
+    };
+
+    const handleManualTeams = (newTeams) => {
+        tourney.knockout.forEach((k) => {
+            if (k.name === configTeamsModal.groupId) {
+                const index = k.matchs.findIndex((x) => x.week === configTeamsModal.week && x.matchOrder === configTeamsModal.matchOrder);
+                const hasDirect = k.matchs[index].teams.some((x) => x._id === '65012bf767e463f4f47fe668');
+                k.matchs[index].teams = newTeams;
+                k.matchs[index].winner = hasDirect ? newTeams.find((x) => x._id !== '65012bf767e463f4f47fe668')._id : null;
+            }
+        });
+        setTourneyData(cloneDeep(tourney));
+        setConfigTeams({ groupId: null, week: null, matchOrder: null, teams: [] });
+        setTeamSelectModal(false);
     };
 
     return (
@@ -344,6 +412,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                                                             updateMatchDate={updateMatchDate}
                                                             tourneyDate={tourney.createdOn}
                                                             disableBtn={index + 1 < tourney.knockout.length}
+                                                            configMocked={configMocked}
                                                         />
                                                     ))}
                                             </div>
@@ -356,13 +425,29 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                     {renderNewStageBtn()}
                 </>
             ) : (
-                <div className="knockout-config-content-btn">
-                    <Button type="button" onClick={addFirstStage}>
-                        Crear cruces
-                    </Button>
-                </div>
+                <>
+                    <FormField>
+                        <Label>Configuración de cruces</Label>
+                        <Select value={draftType} onChange={(e) => setDraftType(e)}>
+                            <Option value={'random'}>Al azar</Option>
+                            <Option value={'manual'}>Manual</Option>
+                        </Select>
+                    </FormField>
+                    <div className="knockout-config-content-btn">
+                        <Button type="button" onClick={addFirstStage}>
+                            Crear calendario
+                        </Button>
+                    </div>
+                </>
             )}
+            <ManualTeamSelection show={teamSelectModal} onClose={() => setTeamSelectModal(false)} onSubmit={handleManualTeams} configTeamsModal={configTeamsModal} />
             <DeleteConfirmation show={deleteModal} onClose={() => setDeleteModal(false)} onSubmit={handleDeleteStage} message={'¿Seguro quieres eliminar esta etapa?'} />
+            <DeleteConfirmation
+                show={deleteModalTeams}
+                onClose={() => setDeleteModalTeams(false)}
+                onSubmit={handleManualTeamsDelete}
+                message={'¿Seguro quieres eliminar los equipos?'}
+            />
         </>
     );
 };

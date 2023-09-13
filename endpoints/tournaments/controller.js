@@ -89,19 +89,13 @@ module.exports = {
                                     { _id: null, name: 'Desconocido', players: [], mocked: true },
                                 ];
                             }
+                            if (match.teams.length === 1 && match.teams.some((x) => x._id.toString() === '65012bf767e463f4f47fe668')) {
+                                match.teams.unshift({ _id: null, name: 'Desconocido', players: [], mocked: true });
+                            }
                             return match;
                         })
                         .sort((a, b) => a.matchOrder - b.matchOrder)
-                        .sort((a, b) => a.week - b.week)
-                        .map((m) => {
-                            if (m.teams.length === 1) {
-                                m.teams.push({
-                                    _id: null,
-                                    name: 'Clasificado directo',
-                                });
-                            }
-                            return m;
-                        }),
+                        .sort((a, b) => a.week - b.week),
                 }))
                 .sort((a, b) => a.order - b.order);
             res.status(200).json(tourney);
@@ -354,7 +348,7 @@ const saveConfig = async (config, user, session, res) => {
 };
 
 const updatePlayersSanctions = async (groups = [], knockout = [], session) => {
-    const matches = [...groups, ...knockout].flatMap((x) => x.matchs);
+    const matches = [...groups, ...knockout].flatMap((x) => x.matchs).filter((x) => !x.teams.includes(null));
     const matchsWithDate = matches.filter((x) => x?.date);
     if (matchsWithDate.length) {
         const teamsToCheck = matchsWithDate.flatMap((x) => x.teams.map((x) => (x?._id ? x._id : x)));

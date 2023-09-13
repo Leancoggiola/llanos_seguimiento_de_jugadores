@@ -97,6 +97,11 @@ const knockoutObj = {
         required: false,
         default: false,
     },
+    isManual: {
+        type: String,
+        required: false,
+        default: false,
+    },
 };
 
 const playerSchema = Schema({

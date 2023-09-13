@@ -8,7 +8,7 @@ module.exports = {
         try {
             const teams = await Team.find({ createdBy: user, hidden: false }).select('_id name players tourney_ids mocked').populate({
                 path: 'players',
-                select: '_id name team_id',
+                select: '_id name age dni sanction team_id',
             });
             res.status(200).json(teams);
         } catch (err) {

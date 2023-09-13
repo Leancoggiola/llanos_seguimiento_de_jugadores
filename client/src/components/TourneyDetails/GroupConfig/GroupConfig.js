@@ -455,7 +455,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
     const configMocked = (match, group, mocked) => {
         setConfigTeams({
-            groupId: group._id,
+            groupId: group.name,
             week: match.week,
             matchOrder: match.matchOrder,
             teams: group.teams,
@@ -473,7 +473,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
     const handleManualTeamsDelete = () => {
         tourney.groups.forEach((g) => {
-            if (g._id === configTeamsModal.groupId) {
+            if (g.name === configTeamsModal.groupId) {
                 const index = g.matchs.findIndex((x) => x.week === configTeamsModal.week && x.matchOrder === configTeamsModal.matchOrder);
                 g.matchs[index].teams = [MOCKED_TEAM, MOCKED_TEAM];
                 g.matchs[index].date = null;
@@ -489,7 +489,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
 
     const handleManualTeams = (newTeams) => {
         tourney.groups.forEach((g) => {
-            if (g._id === configTeamsModal.groupId) {
+            if (g.name === configTeamsModal.groupId) {
                 const index = g.matchs.findIndex((x) => x.week === configTeamsModal.week && x.matchOrder === configTeamsModal.matchOrder);
                 g.matchs[index].teams = newTeams;
             }

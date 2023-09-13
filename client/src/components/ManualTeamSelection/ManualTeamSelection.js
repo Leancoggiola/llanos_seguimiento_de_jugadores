@@ -14,7 +14,7 @@ const ManualTeamSelection = (props) => {
         show,
         onClose,
         onSubmit,
-        configTeamsModal: { groupId, teams },
+        configTeamsModal: { groupId, teams, hasDirect },
     } = props;
 
     const [newTeams, setTeams] = useState([
@@ -25,7 +25,7 @@ const ManualTeamSelection = (props) => {
     useEffect(() => {
         setTeams([
             { _id: null, name: null },
-            { _id: null, name: null },
+            { _id: hasDirect ? '65012bf767e463f4f47fe668' : null, name: hasDirect ? 'Clasificado directo' : null },
         ]);
     }, [show]);
 
@@ -41,7 +41,7 @@ const ManualTeamSelection = (props) => {
 
     const getTeam = (index) => newTeams[index]._id;
 
-    const validate = () => newTeams.every((x) => x._id !== null);
+    const validate = () => newTeams.every((x) => x._id !== null || x.name !== null);
 
     return (
         <Modal show={show && groupId !== null} onClose={onClose} className="manual-teams-modal">
@@ -60,18 +60,29 @@ const ManualTeamSelection = (props) => {
                                 ))}
                         </Select>
                     </FormField>
-                    <FormField>
-                        <Label>Visitante</Label>
-                        <Select value={getTeam(0)} onChange={(e) => handleChange(e, 1)} filter={true}>
-                            {teams
-                                .filter((x) => x._id !== newTeams[0]._id)
-                                .map((option, index) => (
-                                    <Option value={option._id} key={option._id + index}>
-                                        {capitalize(option.name)}
-                                    </Option>
-                                ))}
-                        </Select>
-                    </FormField>
+                    {hasDirect ? (
+                        <FormField>
+                            <Label>Visitante</Label>
+                            <Select value={'Clasificado directo'} disabled={true}>
+                                <Option value={'Clasificado directo'} key={'direct'}>
+                                    'Clasificado directo'
+                                </Option>
+                            </Select>
+                        </FormField>
+                    ) : (
+                        <FormField>
+                            <Label>Visitante</Label>
+                            <Select value={getTeam(0)} onChange={(e) => handleChange(e, 1)} filter={true}>
+                                {teams
+                                    .filter((x) => x._id !== newTeams[0]._id)
+                                    .map((option, index) => (
+                                        <Option value={option._id} key={option._id + index}>
+                                            {capitalize(option.name)}
+                                        </Option>
+                                    ))}
+                            </Select>
+                        </FormField>
+                    )}
                 </div>
             </ModalBody>
             <ModalFooter className="manual-teams-modal-footer">

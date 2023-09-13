@@ -13,7 +13,7 @@ const MatchCard = (props) => {
     const { group, match, goToMatchDetails, getScore, updateMatchDate, tourneyDate, disableBtn, generateMatchPdf, isFinished, configMocked } = props;
 
     const [date, setDate] = useState(match?.date ? new Date(match.date) : null);
-    const classificated = match.teams.some((x) => x._id === null && x.name !== 'Desconocido');
+    const classificated = match.teams.some((x) => x._id === '65012bf767e463f4f47fe668');
     const mocked = match.teams.some((x) => x.mocked === true);
 
     const handleDateChange = (e) => {
