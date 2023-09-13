@@ -71,11 +71,11 @@ const getHeaders = (doc, category) => {
     return head;
 };
 
-const getBody = (team, { week, matchOrder, details }, group, type, tourney) => {
+const getBody = (team, { week, matchOrder, details, date }, group, type, tourney) => {
     const { category } = tourney;
     let accDetails, validMatchs;
     if (type === 'grupo') {
-        validMatchs = group.matchs.filter((m) => m.week <= week && m.matchOrder <= matchOrder && m.teams.map((x) => x._id).includes(team._id) && m.teams.every((x) => x._id));
+        validMatchs = group.matchs.filter((m) => m.week <= week && m.matchOrder < matchOrder && m.teams.map((x) => x._id).includes(team._id) && m.teams.every((x) => x._id));
         accDetails = validMatchs.flatMap((x) => x.details);
     } else if (type === 'eliminatoria') {
         // Get all matchs on groups with that team
@@ -83,7 +83,7 @@ const getBody = (team, { week, matchOrder, details }, group, type, tourney) => {
         validMatchs = [
             ...validMatchs,
             ...tourney.knockout
-                .filter((x) => x.order < group.order)
+                .filter((x) => x.order <= group.order)
                 .flatMap((x) => x.matchs)
                 .filter((x) => x.teams.map((x) => x._id).includes(team._id)),
         ];
@@ -108,7 +108,7 @@ const getBody = (team, { week, matchOrder, details }, group, type, tourney) => {
                 data.push(detail >= 1 ? 'X' : '');
                 data.push(detail >= 2 ? 'X' : '');
                 // SANCIONES TOTALES
-                data.push(getSanciones(accDetails, player));
+                data.push(getSanciones(validMatchs, player, date));
                 // GOLES TOTALES
                 detail = accDetails.filter((x) => player._id === x.player?._id && x.type === 'gol').length;
                 data.push(detail);
@@ -119,9 +119,9 @@ const getBody = (team, { week, matchOrder, details }, group, type, tourney) => {
                 // AMARILLAS EN PARTIDO
                 data.push('', '');
                 // SANCIONES TOTALES
-                data.push(getSanciones(validMatchs, player));
+                data.push(getSanciones(validMatchs, player, date));
                 // GOLES TOTALES
-                data.push(accDetails.filter((x) => player._id === x.player?._id && x.type === 'gol')?.sort((a, b) => a.time_in_match - b.time_in_match));
+                data.push(accDetails.filter((x) => player._id === x.player?._id && x.type === 'gol').length);
                 data.push('');
             }
             players.push(data);
@@ -172,13 +172,16 @@ const generateMatchPdf = (match, group, tourney, type) => {
     doc.save(`Partido ${match.teams[0].name}-${match.teams[1].name}.pdf`);
 };
 
-const getSanciones = (matchs, player) => {
+const getSanciones = (matchs, player, date = null) => {
     let sanction = 0;
-    const matchsDates = matchs.filter((x) => x?.date).map((x) => x.date);
+    let matchsDates = matchs.filter((x) => x?.date).map((x) => new Date(x.date));
+    if (date) {
+        matchsDates = matchsDates.filter((x) => x !== new Date(date));
+    }
     if (player?.initial_sanction) {
         sanction = matchsDates.reduce((prev, matchDate) => {
             if (prev !== 0) {
-                prev = new Date(matchDate) > new Date(player.sanction_date) ? prev - 1 : prev;
+                prev = matchDate > new Date(player.sanction_date) ? prev - 1 : prev;
             }
             return prev;
         }, player.initial_sanction);

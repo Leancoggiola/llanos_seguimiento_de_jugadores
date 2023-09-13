@@ -1,10 +1,6 @@
-.cc-form-field-date-input {
-    position: initial;
-}
-
 .cc-date-picker-wrapper {
     height: 1.5rem;
-    /*
+    position: relative;
     .cc-date-picker {
         font-family: Calibri;
         font-weight: lighter;
@@ -13,10 +9,9 @@
         color: var(--app-color);
         background: var(--form-element-bg);
         border: none;
-        border-bottom: 1px solid var(--form-element-border);
+        box-shadow: inset 0px -1px 0px 0px var(--form-element-border);
 
         display: block;
-        height: 3.15rem;
         width: 100%;
         resize: vertical;
 
@@ -54,11 +49,11 @@
             }
         }
 
-        &.react-date-picker--disabled {
+        &-disabled,&.react-date-picker--disabled {
             background: var(--form-element-disabled-bg);
             color: var(--form-element-disabled-color);
-            border: 1px solid var(--form-element-disabled-border);
             cursor: not-allowed;
+            pointer-events: none;
 
             input, button { cursor: not-allowed; }
 
@@ -154,7 +149,6 @@
             color: var(--date-picker-tile-now-color);
         }
     }
-    */
 }
 
 .cc-date-picker-calendar {

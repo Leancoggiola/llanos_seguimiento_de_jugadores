@@ -8,8 +8,7 @@ const Label = (props) => {
     const { children, className } = props;
     const others = omit(props, ['children', 'className']);
 
-    const { disabled, id, isFocused, invalid, formElementType, required } =
-        useContext(FormFieldContext);
+    const { disabled, id, isFocused, invalid, formElementType, required } = useContext(FormFieldContext);
 
     const classes =
         `cc-label ` +

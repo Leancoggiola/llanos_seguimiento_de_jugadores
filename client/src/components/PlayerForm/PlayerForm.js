@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
+import { contentIcRemove } from '../../assets/icons';
 import Button from '../../commonComponents/Button';
+import DatePicker from '../../commonComponents/DatePicker';
 import FormField from '../../commonComponents/FormField';
 import FormFieldError from '../../commonComponents/FormFieldError';
+import Icon from '../../commonComponents/Icon';
+import IconButton from '../../commonComponents/IconButton';
 import Input from '../../commonComponents/Input';
 import Label from '../../commonComponents/Label';
+import List from '../../commonComponents/List';
 import LoadingSpinner from '../../commonComponents/LoadingSpinner';
 // Assets
 import playerIcon from '../../assets/shirt-icon.webp';
@@ -21,6 +26,8 @@ const PlayerForm = (props) => {
     const [dni, setDNI] = useState(player?.dni ? player.dni : '');
     const [age, setAge] = useState(player?.age ? player.age : '');
     const [sancion, setSancion] = useState(player?.sanction ? player.sanction : 0);
+    const [date, setDate] = useState(player?.sanction_date ? new Date(player.sanction_date) : new Date());
+    const [history, setHistory] = useState(player.sanction_history);
 
     const dispatch = useDispatch();
 
@@ -33,8 +40,9 @@ const PlayerForm = (props) => {
             dni: dni,
             age: age,
             sanction: Number(sancion),
-            sanction_date: player?.sanction_date,
-            update_date: Number(sancion) && sancion !== player?.sanction,
+            sanction_date: date,
+            update_date: Number(sancion) > 0 && sancion !== player?.sanction && new Date(player?.sanction_date) !== date,
+            sanction_history: history,
         };
         if (player?._id) {
             dispatch(putPlayerRequest({ body, resolve: onClose, id: player._id }));
@@ -43,6 +51,16 @@ const PlayerForm = (props) => {
         }
     };
 
+    const handleRemoveSanction = (index) => {
+        setHistory([...player.sanction_history.filter((_, i) => i !== index)]);
+    };
+
+    const formatDate = (dateToFormat) => {
+        const newD = new Date(dateToFormat);
+        return `${newD.getDate()}-${newD.getMonth()}-${newD.getFullYear()}`;
+    };
+
+    console.log(player);
     if (playerCrud.loading) {
         return <LoadingSpinner fullscreen={true} />;
     }
@@ -69,13 +87,44 @@ const PlayerForm = (props) => {
                             <Label>Edad</Label>
                             <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} min={1} max={99} />
                         </FormField>
-                        {player?._id && (
+                    </div>
+                    {player?._id && (
+                        <div className="player-form-numbers">
                             <FormField>
-                                <Label>Sancion</Label>
+                                <Label>Sanción</Label>
                                 <Input type="number" value={sancion} onChange={(e) => setSancion(e.target.value)} min={0} max={99} disabled={player?.sanction > 0} />
                             </FormField>
-                        )}
-                    </div>
+                            <FormField>
+                                <Label>Fecha sanción</Label>
+                                <DatePicker
+                                    disabled={Number(sancion) === 0 || player?.sanction_date}
+                                    value={date}
+                                    onChange={(e) => setDate(e)}
+                                    showLeadingZeros={false}
+                                    format="dd-MM-yyyy"
+                                    onlyIcon={false}
+                                />
+                            </FormField>
+                        </div>
+                    )}
+                    {history.length > 0 && (
+                        <>
+                            <h4>Historial de Sanciones</h4>
+                            <div className="player-form-list">
+                                <List>
+                                    {history.map((sanction, index) => (
+                                        <div className="player-form-list-sanction" key={'sanction-' + index}>
+                                            <p>Sanciones: {sanction.initial_sanction}</p>
+                                            <p>Fecha: {formatDate(sanction.sanction_date)}</p>
+                                            <IconButton onClick={() => handleRemoveSanction(index)}>
+                                                <Icon src={contentIcRemove} />
+                                            </IconButton>
+                                        </div>
+                                    ))}
+                                </List>
+                            </div>
+                        </>
+                    )}
                 </form>
             </div>
             <div className="player-form-action-buttons">

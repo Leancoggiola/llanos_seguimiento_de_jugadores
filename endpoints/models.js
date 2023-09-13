@@ -129,6 +129,11 @@ const playerSchema = Schema({
     createdBy: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     team_id: { type: Schema.Types.ObjectId, ref: 'teams', default: null },
     hidden: { type: Boolean, default: false },
+    sanction_history: {
+        type: [Object],
+        require: false,
+        default: [],
+    },
 });
 
 const teamsSchema = Schema({

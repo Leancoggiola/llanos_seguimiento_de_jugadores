@@ -12,12 +12,12 @@ const tourneyOptions = [
     {
         path: 'groups.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name age dni sanction team_id' },
+        populate: { path: 'players', select: '_id name age dni initial_sanction sanction sanction_date team_id' },
     },
     {
         path: 'groups.matchs.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name age dni sanction team_id' },
+        populate: { path: 'players', select: '_id name age dni initial_sanction sanction sanction_date team_id' },
     },
     {
         path: 'groups.matchs.details.player',
@@ -26,12 +26,12 @@ const tourneyOptions = [
     {
         path: 'knockout.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name age dni sanction team_id' },
+        populate: { path: 'players', select: '_id name age dni initial_sanction sanction sanction_date team_id' },
     },
     {
         path: 'knockout.matchs.teams',
         select: '_id name players tourney_ids',
-        populate: { path: 'players', select: '_id name age dni sanction team_id' },
+        populate: { path: 'players', select: '_id name age dni initial_sanction sanction sanction_date team_id' },
     },
     {
         path: 'knockout.matchs.details.player',
@@ -372,6 +372,10 @@ const updatePlayersSanctions = async (groups = [], knockout = [], session) => {
                     initial_sanction: newSanction < 1 ? 0 : player.initial_sanction,
                     sanction_date: newSanction < 1 ? null : player.sanction_date,
                 };
+                if (newSanction < 1) {
+                    player.sanction_history.push({ initial_sanction: player.initial_sanction, sanction_date: player.sanction_date });
+                    updateData.sanction_history = player.sanction_history;
+                }
                 await Player.findOneAndUpdate({ _id: player._id }, updateData, {
                     session,
                 });

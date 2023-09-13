@@ -119,9 +119,12 @@ const DatePicker = (props) => {
 
     const classes =
         'cc-date-picker' +
-        `${formField.hasContent || value ? ' cc-date-picker-has-value' : ''}${formField.invalid ? ' cc-date-picker-invalid' : ''}${
-            !formField.isFocused ? ' cc-date-picker-not-focused' : ''
-        }${todayMark ? ' cc-date-picker-today-highlight' : ''}${className ? ' ' + className : ''}`;
+        `${formField.hasContent || value ? ' cc-date-picker-has-value' : ''}` +
+        `${formField.invalid ? ' cc-date-picker-invalid' : ''}` +
+        `${!formField.isFocused ? ' cc-date-picker-not-focused' : ''}` +
+        `${todayMark ? ' cc-date-picker-today-highlight' : ''}` +
+        `${disabled ? ' cc-date-picker-disabled' : ''}` +
+        `${className ? ' ' + className : ''}`;
 
     const CustomIconInput = forwardRef(({ onClick, disabled }, ref) => (
         <IconButton onClick={onClick} innerRef={ref} disabled={disabled}>
@@ -164,7 +167,7 @@ const DatePicker = (props) => {
         withPortal: true,
         portalId: formField.id,
         renderCustomHeader: CustomHeader,
-        customInput: <CustomIconInput />,
+        customInput: onlyIcon && <CustomIconInput />,
         disabledKeyboardNavigation: true,
         ...others,
     };

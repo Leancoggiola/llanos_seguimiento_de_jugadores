@@ -32,6 +32,16 @@
     & + .cc-input-component .cc-text-area {
         padding: 1.45rem 0.715rem 0.0715rem;
     }
+    & + .cc-date-picker-wrapper .cc-date-picker {
+        padding: 1.45rem 0.715rem 0.0715rem;
+    }
+}
+
+.cc-form-field-date-input .cc-label{
+    line-height: 1.15rem;
+    & + .cc-date-picker-wrapper .cc-date-picker {
+        padding: 1.45rem 0.715rem 0.0715rem;
+    }
 }
 
 .cc-form-field-date-input,
