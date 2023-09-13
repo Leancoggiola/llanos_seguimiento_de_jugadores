@@ -55,7 +55,7 @@ const MatchCard = (props) => {
                     </IconButton>
                 </div>
                 <div className="details-logo">
-                    <IconButton onClick={(e) => goToMatchDetails({ ...match, groupName: group.name }, e)} disabled={disableBtn || classificated || isFinished || mocked}>
+                    <IconButton onClick={(e) => goToMatchDetails({ ...match, groupName: group.name, disabled: isFinished || disableBtn }, e)} disabled={classificated || mocked}>
                         <Icon src={actionIcLaunch} />
                     </IconButton>
                 </div>

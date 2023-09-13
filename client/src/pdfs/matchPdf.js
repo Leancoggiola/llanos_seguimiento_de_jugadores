@@ -71,10 +71,22 @@ const getHeaders = (doc, category) => {
     return head;
 };
 
-const getBody = (team, { week, matchOrder, details }, group, knockout, type, category) => {
+const getBody = (team, { week, matchOrder, details }, group, type, tourney) => {
+    const { category } = tourney;
     let accDetails, validMatchs;
     if (type === 'grupo') {
-        validMatchs = group.matchs.filter((m) => m.week <= week && m.matchOrder <= matchOrder && m.teams.map((x) => x._id).includes(team._id));
+        validMatchs = group.matchs.filter((m) => m.week <= week && m.matchOrder <= matchOrder && m.teams.map((x) => x._id).includes(team._id) && m.teams.every((x) => x._id));
+        accDetails = validMatchs.flatMap((x) => x.details);
+    } else if (type === 'eliminatoria') {
+        // Get all matchs on groups with that team
+        validMatchs = tourney.groups.flatMap((x) => x.matchs).filter((x) => x.teams.map((x) => x._id).includes(team._id));
+        validMatchs = [
+            ...validMatchs,
+            ...tourney.knockout
+                .filter((x) => x.order < group.order)
+                .flatMap((x) => x.matchs)
+                .filter((x) => x.teams.map((x) => x._id).includes(team._id)),
+        ];
         accDetails = validMatchs.flatMap((x) => x.details);
     }
 
@@ -119,7 +131,7 @@ const getBody = (team, { week, matchOrder, details }, group, knockout, type, cat
 };
 
 const generateMatchPdf = (match, group, tourney, type) => {
-    const { name, category, knockout } = tourney;
+    const { name, category } = tourney;
     const doc = new jsPDF();
 
     doc.setFontSize(20);
@@ -152,7 +164,7 @@ const generateMatchPdf = (match, group, tourney, type) => {
             },
             theme: 'grid',
             head: [getHeaders(doc, category)],
-            body: getBody(team, match, group, knockout, type, category),
+            body: getBody(team, match, group, type, tourney),
         });
     });
     doc.setFont(undefined, 'bold');

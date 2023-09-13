@@ -122,12 +122,16 @@ const MatchDetails = (props) => {
                     );
                 })}
             </div>
-            <IconButton className="match-details-icon-add add-new" onClick={() => setDetailsForm(true)}>
-                <Icon src={contentIcAddCircle} />
-            </IconButton>
-            <IconButton className="match-details-icon-save add-new" onClick={handleSubmit}>
-                <Icon src={contentIcSave} />
-            </IconButton>
+            {!match.disabled && (
+                <>
+                    <IconButton className="match-details-icon-add add-new" onClick={() => setDetailsForm(true)}>
+                        <Icon src={contentIcAddCircle} />
+                    </IconButton>
+                    <IconButton className="match-details-icon-save add-new" onClick={handleSubmit}>
+                        <Icon src={contentIcSave} />
+                    </IconButton>
+                </>
+            )}
             <DetailModal show={detailsForm} match={match} onClose={() => setDetailsForm(false)} detailsList={detailsList} setDetailsList={setDetailsList} isKnockout={isKnockout} />
             <DeleteConfirmation show={showModal} onClose={() => setShowModal(false)} onSubmit={handleDelete} message={'¿Seguro quieres eliminar este registro?'} />
         </div>

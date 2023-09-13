@@ -90,7 +90,7 @@ const TourneyDetails = (props) => {
     };
 
     const handlePdf = (match, group) => {
-        generateMatchPdf(match, group, tourney, option);
+        generateMatchPdf(match, group, tourneyData, option);
     };
 
     const renderTab = () => {
