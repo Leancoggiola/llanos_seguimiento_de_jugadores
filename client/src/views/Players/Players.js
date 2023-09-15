@@ -47,7 +47,7 @@ const Players = () => {
     };
 
     return (
-        <section className="player-page-page">
+        <section className="player-page">
             {playerForm && <PlayerForm onClose={() => dispatch(navbarBack())} player={selectedPlayer} />}
             {!playerForm && (
                 <article className="player-page-main">

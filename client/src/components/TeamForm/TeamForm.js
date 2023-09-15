@@ -62,7 +62,7 @@ const TeamForm = (props) => {
     };
 
     const isRemovable = (item) => {
-        return !playerList.data.some((x) => item.dni !== null && x.dni === item.dni);
+        return jugadores.some((x) => item.name === x.name);
     };
 
     if (teamCrud.loading) {

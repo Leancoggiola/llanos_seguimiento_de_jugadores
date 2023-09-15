@@ -21,22 +21,13 @@ module.exports = {
             const { body } = req;
             body['createdBy'] = user;
             const doc = new Player({ ...body });
-            await doc
-                .save({ session })
-                .then(async (player, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(201).json({
-                            result: player,
-                            newData: await Player.find({ createdBy: user, hidden: false }).select(
-                                '_id name age dni initial_sanction sanction sanction_date team_id sanction_history'
-                            ),
-                        });
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            const response = await doc.save({ session });
+            await session.commitTransaction();
+            session.endSession();
+            res.status(201).json({
+                result: response,
+                newData: await Player.find({ createdBy: user, hidden: false }).select('_id name age dni initial_sanction sanction sanction_date team_id sanction_history'),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -55,27 +46,19 @@ module.exports = {
                 body.sanction_date = new Date(body.sanction_date);
             }
 
-            await Player.findOneAndUpdate({ _id: req.params.id }, body, {
+            const player = await Player.findOneAndUpdate({ _id: req.params.id }, body, {
                 new: true,
                 select: '_id name age dni initial_sanction sanction sanction_date team_id',
                 upsert: false,
                 runValidators: true,
                 session,
-            })
-                .then(async (player, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(201).json({
-                            result: player,
-                            newData: await Player.find({ createdBy: user, hidden: false }).select(
-                                '_id name age dni initial_sanction sanction sanction_date team_id sanction_history'
-                            ),
-                        });
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            });
+            await session.commitTransaction();
+            session.endSession();
+            res.status(201).json({
+                result: player,
+                newData: await Player.find({ createdBy: user, hidden: false }).select('_id name age dni initial_sanction sanction sanction_date team_id sanction_history'),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -90,24 +73,24 @@ module.exports = {
             const player = await Player.findById(req.params.id);
 
             const deletePlayer = async () => {
-                if (player.team_id) await Team.findOneAndUpdate({ _id: player.team_id }, { $pull: { players: { _id: id } } }, { session });
-                await Player.findByIdAndUpdate(id, { $set: { hidden: true } }, { session })
-                    .then(async (response) => {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(201).json({
-                            result: response,
-                            newData: await Player.find({ createdBy: user, hidden: false }).select(
-                                '_id name age dni initial_sanction sanction sanction_date team_id sanction_history'
-                            ),
-                        });
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                if (player.team_id) {
+                    await Team.findOneAndUpdate({ _id: player.team_id }, { $pull: { players: { _id: id } } }, { session });
+                }
+                const response = await Player.findByIdAndUpdate(id, { $set: { hidden: true } }, { session });
+                await session.commitTransaction();
+                session.endSession();
+                res.status(201).json({
+                    result: response,
+                    newData: await Player.find({ createdBy: user, hidden: false }).select('_id name age dni initial_sanction sanction sanction_date team_id sanction_history'),
+                });
             };
 
             const isOnTournament = await Tournament.find({ status: { $ne: 'Terminado' }, teams: { $in: [player?.team_id] } });
-            if (isOnTournament?.length) res.status(404).json({ message: 'El jugador se encuentra en un torneo activo.' });
-            else await deletePlayer();
+            if (isOnTournament?.length) {
+                throw new Error('El jugador se encuentra en un torneo activo.');
+            } else {
+                await deletePlayer();
+            }
         } catch (err) {
             await errorHandler(session, err, res);
         }

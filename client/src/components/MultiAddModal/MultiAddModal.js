@@ -47,7 +47,7 @@ const MultiAddModal = (props) => {
                     .filter((x) => x)
                     .map((x) => x.trim());
                 if (type === 'jugador') {
-                    const regex = /^(?<name>\D{0,35})-\s*(?<dni>\d{7,8})\s*-\s*(?<age>\d{1,2})$/;
+                    const regex = /^(?<name>.{0,35})-\s*(?<dni>\d{0,15})\s*-\s*(?<age>\d{1,3})$/;
                     let groups = newList.map((x) => x.match(regex)?.groups);
                     newList = groups.map((x) => {
                         if (!x?.name || !x?.dni || !x?.age) throw new Error('Hay campos incorrectos');
@@ -62,7 +62,7 @@ const MultiAddModal = (props) => {
                 setTotal('1');
                 onClose();
             } else {
-                throw new Error(`Uno o más ${type}${plural} ya existen con esta información: ${type === 'equipo' ? 'Nombre' : 'DNI'} repetido`);
+                throw new Error(`Uno o más equipos ya existen con esta información: Nombre repetido`);
             }
         } catch (e) {
             dispatch(updateToastData({ show: true, variant: 'error', message: e.message, closeBtn: false }));
@@ -72,11 +72,7 @@ const MultiAddModal = (props) => {
     const validate = (newList) => {
         if (type === 'equipo') {
             return !newList.some((newElement) => existingElements.map((existing) => existing.name).includes(newElement.name));
-        } else {
-            return tabIndex === 0
-                ? !newList.some((newElement) => existingElements.map((existing) => existing.name).includes(newElement.name))
-                : !newList.some((x) => existingElements.map((x) => x.dni).includes(x.dni));
-        }
+        } else return true;
     };
 
     const renderTab = () => {

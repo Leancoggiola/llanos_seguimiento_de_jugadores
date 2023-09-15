@@ -43,40 +43,25 @@ module.exports = {
 
                 // Añadir jugadores nuevos a la DB
                 let docs;
-                await Player.insertMany(newPlayers, { session })
-                    .then(async (doc, err) => {
-                        if (err) await errorHandler(session, err, res);
-                        else docs = doc.map((x) => x._id);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Player.insertMany(newPlayers, { session }).then(async (doc) => (docs = doc.map((x) => x._id)));
 
                 // Actualizar el team id de los jugadores existentes
-                await Player.updateMany({ _id: { $in: existing } }, { $set: { team_id: newTeamId } }, { session })
-                    .then(async (_, err) => {
-                        if (err) await errorHandler(session, err, res);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Player.updateMany({ _id: { $in: existing } }, { $set: { team_id: newTeamId } }, { session });
 
                 body.players = [...existing, ...docs];
             }
-            const doc = new Team({ ...body });
-            await doc
-                .save({ session })
-                .then(async (team, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(201).json({
-                            result: team,
-                            newData: await Team.find({ createdBy: user, hidden: false })
-                                .select('_id name players tourney_ids mocked')
-                                .populate({ path: 'players', select: '_id name team_id' }),
-                            newPlayers: await Player.find({ createdBy: user, hidden: false }),
-                        });
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            const doc = new Team({ ...body, name: null });
+            const response = await doc.save({ session });
+
+            await session.commitTransaction();
+            session.endSession();
+            res.status(201).json({
+                result: response,
+                newData: await Team.find({ createdBy: user, hidden: false })
+                    .select('_id name players tourney_ids mocked')
+                    .populate({ path: 'players', select: '_id name team_id' }),
+                newPlayers: await Player.find({ createdBy: user, hidden: false }),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -106,51 +91,33 @@ module.exports = {
 
                 // Añadir jugadores nuevos a la DB
                 let docs;
-                await Player.insertMany(newPlayers, { session })
-                    .then(async (doc, err) => {
-                        if (err) await errorHandler(session, err, res);
-                        else docs = doc.map((x) => x._id);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Player.insertMany(newPlayers, { session }).then(async (doc) => (docs = doc.map((x) => x._id)));
 
                 // Actualizar el team id de los jugadores existentes
-                await Player.updateMany({ _id: { $in: existing } }, { $set: { team_id: id } }, { session })
-                    .then(async (_, err) => {
-                        if (err) await errorHandler(session, err, res);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Player.updateMany({ _id: { $in: existing } }, { $set: { team_id: id } }, { session });
 
                 body.players = [...existing, ...docs];
             }
 
             //Remove team id de los players
-            await Player.updateMany({ team_id: id, _id: { $nin: body.players } }, { $set: { team_id: null } }, { session })
-                .then(async (_, err) => {
-                    if (err) await errorHandler(session, err, res);
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            await Player.updateMany({ team_id: id, _id: { $nin: body.players } }, { $set: { team_id: null } }, { session });
 
-            await Team.findOneAndUpdate({ _id: id }, body, {
+            const response = await Team.findOneAndUpdate({ _id: id }, body, {
                 new: true,
                 upsert: false,
                 runValidators: true,
                 session,
-            })
-                .then(async (team, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(200).json({
-                            result: team,
-                            newData: await Team.find({ createdBy: user, hidden: false })
-                                .select('_id name players tourney_ids mocked')
-                                .populate({ path: 'players', select: '_id name team_id' }),
-                            newPlayers: await Player.find({ createdBy: user, hidden: false }),
-                        });
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            });
+
+            await session.commitTransaction();
+            session.endSession();
+            res.status(200).json({
+                result: response,
+                newData: await Team.find({ createdBy: user, hidden: false })
+                    .select('_id name players tourney_ids mocked')
+                    .populate({ path: 'players', select: '_id name team_id' }),
+                newPlayers: await Player.find({ createdBy: user, hidden: false }),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -174,25 +141,18 @@ module.exports = {
                 });
             } else {
                 //Remove team id de los players
-                await Player.updateMany({ team_id: id }, { $set: { team_id: null } }, { session })
-                    .then(async (_, err) => {
-                        if (err) await errorHandler(session, err, res);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Player.updateMany({ team_id: id }, { $set: { team_id: null } }, { session });
 
-                await Team.findByIdAndUpdate(id, { $set: { hidden: true } }, { session, runValidators: true })
-                    .then(async (response) => {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(200).json({
-                            result: response,
-                            newData: await Team.find({ createdBy: user, hidden: false })
-                                .select('_id name players tourney_ids mocked')
-                                .populate({ path: 'players', select: '_id name team_id' }),
-                            newPlayers: await Player.find({ createdBy: user, hidden: false }),
-                        });
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                const response = await Team.findByIdAndUpdate(id, { $set: { hidden: true } }, { session, runValidators: true });
+                await session.commitTransaction();
+                session.endSession();
+                res.status(200).json({
+                    result: response,
+                    newData: await Team.find({ createdBy: user, hidden: false })
+                        .select('_id name players tourney_ids mocked')
+                        .populate({ path: 'players', select: '_id name team_id' }),
+                    newPlayers: await Player.find({ createdBy: user, hidden: false }),
+                });
             }
         } catch (err) {
             await errorHandler(session, err, res);

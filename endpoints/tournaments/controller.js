@@ -131,45 +131,29 @@ module.exports = {
 
                 // Añadir teams nuevos a la DB
                 let docs;
-                await Team.insertMany(newTeams, { session })
-                    .then(async (doc, err) => {
-                        if (err) await errorHandler(session, err, res);
-                        else docs = doc.map((x) => x._id);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Team.insertMany(newTeams, { session }).then((doc) => (docs = doc.map((x) => x._id)));
 
                 // Actualizar el team id de los jugadores existentes
-                await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: newTeamId } }, { session })
-                    .then(async (_, err) => {
-                        if (err) await errorHandler(session, err, res);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: newTeamId } }, { session });
 
                 body.teams = [...existing, ...docs];
             }
 
             const doc = new Tournament({ ...body });
-            await doc
-                .save({ session })
-                .then(async (tourney, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(201).json({
-                            result: tourney,
-                            newData: await Tournament.find({ createdBy: user }).populate({
-                                path: 'teams',
-                                select: '_id name tourney_ids',
-                            }),
-                            newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
-                                path: 'players',
-                                select: '_id name team_id',
-                            }),
-                        });
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            const tourney = await doc.save({ session });
+            await session.commitTransaction();
+            session.endSession();
+            res.status(201).json({
+                result: tourney,
+                newData: await Tournament.find({ createdBy: user }).populate({
+                    path: 'teams',
+                    select: '_id name tourney_ids',
+                }),
+                newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
+                    path: 'players',
+                    select: '_id name team_id',
+                }),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -201,64 +185,40 @@ module.exports = {
                 // Añadir teams nuevos a la DB
                 let docs = [];
                 if (newTeams.length) {
-                    await Team.insertMany(newTeams, { session })
-                        .then(async (doc, err) => {
-                            if (err) await errorHandler(session, err, res);
-                            else docs = doc.map((x) => x._id);
-                        })
-                        .catch(async (err) => await errorHandler(session, err, res));
+                    await Team.insertMany(newTeams, { session }).then((doc) => (docs = doc.map((x) => x._id)));
                 }
 
                 // Actualizar el team id de los jugadores existentes
-                await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: id } }, { session })
-                    .then(async (_, err) => {
-                        if (err) await errorHandler(session, err, res);
-                    })
-                    .catch(async (err) => await errorHandler(session, err, res));
+                await Team.updateMany({ _id: { $in: existing } }, { $addToSet: { tourney_ids: id } }, { session });
 
                 body.teams = [...existing, ...docs];
             }
 
-            await Tournament.findById(id)
-                .then(async (tourney, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        // Remove tourney id from team
-                        const newData = tourney.teams.filter((x) => !body.teams.includes(x.toString()));
-                        await Team.updateMany({ _id: { $in: newData } }, { $pull: { tourney_ids: id } }, { session })
-                            .then(async (_, err) => {
-                                if (err) await errorHandler(session, err, res);
-                            })
-                            .catch(async (err) => await errorHandler(session, err, res));
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            const currentData = await Tournament.findById(id);
 
-            await Tournament.findOneAndUpdate({ _id: id }, body, {
+            const newData = currentData.teams.filter((x) => !body.teams.includes(x.toString()));
+            await Team.updateMany({ _id: { $in: newData } }, { $pull: { tourney_ids: id } }, { session });
+
+            const tourney = await Tournament.findOneAndUpdate({ _id: id }, body, {
                 new: true,
                 upsert: false,
                 runValidators: true,
                 session,
-            })
-                .then(async (tourney, err) => {
-                    if (err) await errorHandler(session, err, res);
-                    else {
-                        await session.commitTransaction();
-                        session.endSession();
-                        res.status(200).json({
-                            result: tourney,
-                            newData: await Tournament.find({ createdBy: user }).populate({
-                                path: 'teams',
-                                select: '_id name tourney_ids',
-                            }),
-                            newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
-                                path: 'players',
-                                select: '_id name team_id',
-                            }),
-                        });
-                    }
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            });
+
+            await session.commitTransaction();
+            session.endSession();
+            res.status(200).json({
+                result: tourney,
+                newData: await Tournament.find({ createdBy: user }).populate({
+                    path: 'teams',
+                    select: '_id name tourney_ids',
+                }),
+                newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
+                    path: 'players',
+                    select: '_id name team_id',
+                }),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -292,14 +252,10 @@ module.exports = {
 
             await updatePlayersSanctions(body?.groups ? body.groups : formatedData.groups, body?.knockout ? body.knockout : formatedData.knockout, session);
 
-            tourney
-                .save()
-                .then(async () => {
-                    await session.commitTransaction();
-                    session.endSession();
-                    res.status(200).json('Información cargada con exito');
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            await tourney.save({ session });
+            await session.commitTransaction();
+            session.endSession();
+            res.status(200).json('Información cargada con exito');
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -313,26 +269,19 @@ module.exports = {
             const id = req.params.id;
 
             // Remove tournament from teams
-            await Team.updateMany({ $in: { tourney_ids: id } }, { $pull: { tourney_ids: id } }, { session })
-                .then(async (_, err) => {
-                    if (err) await errorHandler(session, err, res);
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            await Team.updateMany({ $in: { tourney_ids: id } }, { $pull: { tourney_ids: id } }, { session });
 
-            await Tournament.findByIdAndDelete(id, { session, runValidators: true })
-                .then(async (tourney) => {
-                    await session.commitTransaction();
-                    session.endSession();
-                    res.status(200).json({
-                        result: tourney,
-                        newData: await Tournament.find({ createdBy: user }),
-                        newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
-                            path: 'players',
-                            select: '_id name team_id',
-                        }),
-                    });
-                })
-                .catch(async (err) => await errorHandler(session, err, res));
+            const tourney = await Tournament.findByIdAndDelete(id, { session, runValidators: true });
+            await session.commitTransaction();
+            session.endSession();
+            res.status(200).json({
+                result: tourney,
+                newData: await Tournament.find({ createdBy: user }),
+                newTeams: await Team.find({ createdBy: user, hidden: false }).populate({
+                    path: 'players',
+                    select: '_id name team_id',
+                }),
+            });
         } catch (err) {
             await errorHandler(session, err, res);
         }
@@ -340,11 +289,7 @@ module.exports = {
 };
 
 const saveConfig = async (config, user, session, res) => {
-    await User.findOneAndUpdate({ _id: user }, { groupConfig: config }, { session })
-        .then(async (_, err) => {
-            if (err) await errorHandler(session, err, res);
-        })
-        .catch(async (err) => await errorHandler(session, err, res));
+    await User.findOneAndUpdate({ _id: user }, { groupConfig: config }, { session });
 };
 
 const updatePlayersSanctions = async (groups = [], knockout = [], session) => {
@@ -402,9 +347,5 @@ const updateTeams = async (teams = [], tourneyId, session) => {
         ],
         null,
         { session }
-    )
-        .then(async (_, err) => {
-            if (err) await errorHandler(session, err, res);
-        })
-        .catch(async (err) => await errorHandler(session, err, res));
+    );
 };
