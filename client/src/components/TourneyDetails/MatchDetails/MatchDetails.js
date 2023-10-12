@@ -80,7 +80,7 @@ const MatchDetails = (props) => {
             <div className="match-details-list">
                 <div className="match-details-list-header">
                     <h4>Jugador</h4>
-                    <h4>Minuto</h4>
+                    <h4></h4>
                     <h4>Jugador</h4>
                 </div>
                 {detailsList.map((det, index) => {
@@ -113,9 +113,6 @@ const MatchDetails = (props) => {
                                         {capitalize(det.player?.name)}
                                         {!side && <img src={getImage(det.type)} alt="type-img" />}
                                     </div>
-                                    <div className="time-det" style={{ gridRow: index + 2 }}>
-                                        {det.time_in_match}'
-                                    </div>
                                 </>
                             )}
                         </div>
@@ -145,20 +142,22 @@ const DetailModal = (props) => {
     const [type, setType] = useState();
     const [team, setTeam] = useState();
     const [player, setPlayer] = useState('');
-    const [time_in_match, setTime] = useState();
+    const [cantidad, setCantidad] = useState(1);
 
     useEffect(() => {
         if (!type) setTabIndex(0);
         else type === 'sin goles' ? handleSubmit() : setTabIndex(1);
+        setCantidad(1);
     }, [type]);
 
     useEffect(() => {
         setPlayer(undefined);
-        setTime();
+        setCantidad(1);
     }, [team]);
 
     useEffect(() => {
         player === undefined && setPlayer('');
+        setCantidad(1);
     }, [player]);
 
     useEffect(() => {
@@ -167,18 +166,19 @@ const DetailModal = (props) => {
             setType();
             setTeam();
             setPlayer('');
-            setTime();
+            setCantidad(1);
         }
     }, [show]);
 
     const handleSubmit = () => {
         const newList = [...detailsList];
-        newList.push({
-            type,
-            player: type !== 'sin goles' ? team.players.find((x) => x._id === player) : null,
-            time_in_match: type !== 'sin goles' ? Number(time_in_match) : 999,
-        });
-        setDetailsList(newList.sort((a, b) => a.time_in_match - b.time_in_match));
+        for (let i = 0; i < cantidad; i++) {
+            newList.push({
+                type,
+                player: type !== 'sin goles' ? team.players.find((x) => x._id === player) : null,
+            });
+        }
+        setDetailsList(newList);
         onClose();
     };
 
@@ -193,7 +193,7 @@ const DetailModal = (props) => {
                             setType();
                             setTeam();
                             setPlayer();
-                            setTime();
+                            setCantidad(0);
                         }}
                     />
                     <ProgressIndicatorStep body={'Jugador'} status={tabIndex === 1 ? 'active' : 'default'} />
@@ -249,10 +249,12 @@ const DetailModal = (props) => {
                                             </Select>
                                         </FormField>
                                     )}
-                                    <FormField>
-                                        <Label>Minuto</Label>
-                                        <Input type="number" min={0} max={200} value={time_in_match} onChange={(e) => setTime(e.target.value)} />
-                                    </FormField>
+                                    {(type === 'gol' || type === 'tarjeta amarilla') && (
+                                        <FormField>
+                                            <Label>Cantidad</Label>
+                                            <Input type="number" value={cantidad} onChange={(e) => setCantidad(e.target.value)} />
+                                        </FormField>
+                                    )}
                                 </div>
                             )}
                         </>
@@ -263,7 +265,7 @@ const DetailModal = (props) => {
                 <Button type="button" variant="secondary" onClick={onClose}>
                     Cancelar
                 </Button>
-                {type && team && player && time_in_match && (
+                {type && team && player && cantidad && cantidad > 0 && (
                     <Button type="button" variant="primery" onClick={handleSubmit}>
                         Confirmar
                     </Button>

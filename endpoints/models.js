@@ -12,7 +12,6 @@ const matchDetailsObj = {
         ref: 'players',
         required: false,
     },
-    time_in_match: { type: Number, required: true },
 };
 
 const matchObj = {
