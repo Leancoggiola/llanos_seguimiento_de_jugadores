@@ -4,9 +4,15 @@
     width: -webkit-fill-available;
     width: fill-available;
     margin: 1rem 0.5rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     &-header {
-        display: grid;
-        grid-template-columns: max-content 1fr;
+        h2{
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
         gap: 1rem;
         &-player-count {
             display: flex;

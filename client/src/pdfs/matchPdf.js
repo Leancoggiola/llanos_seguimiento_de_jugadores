@@ -4,6 +4,12 @@ import { capitalize, startCase } from 'lodash';
 
 const headers = [
     {
+        content: '',
+        styles: {
+            cellWidth: 7,
+        },
+    },
+    {
         content: 'JUGADOR',
         colSpan: 1,
     },
@@ -51,21 +57,21 @@ const headers = [
 const getHeaders = (doc, category) => {
     const width = Math.floor(doc.internal.pageSize.getWidth()) - 40;
     const head = [...headers];
-    head[1].styles = { cellWidth: width * 0.2 };
+    head[2].styles = { cellWidth: width * 0.2 };
     if (category === 'Veterano') {
-        head[0].styles = { cellWidth: width * 0.28 };
-        head.splice(2, 0, {
+        head[1].styles = { cellWidth: width * 0.28 };
+        head.splice(3, 0, {
             content: 'DNI',
             colSpan: 1,
             styles: { cellWidth: width * 0.15 },
         });
-        head.splice(3, 0, {
+        head.splice(4, 0, {
             content: 'EDAD',
             colSpan: 1,
             styles: { cellWidth: width * 0.09 },
         });
     }
-    for (let i = category === 'Veterano' ? 4 : 2; i < head.length - 1; i++) {
+    for (let i = category === 'Veterano' ? 5 : 3; i < head.length - 1; i++) {
         head[i].styles = { ...head[i].styles, cellWidth: 7 };
     }
     return head;
@@ -92,14 +98,17 @@ const getBody = (team, { week, details, date }, group, type, tourney, prevDouble
     }
 
     const players = [];
-    if (team.players.length) {
-        team.players.forEach((player) => {
+
+    for (let i = 0; i < 15; i++) {
+        if (team.players[i]?._id) {
+            const player = team.players[i];
+
             // Check Si tiene doble amarrilla partido anterior
             const hasDouble = validMatchs.find((x) => x.week === week - 1)?.details.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla')?.length === 2;
 
             hasDouble && prevDoubleAmarilla.push(player.name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
 
-            const data = [{ content: startCase(player.name), styles: { halign: 'left' } }, ''];
+            const data = [i + 1, { content: startCase(player.name), styles: { halign: 'left' } }, ''];
             if (category === 'Veterano') {
                 data.push(player.dni);
                 data.push(player.age);
@@ -126,8 +135,11 @@ const getBody = (team, { week, details, date }, group, type, tourney, prevDouble
             data.push('');
 
             players.push(data);
-        });
-    } else players.push([]);
+        } else {
+            players.push([i + 1]);
+        }
+    }
+
     return players;
 };
 
@@ -179,7 +191,7 @@ const generateMatchPdf = (match, group, tourney, type) => {
                     const saOff = category !== 'Veterano' ? 5 : 7;
                     if (row.cells[saOff].raw > 0) {
                         data.cell.styles.fillColor = [241, 174, 181];
-                    } else if (prevDoubleAmarilla.includes(row.cells[0].raw.content)) {
+                    } else if (prevDoubleAmarilla.includes(row.cells[0].raw?.content)) {
                         data.cell.styles.fillColor = [255, 218, 106];
                     }
                 }

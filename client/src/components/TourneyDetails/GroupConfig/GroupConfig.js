@@ -430,7 +430,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                     if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && g.name === matchDetails.groupName) {
                         m.details = [...matchDetails.details];
                         if (!isEmpty(m.details)) {
-                            const results = getScore(m).split(':');
+                            const results = getScore(m).split(':').map(Number);
                             m.winner = results[0] === results[1] ? 'empate' : results[0] > results[1] ? m.teams[0]._id : m.teams[1]._id;
                         } else {
                             m.winner = null;
