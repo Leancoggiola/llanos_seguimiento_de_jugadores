@@ -60,7 +60,6 @@ const PlayerForm = (props) => {
         return `${newD.getDate()}-${newD.getMonth()}-${newD.getFullYear()}`;
     };
 
-    console.log(player);
     if (playerCrud.loading) {
         return <LoadingSpinner fullscreen={true} />;
     }

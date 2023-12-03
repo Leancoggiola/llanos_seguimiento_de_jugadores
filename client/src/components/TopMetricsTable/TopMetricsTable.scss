@@ -1,0 +1,14 @@
+.metrics-navigator {
+    .cc-tab-button {
+        width: 100%;
+    }
+    .cc-list {
+        padding: 0;
+        li {
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+}

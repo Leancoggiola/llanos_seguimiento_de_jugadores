@@ -2,7 +2,7 @@ import { capitalize, cloneDeep, isEmpty, shuffle } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
-import { contentIcTeam, editorIcFormatListNumbered, notificationIcEventNote } from '../../../assets/icons';
+import { contentIcTeam, editorIcFormatListNumbered, notificationIcEventNote, avIcEqualizer } from '../../../assets/icons';
 import { Accordion, AccordionContent, AccordionTrigger } from '../../../commonComponents/Accordion';
 import Button from '../../../commonComponents/Button';
 import FormField from '../../../commonComponents/FormField';
@@ -18,6 +18,7 @@ import ManualForm from '../../ManualForm';
 import ManualTeamSelection from '../../ManualTeamSelection';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
+import TopMetricsTable from '../../TopMetricsTable';
 // Middleware
 import { navbarNewEntry, updateToastData } from '../../../middleware/actions/navbarActions';
 // Styling
@@ -112,11 +113,15 @@ const GroupConfig = (props) => {
                 <TabControl onClick={() => setTabIndex(2)} disabled={isEmpty(tourney.groups)}>
                     <Icon src={notificationIcEventNote} />
                 </TabControl>
+                <TabControl onClick={() => setTabIndex(3)}>
+                    <Icon src={avIcEqualizer} />
+                </TabControl>
             </TabNavigator>
             <div className="group-config-content">
                 {tabIndex === 0 && <Equipos tourney={tourney} setTourneyData={setTourneyData} />}
                 {tabIndex === 1 && <Grupos tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} />}
                 {tabIndex === 2 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} handlePdf={handlePdf} />}
+                {tabIndex === 3 && <TopMetricsTable tourney={tourney} />}
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useDispatch, useSelector } from 'react-redux';
 // Components
-import { contentIcTrophy, navigationIcClose, notificationIcEventNote } from '../../../assets/icons';
+import { avIcEqualizer, contentIcTrophy, navigationIcClose, notificationIcEventNote } from '../../../assets/icons';
 import { Accordion, AccordionContent, AccordionTrigger } from '../../../commonComponents/Accordion';
 import Button from '../../../commonComponents/Button';
 import FormField from '../../../commonComponents/FormField';
@@ -14,6 +14,7 @@ import { Option, Select } from '../../../commonComponents/Select';
 import { TabControl, TabNavigator } from '../../../commonComponents/TabNavigator';
 import DeleteConfirmation from '../../DeleteConfirmation';
 import ManualTeamSelection from '../../ManualTeamSelection';
+import TopMetricsTable from '../../TopMetricsTable';
 import MatchCard from '../MatchCard/MatchCard';
 import MatchDetails from '../MatchDetails/MatchDetails';
 // Middleware
@@ -63,13 +64,17 @@ const KnockoutConfig = (props) => {
                 <TabControl onClick={() => setTabIndex(0)}>
                     <Icon src={notificationIcEventNote} />
                 </TabControl>
-                <TabControl onClick={() => setTabIndex(1)} disabled={!haveWinner()}>
+                <TabControl onClick={() => setTabIndex(1)}>
+                    <Icon src={avIcEqualizer} />
+                </TabControl>
+                <TabControl onClick={() => setTabIndex(2)} disabled={!haveWinner()}>
                     <Icon src={contentIcTrophy} />
                 </TabControl>
             </TabNavigator>
             <div className="knockout-config-content">
                 {tabIndex === 0 && <Calendario tourney={tourney} setTourneyData={setTourneyData} getScore={getScore} handlePdf={handlePdf} />}
-                {tabIndex === 1 && <WinnerScreen winner={getWinner()} />}
+                {tabIndex === 1 && <TopMetricsTable tourney={tourney} />}
+                {tabIndex === 2 && <WinnerScreen winner={getWinner()} />}
             </div>
         </div>
     );
@@ -102,7 +107,7 @@ const Calendario = ({ tourney, setTourneyData, getScore, handlePdf }) => {
                     if (m.matchOrder === matchDetails.matchOrder && m.week === matchDetails.week && k.name === matchDetails.groupName) {
                         m.details = [...matchDetails.details];
                         if (!isEmpty(m.details)) {
-                            const results = getScore(m).split(':');
+                            const results = getScore(m).split(':').map(Number);
                             m.winner = results[0] === results[1] ? 'empate' : results[0] > results[1] ? m.teams[0]._id : m.teams[1]._id;
                         } else {
                             m.winner = null;
