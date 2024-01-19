@@ -50,7 +50,7 @@ module.exports = {
 
                 body.players = [...existing, ...docs];
             }
-            const doc = new Team({ ...body, name: null });
+            const doc = new Team({ ...body });
             const response = await doc.save({ session });
 
             await session.commitTransaction();
