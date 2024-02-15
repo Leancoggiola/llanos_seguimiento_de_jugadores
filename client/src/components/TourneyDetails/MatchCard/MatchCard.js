@@ -72,7 +72,7 @@ const MatchCard = (props) => {
             {date && (
                 <div className="match-card-date">
                     <span>
-                        <i>{`Jugado el: ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`}</i>
+                        <i>{`Jugado el: ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`}</i>
                     </span>
                     <IconButton onClick={() => handleDateChange(null)}>
                         <Icon src={navigationIcClose} />

@@ -98,15 +98,17 @@ const getBody = (team, { week, details, date }, group, type, tourney, prevDouble
     }
 
     const players = [];
+    let nroRows = category === 'Veterano' ? 16 : 13;
+    nroRows = team.players.length > nroRows ? team.players.length : nroRows;
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < nroRows; i++) {
         if (team.players[i]?._id) {
             const player = team.players[i];
 
             // Check Si tiene doble amarrilla partido anterior
             const hasDouble = validMatchs.find((x) => x.week === week - 1)?.details.filter((x) => player._id === x.player?._id && x.type === 'tarjeta amarilla')?.length === 2;
 
-            hasDouble && prevDoubleAmarilla.push(player.name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+            hasDouble && prevDoubleAmarilla.push(startCase(player.name));
 
             const data = [i + 1, { content: startCase(player.name), styles: { halign: 'left' } }, ''];
             if (category === 'Veterano') {
@@ -191,7 +193,7 @@ const generateMatchPdf = (match, group, tourney, type) => {
                     const saOff = category !== 'Veterano' ? 5 : 7;
                     if (row.cells[saOff].raw > 0) {
                         data.cell.styles.fillColor = [241, 174, 181];
-                    } else if (prevDoubleAmarilla.includes(row.cells[0].raw?.content)) {
+                    } else if (prevDoubleAmarilla.includes(row.cells[1].text[0])) {
                         data.cell.styles.fillColor = [255, 218, 106];
                     }
                 }
